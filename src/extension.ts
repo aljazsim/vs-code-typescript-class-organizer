@@ -7,9 +7,6 @@ export function activate(context: vscode.ExtensionContext)
 {
     context.subscriptions.push(vscode.commands.registerCommand('tsco.organize', () => organize(vscode.window.activeTextEditor, getUseRegions())));
     context.subscriptions.push(vscode.commands.registerCommand('tsco.organizeAll', () => organizeAll(getUseRegions())));
-
-    vscode.workspace.
-
 }
 
 function getUseRegions(): boolean

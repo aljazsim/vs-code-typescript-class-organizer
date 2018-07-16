@@ -8,7 +8,7 @@
     "name": "aljazsim",
     "url": "https://github.com/aljazsim/"
   },
-  "icon": ".\\doc\\logo.png",
+  "icon": "doc/logo.png",
   "galleryBanner": {
     "color": "#4c725d",
     "theme": "dark"
@@ -32,9 +32,7 @@
     "TypeScript",
     "organize",
     "order",
-    "group",
     "class",
-    "members",
     "regions"
   ],
   "activationEvents": [

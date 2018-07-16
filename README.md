@@ -1,6 +1,6 @@
 # TypeScript Class Organizer for VS Code
 
-Keeps your TypeScript code organized by grouping and ordering class members.
+VS Code extension for keeping your TypeScript code organized by grouping and ordering class members.
 
 ## Features
 Organize currently opened TypeScript file or all TypeScript files in your project.
@@ -28,7 +28,6 @@ You can invoke command "TypeScript Class Organizer: Organize Current File" by us
 You can invoke command "TypeScript Class Organizer: Organize Current File" by using the context menu item.
 
 ![Context Menu](./doc/context_menu.png "Context Menu")
-
 
 ## Configuration
 
