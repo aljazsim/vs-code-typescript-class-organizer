@@ -198,6 +198,7 @@ function print(groups: any, sourceCode: string, start: number, end: number, addP
                 }
 
                 members += newLine;
+                members += newLine;
             }
 
             members += newLine;
@@ -211,7 +212,7 @@ function print(groups: any, sourceCode: string, start: number, end: number, addP
     sourceCode2 += newLine;
     sourceCode2 += "\t" + members.trim();
     sourceCode2 += newLine;
-    sourceCode2 += sourceCode.substring(end, sourceCode.length - 1).trimLeft();
+    sourceCode2 += sourceCode.substring(end - 1, sourceCode.length - 1).trimLeft();
 
     return sourceCode2.trimLeft();
 }

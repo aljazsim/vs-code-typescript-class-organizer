@@ -133,14 +133,6 @@ export function formatLines(sourceCode: string)
 		{
 			// skip emptyline
 		}
-		else if (closingBraceRegex.test(lines[i]) &&
-			!closingBraceRegex.test(lines[i + 1]) &&
-			!newLineRegex.test(lines[i + 1]))
-		{
-			// add emptyline
-			lines2.push(lines[i]);
-			lines2.push("");
-		}
 		else
 		{
 			lines2.push(lines[i]);
