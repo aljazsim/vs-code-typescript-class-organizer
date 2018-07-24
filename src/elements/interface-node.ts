@@ -8,11 +8,17 @@ import { WriteModifier } from "./write-modifier";
 
 export class InterfaceNode extends ElementNode
 {
+	// #region Properties (5)
+
+	public indexes: IndexSignatureNode[] = [];
+	public membersEnd: number = 0;
+	public membersStart: number = 0;
 	public methods: MethodSignatureNode[] = [];
 	public properties: PropertySignatureNode[] = [];
-	public indexes: IndexSignatureNode[] = [];
-	public membersStart: number = 0;
-	public membersEnd: number = 0;
+
+	// #endregion
+
+	// #region Constructors (1)
 
 	constructor(sourceFile: ts.SourceFile, interfaceDeclaration: ts.InterfaceDeclaration)
 	{
@@ -32,9 +38,23 @@ export class InterfaceNode extends ElementNode
 		}
 	}
 
+	// #endregion
+
+	// #region Public Methods (5)
+
+	public getConstProperties()
+	{
+		return this.properties.filter(x => x.writeMode === WriteModifier.Const).sort((a, b) => compareStrings(a.name, b.name));
+	}
+
 	public getIndexes()
 	{
 		return this.indexes.sort((a, b) => compareStrings(a.name, b.name));
+	}
+
+	public getMethods()
+	{
+		return this.methods.sort((a, b) => compareStrings(a.name, b.name));
 	}
 
 	public getProperties()
@@ -42,18 +62,10 @@ export class InterfaceNode extends ElementNode
 		return this.properties.filter(x => x.writeMode === WriteModifier.Writable).sort((a, b) => compareStrings(a.name, b.name));
 	}
 
-	public getConstProperties()
-	{
-		return this.properties.filter(x => x.writeMode === WriteModifier.Const).sort((a, b) => compareStrings(a.name, b.name));
-	}
-
 	public getReadOnlyProperties()
 	{
 		return this.properties.filter(x => x.writeMode === WriteModifier.ReadOnly).sort((a, b) => compareStrings(a.name, b.name));
 	}
 
-	public getMethods()
-	{
-		return this.methods.sort((a, b) => compareStrings(a.name, b.name));
-	}
+	// #endregion
 }

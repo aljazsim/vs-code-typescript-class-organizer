@@ -14,6 +14,8 @@ import { SetterNode } from "./elements/setter-node";
 
 export class Transformer
 {
+	// #region Public Methods (1)
+
 	public analyzeSyntaxTree(sourceFile: ts.SourceFile)
 	{
 		let elements: ElementNode[] = [];
@@ -26,6 +28,10 @@ export class Transformer
 
 		return elements;
 	}
+
+	// #endregion
+
+	// #region Private Methods (1)
 
 	private visitSyntaxTree(elements: ElementNode[], node: ts.Node, sourceFile: ts.SourceFile)
 	{
@@ -80,7 +86,6 @@ export class Transformer
 					(<ClassNode>elements[elements.length - 1]).indexes.push(new IndexNode(sourceFile, member));
 				}
 			}
-
 		}
 		else
 		{
@@ -92,4 +97,6 @@ export class Transformer
 
 		return elements;
 	}
+
+	// #endregion
 }

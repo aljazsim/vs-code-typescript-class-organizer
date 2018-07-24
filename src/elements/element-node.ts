@@ -4,15 +4,25 @@ import { WriteModifier } from "./write-modifier";
 
 export abstract class ElementNode
 {
+	// #region Properties (5)
+
 	public accessModifier: AccessModifier = AccessModifier.public;
-	public name: string = "";
-	public fullStart: number = 0;
-	public start: number = 0;
 	public end: number = 0;
+	public fullStart: number = 0;
+	public name: string = "";
+	public start: number = 0;
+
+	// #endregion
+
+	// #region Constructors (1)
 
 	constructor()
 	{
 	}
+
+	// #endregion
+
+	// #region Protected Methods (4)
 
 	protected getAccessModifier(node: ts.PropertyDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration | ts.MethodDeclaration | ts.IndexedAccessTypeNode | ts.PropertySignature | ts.IndexSignatureDeclaration)
 	{
@@ -89,4 +99,6 @@ export abstract class ElementNode
 
 		return writeMode;
 	}
+
+	// #endregion
 }

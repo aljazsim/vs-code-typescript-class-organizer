@@ -3,8 +3,14 @@ import { ElementNode } from "./element-node";
 
 export class MethodNode extends ElementNode
 {
+	// #region Properties (2)
+
 	public isAbstract: boolean;
 	public isStatic: boolean;
+
+	// #endregion
+
+	// #region Constructors (1)
 
 	constructor(sourceFile: ts.SourceFile, methodDeclaration: ts.MethodDeclaration)
 	{
@@ -20,4 +26,6 @@ export class MethodNode extends ElementNode
 		this.isAbstract = this.getIsAbstract(methodDeclaration);
 		this.isStatic = this.getIsStatic(methodDeclaration);
 	}
+
+	// #endregion
 }

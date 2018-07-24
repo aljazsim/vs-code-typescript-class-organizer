@@ -3,8 +3,14 @@ import { ElementNode } from "./element-node";
 
 export class SetterNode extends ElementNode
 {
+	// #region Properties (2)
+
 	public isAbstract: boolean;
 	public isStatic: boolean;
+
+	// #endregion
+
+	// #region Constructors (1)
 
 	constructor(sourceFile: ts.SourceFile, setterDeclaration: ts.SetAccessorDeclaration)
 	{
@@ -20,4 +26,6 @@ export class SetterNode extends ElementNode
 		this.isAbstract = this.getIsAbstract(setterDeclaration);
 		this.isStatic = this.getIsStatic(setterDeclaration);
 	}
+
+	// #endregion
 }

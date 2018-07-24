@@ -4,7 +4,13 @@ import { WriteModifier } from "./write-modifier";
 
 export class PropertySignatureNode extends ElementNode
 {
+	// #region Properties (1)
+
 	public writeMode: WriteModifier = WriteModifier.Writable;
+
+	// #endregion
+
+	// #region Constructors (1)
 
 	constructor(sourceFile: ts.SourceFile, propertyDeclaration: ts.PropertySignature)
 	{
@@ -19,4 +25,6 @@ export class PropertySignatureNode extends ElementNode
 		this.accessModifier = this.getAccessModifier(propertyDeclaration);
 		this.writeMode = this.getWriteMode(propertyDeclaration);
 	}
+
+	// #endregion
 }

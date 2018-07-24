@@ -3,6 +3,8 @@ import { ElementNode } from "./element-node";
 
 export class ConstructorNode extends ElementNode
 {
+	// #region Constructors (1)
+
 	constructor(sourceFile: ts.SourceFile, constructorDeclaration: ts.ConstructorDeclaration)
 	{
 		super();
@@ -13,4 +15,6 @@ export class ConstructorNode extends ElementNode
 		this.end = constructorDeclaration.getEnd();
 		this.start = constructorDeclaration.getStart(sourceFile, false);
 	}
+
+	// #endregion
 }

@@ -4,9 +4,15 @@ import { WriteModifier } from "./write-modifier";
 
 export class IndexNode extends ElementNode
 {
+	// #region Properties (3)
+
 	public isAbstract: boolean;
 	public isStatic: boolean;
 	public writeMode: WriteModifier = WriteModifier.Writable;
+
+	// #endregion
+
+	// #region Constructors (1)
 
 	constructor(sourceFile: ts.SourceFile, indexDeclaration: ts.IndexedAccessTypeNode)
 	{
@@ -23,4 +29,6 @@ export class IndexNode extends ElementNode
 		this.isStatic = this.getIsStatic(indexDeclaration);
 		this.writeMode = this.getWriteMode(indexDeclaration);
 	}
+
+	// #endregion
 }
