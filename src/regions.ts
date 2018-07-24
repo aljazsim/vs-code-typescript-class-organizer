@@ -99,15 +99,19 @@ export function formatLines(sourceCode: string)
 	const newLine = "\r\n";
 	let newLineRegex = new RegExp(`^\\s*$`);
 	let openingBraceRegex = new RegExp(`^.*\{\\s*$`);
-	let closingBraceRegex = new RegExp(`^\\s*\}.*$`);
-	let importRegex = new RegExp(`^import.+from.+;$`);
+	let closingBraceRegex = new RegExp(`^\\s*\}\\s*$`);
 
 	let lines: string[] = sourceCode.split(newLine);
 	let lines2: string[] = [];
 
-	for (let i = 0; i < lines.length - 1; i++)
+	for (let i = 0; i < lines.length; i++)
 	{
-		if (openingBraceRegex.test(lines[i]) &&
+		if (i === lines.length - 1)
+		{
+			// last line
+			lines2.push(lines[i]);
+		}
+		else if (openingBraceRegex.test(lines[i]) &&
 			newLineRegex.test(lines[i + 1]))
 		{
 			// remove empty line after {
@@ -129,10 +133,11 @@ export function formatLines(sourceCode: string)
 		{
 			// skip emptyline
 		}
-		else if (importRegex.test(lines[i]) &&
-			!importRegex.test(lines[i + 1]))
+		else if (closingBraceRegex.test(lines[i]) &&
+			!closingBraceRegex.test(lines[i + 1]) &&
+			!newLineRegex.test(lines[i + 1]))
 		{
-			// add empty line after imports
+			// add emptyline
 			lines2.push(lines[i]);
 			lines2.push("");
 		}

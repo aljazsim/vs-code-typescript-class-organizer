@@ -1,0 +1,1 @@
+vsce publish -p key

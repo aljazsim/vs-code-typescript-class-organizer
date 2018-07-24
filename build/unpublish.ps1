@@ -1,0 +1,1 @@
+vsce unpublish username.extensionId
