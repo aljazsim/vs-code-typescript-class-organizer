@@ -62,6 +62,24 @@ export abstract class ElementNode
 		return isAbstract;
 	}
 
+	protected getIsExport(node: ts.ClassDeclaration | ts.FunctionDeclaration)
+	{
+		let isExport = false;
+
+		if (node.modifiers)
+		{
+			let tmp = node.modifiers.find((modifier, index, array) => modifier.kind === ts.SyntaxKind.ExportKeyword);
+
+			if (tmp &&
+				tmp.kind === ts.SyntaxKind.ExportKeyword)
+			{
+				isExport = true;
+			}
+		}
+
+		return isExport;
+	}
+
 	protected getIsStatic(node: ts.ClassDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration | ts.PropertyDeclaration | ts.MethodDeclaration | ts.IndexedAccessTypeNode)
 	{
 		let isStatic = false;
@@ -74,7 +92,7 @@ export abstract class ElementNode
 		return isStatic;
 	}
 
-	protected getWriteMode(node: ts.PropertyDeclaration | ts.IndexedAccessTypeNode | ts.PropertySignature | ts.IndexSignatureDeclaration)
+	protected getWriteMode(node: ts.PropertyDeclaration | ts.VariableStatement | ts.IndexedAccessTypeNode | ts.PropertySignature | ts.IndexSignatureDeclaration)
 	{
 		let writeMode: WriteModifier = WriteModifier.Writable;
 		let writeModifiers: ts.SyntaxKind[] = [ts.SyntaxKind.ConstKeyword, ts.SyntaxKind.ReadonlyKeyword];

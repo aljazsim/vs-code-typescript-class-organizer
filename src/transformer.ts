@@ -2,7 +2,10 @@ import * as ts from "typescript";
 import { ClassNode } from "./elements/class-node";
 import { ConstructorNode } from "./elements/constructor-node";
 import { ElementNode } from "./elements/element-node";
+import { EnumNode } from "./elements/enum-node";
+import { FunctionNode } from "./elements/function-node";
 import { GetterNode } from "./elements/getter-node";
+import { ImportNode } from "./elements/import-node";
 import { IndexNode } from "./elements/index-node";
 import { IndexSignatureNode } from "./elements/index-signature-node";
 import { InterfaceNode } from "./elements/interface-node";
@@ -11,6 +14,7 @@ import { MethodSignatureNode } from "./elements/method-signature-node";
 import { PropertyNode } from "./elements/property-node";
 import { PropertySignatureNode } from "./elements/property-signature-node";
 import { SetterNode } from "./elements/setter-node";
+import { TypeAliasNode } from "./elements/type-alias-node";
 
 export class Transformer
 {
@@ -35,7 +39,15 @@ export class Transformer
 
 	private visitSyntaxTree(elements: ElementNode[], node: ts.Node, sourceFile: ts.SourceFile)
 	{
-		if (ts.isInterfaceDeclaration(node))
+		if (ts.isImportDeclaration(node))
+		{
+			elements.push(new ImportNode(sourceFile, node));
+		}
+		if (ts.isTypeAliasDeclaration(node))
+		{
+			elements.push(new TypeAliasNode(sourceFile, node));
+		}
+		else if (ts.isInterfaceDeclaration(node))
 		{
 			elements.push(new InterfaceNode(sourceFile, node));
 
@@ -86,6 +98,14 @@ export class Transformer
 					(<ClassNode>elements[elements.length - 1]).indexes.push(new IndexNode(sourceFile, member));
 				}
 			}
+		}
+		else if (ts.isEnumDeclaration(node))
+		{
+			elements.push(new EnumNode(sourceFile, node));
+		}
+		else if (ts.isFunctionDeclaration(node))
+		{
+			elements.push(new FunctionNode(sourceFile, node));
 		}
 		else
 		{

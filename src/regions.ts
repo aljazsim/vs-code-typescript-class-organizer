@@ -33,16 +33,27 @@ export function removeRegions(sourceCode: string)
 	let accessorsRegex = "(Accessors)";
 	let constructorRegex = "(Constructors)";
 	let methodsRegex = "(Methods)";
+	let typesRegex = "(Type aliases)";
+	let interfacesRegex = "(Interfaces)";
+	let classesRegex = "(Classes)";
+	let enumsRegex = "(Enums)";
+	let functionsRegex = "(Functions)";
+	let variablesRegex = "(Variables)";
 	let countRegex = "\\([0-9]+\\)";
 	let spaceRegex = "\\s*";
 	let propertiesRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${accessModifierRegex}${spaceRegex}(${writeModifierRegex}${spaceRegex})?${propertiesRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
 	let accessorsRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${accessModifierRegex}${spaceRegex}${accessorsRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
 	let constructorRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${constructorRegex}${spaceRegex}${countRegex}${spaceRegex}`, "i");
 	let methodsRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${accessModifierRegex}${spaceRegex}(${staticModifierRegex}${spaceRegex})?${methodsRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
-
 	let propertySiganturesRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}(${writeModifierRegex}${spaceRegex})?${propertiesRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
 	let indexSiganturesRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}(${writeModifierRegex}${spaceRegex})?${indexesRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
 	let methodSignaturesRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${methodsRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
+	let typesRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${typesRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
+	let interfacesRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${interfacesRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
+	let classesRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${classesRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
+	let enumsRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${enumsRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
+	let functionsRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${functionsRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
+	let variablesRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${variablesRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
 
 	let endregionsRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${endregionRegex}${spaceRegex}$`, "i");
 	let lines: string[] = sourceCode.split(newLine);
@@ -57,7 +68,13 @@ export function removeRegions(sourceCode: string)
 			!endregionsRegex.test(lines[i]) &&
 			!propertySiganturesRegionRegex.test(lines[i]) &&
 			!indexSiganturesRegionRegex.test(lines[i]) &&
-			!methodSignaturesRegionRegex.test(lines[i]))
+			!methodSignaturesRegionRegex.test(lines[i]) &&
+			!typesRegionRegex.test(lines[i]) &&
+			!interfacesRegionRegex.test(lines[i]) &&
+			!classesRegionRegex.test(lines[i]) &&
+			!enumsRegionRegex.test(lines[i]) &&
+			!functionsRegionRegex.test(lines[i]) &&
+			!variablesRegionRegex.test(lines[i]))
 		{
 			lines2.push(lines[i]);
 		}

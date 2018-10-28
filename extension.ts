@@ -1,11 +1,12 @@
 import * as ts from "typescript";
 import * as vscode from "vscode";
 import { ClassNode } from "./src/elements/class-node";
-import { compareNumbers } from "./src/utils";
+import { compareNumbers, getClasses, getEnums, getFunctions, getImports, getInterfaces, getTypeAliases } from "./src/utils";
 import { ElementNode } from "./src/elements/element-node";
 import { formatLines, removeRegions } from "./src/regions";
 import { InterfaceNode } from "./src/elements/interface-node";
 import { Transformer } from "./src/transformer";
+import { UnknownNode } from "./src/elements/unknown-node";
 
 export function activate(context: vscode.ExtensionContext)
 {
@@ -42,6 +43,37 @@ function organize(editor: vscode.TextEditor | undefined, useRegions: boolean)
         sourceCode = editor.document.getText();
         sourceCode = removeRegions(sourceCode);
 
+        // organize type aliases, interfaces, classes, enums, functions and variables
+        sourceFile = ts.createSourceFile(editor.document.fileName, sourceCode, ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
+
+        elements = new Transformer().analyzeSyntaxTree(sourceFile);
+
+        if (elements.filter(x => !(x instanceof UnknownNode)))
+        {
+            let imports = getImports(elements);
+            let functions = getFunctions(elements);
+            let typeAliases = getTypeAliases(elements);
+            let interfaces = getInterfaces(elements);
+            let classes = getClasses(elements);
+            let enums = getEnums(elements);
+
+            let groups = [
+                { description: "Imports", groups: [{ nodes: imports }], regions: false },
+                { description: "Type aliases", groups: [{ nodes: typeAliases }], regions: true },
+                { description: "Interfaces", groups: [{ nodes: interfaces }], regions: true },
+                { description: "Classes", groups: [{ nodes: classes }], regions: true },
+                { description: "Enums", groups: [{ nodes: enums }], regions: true },
+                { description: "Functions", groups: [{ nodes: functions }], regions: true }
+            ];
+
+            if (functions.length + typeAliases.length + interfaces.length + classes.length + enums.length > 1 ||
+                functions.length > 0)
+            {
+                sourceCode = print(groups, sourceCode, 0, sourceCode.length, false, false);
+            }
+        }
+
+        // organize members of interfaces and classes
         sourceFile = ts.createSourceFile(editor.document.fileName, sourceCode, ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
 
         elements = new Transformer().analyzeSyntaxTree(sourceFile);
@@ -53,24 +85,27 @@ function organize(editor: vscode.TextEditor | undefined, useRegions: boolean)
                 let interfaceNode = <InterfaceNode>element;
                 let groups = [
                     {
-                        description: "Properties", groups: [
+                        description: "Properties",
+                        groups: [
                             { nodes: interfaceNode.getConstProperties() },
                             { nodes: interfaceNode.getReadOnlyProperties() },
                             { nodes: interfaceNode.getProperties() }
-                        ]
+                        ],
+                        regions: true
                     },
-                    { description: "Indexes", groups: [{ nodes: interfaceNode.getIndexes() }] },
-                    { description: "Methods", groups: [{ nodes: interfaceNode.getMethods() }] }
+                    { description: "Indexes", groups: [{ nodes: interfaceNode.getIndexes() }], regions: true },
+                    { description: "Methods", groups: [{ nodes: interfaceNode.getMethods() }], regions: true }
                 ];
 
-                sourceCode = print(groups, sourceCode, interfaceNode.membersStart, interfaceNode.membersEnd, false);
+                sourceCode = print(groups, sourceCode, interfaceNode.membersStart, interfaceNode.membersEnd, false, true);
             }
             else if (element instanceof ClassNode)
             {
                 let classNode = <ClassNode>element;
                 let groups = [
                     {
-                        description: "Properties", groups: [
+                        description: "Properties",
+                        groups: [
                             { nodes: classNode.getPrivateStaticConstProperties() },
                             { nodes: classNode.getPrivateConstProperties() },
                             { nodes: classNode.getPrivateStaticReadOnlyProperties() },
@@ -91,49 +126,50 @@ function organize(editor: vscode.TextEditor | undefined, useRegions: boolean)
                             { nodes: classNode.getPublicReadOnlyProperties() },
                             { nodes: classNode.getPublicStaticProperties() },
                             { nodes: classNode.getPublicProperties() }
-                        ]
+                        ],
+                        regions: true
                     },
 
-                    { description: "Constructors", groups: [{ nodes: classNode.getConstructors() }] },
+                    { description: "Constructors", groups: [{ nodes: classNode.getConstructors() }], regions: true },
 
-                    { description: "Public Static Accessors", groups: [{ nodes: classNode.getPublicStaticGettersAndSetters() }] },
-                    { description: "Public Accessors", groups: [{ nodes: classNode.getPublicGettersAndSetters() }] },
-                    { description: "Public Abstract Accessors", groups: [{ nodes: classNode.getPublicAbstractGettersAndSetters() }] },
+                    { description: "Public Static Accessors", groups: [{ nodes: classNode.getPublicStaticGettersAndSetters() }], regions: true },
+                    { description: "Public Accessors", groups: [{ nodes: classNode.getPublicGettersAndSetters() }], regions: true },
+                    { description: "Public Abstract Accessors", groups: [{ nodes: classNode.getPublicAbstractGettersAndSetters() }], regions: true },
 
-                    { description: "Protected Static Accessors", groups: [{ nodes: classNode.getProtectedStaticGettersAndSetters() }] },
-                    { description: "Protected Accessors", groups: [{ nodes: classNode.getProtectedGettersAndSetters() }] },
-                    { description: "Protected Abstract Accessors", groups: [{ nodes: classNode.getProtectedAbstractGettersAndSetters() }] },
+                    { description: "Protected Static Accessors", groups: [{ nodes: classNode.getProtectedStaticGettersAndSetters() }], regions: true },
+                    { description: "Protected Accessors", groups: [{ nodes: classNode.getProtectedGettersAndSetters() }], regions: true },
+                    { description: "Protected Abstract Accessors", groups: [{ nodes: classNode.getProtectedAbstractGettersAndSetters() }], regions: true },
 
-                    { description: "Private Static Accessors", groups: [{ nodes: classNode.getPrivateStaticGettersAndSetters() }] },
-                    { description: "Private Accessors", groups: [{ nodes: classNode.getPrivateGettersAndSetters() }] },
-                    { description: "Private Abstract Accessors", groups: [{ nodes: classNode.getPrivateAbstractGettersAndSetters() }] },
+                    { description: "Private Static Accessors", groups: [{ nodes: classNode.getPrivateStaticGettersAndSetters() }], regions: true },
+                    { description: "Private Accessors", groups: [{ nodes: classNode.getPrivateGettersAndSetters() }], regions: true },
+                    { description: "Private Abstract Accessors", groups: [{ nodes: classNode.getPrivateAbstractGettersAndSetters() }], regions: true },
 
-                    { description: "Public Static Indexes", groups: [{ nodes: classNode.getPublicStaticIndexes() }] },
-                    { description: "Public Indexes", groups: [{ nodes: classNode.getPublicIndexes() }] },
-                    { description: "Public Abstract Indexes", groups: [{ nodes: classNode.getPublicAbstractIndexes() }] },
+                    { description: "Public Static Indexes", groups: [{ nodes: classNode.getPublicStaticIndexes() }], regions: true },
+                    { description: "Public Indexes", groups: [{ nodes: classNode.getPublicIndexes() }], regions: true },
+                    { description: "Public Abstract Indexes", groups: [{ nodes: classNode.getPublicAbstractIndexes() }], regions: true },
 
-                    { description: "Protected Static Indexes", groups: [{ nodes: classNode.getProtectedStaticIndexes() }] },
-                    { description: "Protected Indexes", groups: [{ nodes: classNode.getProtectedIndexes() }] },
-                    { description: "Protected Abstract Indexes", groups: [{ nodes: classNode.getProtectedAbstractIndexes() }] },
+                    { description: "Protected Static Indexes", groups: [{ nodes: classNode.getProtectedStaticIndexes() }], regions: true },
+                    { description: "Protected Indexes", groups: [{ nodes: classNode.getProtectedIndexes() }], regions: true },
+                    { description: "Protected Abstract Indexes", groups: [{ nodes: classNode.getProtectedAbstractIndexes() }], regions: true },
 
-                    { description: "Private Static Indexes", groups: [{ nodes: classNode.getPrivateStaticIndexes() }] },
-                    { description: "Private Indexes", groups: [{ nodes: classNode.getPrivateIndexes() }] },
-                    { description: "Private Abstract Indexes", groups: [{ nodes: classNode.getPrivateAbstractIndexes() }] },
+                    { description: "Private Static Indexes", groups: [{ nodes: classNode.getPrivateStaticIndexes() }], regions: true },
+                    { description: "Private Indexes", groups: [{ nodes: classNode.getPrivateIndexes() }], regions: true },
+                    { description: "Private Abstract Indexes", groups: [{ nodes: classNode.getPrivateAbstractIndexes() }], regions: true },
 
-                    { description: "Public Static Methods", groups: [{ nodes: classNode.getPublicStaticMethods() }] },
-                    { description: "Public Methods", groups: [{ nodes: classNode.getPublicMethods() }] },
-                    { description: "Public Abstract Methods", groups: [{ nodes: classNode.getPublicAbstractMethods() }] },
+                    { description: "Public Static Methods", groups: [{ nodes: classNode.getPublicStaticMethods() }], regions: true },
+                    { description: "Public Methods", groups: [{ nodes: classNode.getPublicMethods() }], regions: true },
+                    { description: "Public Abstract Methods", groups: [{ nodes: classNode.getPublicAbstractMethods() }], regions: true },
 
-                    { description: "Protected Static Methods", groups: [{ nodes: classNode.getProtectedStaticMethods() }] },
-                    { description: "Protected Methods", groups: [{ nodes: classNode.getProtectedMethods() }] },
-                    { description: "Protected Abstract Methods", groups: [{ nodes: classNode.getProtectedAbstractMethods() }] },
+                    { description: "Protected Static Methods", groups: [{ nodes: classNode.getProtectedStaticMethods() }], regions: true },
+                    { description: "Protected Methods", groups: [{ nodes: classNode.getProtectedMethods() }], regions: true },
+                    { description: "Protected Abstract Methods", groups: [{ nodes: classNode.getProtectedAbstractMethods() }], regions: true },
 
-                    { description: "Private Static Methods", groups: [{ nodes: classNode.getPrivateStaticMethods() }] },
+                    { description: "Private Static Methods", groups: [{ nodes: classNode.getPrivateStaticMethods() }], regions: true },
                     { description: "Private Methods", groups: [{ nodes: classNode.getPrivateMethods() }] },
-                    { description: "Private Abstract Methods", groups: [{ nodes: classNode.getPrivateAbstractMethods() }] },
+                    { description: "Private Abstract Methods", groups: [{ nodes: classNode.getPrivateAbstractMethods() }], regions: true },
                 ];
 
-                sourceCode = print(groups, sourceCode, classNode.membersStart, classNode.membersEnd, true);
+                sourceCode = print(groups, sourceCode, classNode.membersStart, classNode.membersEnd, true, true);
             }
         }
 
@@ -155,7 +191,7 @@ function organize(editor: vscode.TextEditor | undefined, useRegions: boolean)
     }
 }
 
-function print(groups: any, sourceCode: string, start: number, end: number, addPublicModifierIfMissing: boolean)
+function print(groups: any, sourceCode: string, start: number, end: number, addPublicModifierIfMissing: boolean, addIdentation: boolean)
 {
     let sourceCode2: string;
     let count;
@@ -173,18 +209,26 @@ function print(groups: any, sourceCode: string, start: number, end: number, addP
 
         if (count > 0)
         {
-            members += newLine;
-            members += `\t// #region ${group.description} (${count})`;
-            members += newLine;
+            if (group.regions)
+            {
+                members += newLine;
+                members += `${addIdentation ? "\t" : ""}// #region ${group.description} (${count})${newLine}`;
+            }
+
             members += newLine;
 
             for (let group2 of group.groups)
             {
                 for (let node of group2.nodes)
                 {
-                    let code = sourceCode.substring(node.fullStart, node.end).trim();
+                    let comment = sourceCode.substring(node.fullStart, node.start);
+                    let code = sourceCode.substring(node.start, node.end).trim();
 
                     if (addPublicModifierIfMissing &&
+                        !code.startsWith("type") &&
+                        !code.startsWith("class") &&
+                        !code.startsWith("interface") &&
+                        !code.startsWith("function") &&
                         !code.startsWith("constructor") &&
                         !code.startsWith("private") &&
                         !code.startsWith("protected") &&
@@ -193,7 +237,7 @@ function print(groups: any, sourceCode: string, start: number, end: number, addP
                         code = "public " + code;
                     }
 
-                    members += `\t${code}`;
+                    members += `${addIdentation ? "\t" : ""}${comment}${code}`;
                     members += newLine;
 
                     if (code.endsWith("}"))
@@ -205,9 +249,12 @@ function print(groups: any, sourceCode: string, start: number, end: number, addP
                 members += newLine;
             }
 
-            members += newLine;
-            members += "\t// #endregion";
-            members += newLine;
+            if (group.regions)
+            {
+                members += newLine;
+                members += `${addIdentation ? "\t" : ""}// #endregion${newLine}`;
+            }
+
             members += newLine;
         }
     }
