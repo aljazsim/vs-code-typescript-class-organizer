@@ -264,7 +264,7 @@ function print(groups: any, sourceCode: string, start: number, end: number, iden
                                     }
                                 }
 
-                                code = codeLines.join(newLine);
+                                code = codeLines.join(newLine).trim();
                             }
                         }
                     }
