@@ -28,6 +28,7 @@ export function removeRegions(sourceCode: string)
 	let accessModifierRegex = "(Public|Protected|Private)";
 	let writeModifierRegex = "(Readonly|Static)";
 	let staticModifierRegex = "(Static)";
+	let abstractModifierRegex = "(Abstract)";
 	let propertiesRegex = "(Properties)";
 	let indexesRegex = "(Indexes)";
 	let accessorsRegex = "(Accessors)";
@@ -44,7 +45,7 @@ export function removeRegions(sourceCode: string)
 	let propertiesRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${accessModifierRegex}${spaceRegex}(${writeModifierRegex}${spaceRegex})?${propertiesRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
 	let accessorsRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${accessModifierRegex}${spaceRegex}${accessorsRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
 	let constructorRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${constructorRegex}${spaceRegex}${countRegex}${spaceRegex}`, "i");
-	let methodsRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${accessModifierRegex}${spaceRegex}(${staticModifierRegex}${spaceRegex})?${methodsRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
+	let methodsRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${accessModifierRegex}${spaceRegex}(${staticModifierRegex}${spaceRegex})?(${abstractModifierRegex}${spaceRegex})?${methodsRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
 	let propertySiganturesRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}(${writeModifierRegex}${spaceRegex})?${propertiesRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
 	let indexSiganturesRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}(${writeModifierRegex}${spaceRegex})?${indexesRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
 	let methodSignaturesRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${methodsRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");

@@ -221,7 +221,7 @@ function print(groups: any, sourceCode: string, start: number, end: number, addP
             {
                 for (let node of group2.nodes)
                 {
-                    let comment = sourceCode.substring(node.fullStart, node.start);
+                    let comment = sourceCode.substring(node.fullStart, node.start).trim();
                     let code = sourceCode.substring(node.start, node.end).trim();
 
                     if (addPublicModifierIfMissing &&
@@ -237,7 +237,12 @@ function print(groups: any, sourceCode: string, start: number, end: number, addP
                         code = "public " + code;
                     }
 
-                    members += `${addIdentation ? "\t" : ""}${comment}${code}`;
+                    if (comment !== "")
+                    {
+                        members += `${addIdentation ? "\t" : ""}${comment}${newLine}`;
+                    }
+
+                    members += `${addIdentation ? "\t" : ""}${code}`;
                     members += newLine;
 
                     if (code.endsWith("}"))
