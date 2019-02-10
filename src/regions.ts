@@ -1,81 +1,21 @@
-import * as ts from "typescript";
-
-export function addRegions(nodes: ts.Node[], text: string)
-{
-	const region = `#region ${text} (${nodes.length})`;
-	const endregion = `#endregion`;
-	const newLinePlaceholder = "newline";
-	const cleanPlaceholder = "clean";
-
-	if (nodes.length > 0)
-	{
-		// add regions
-		nodes[0] = ts.addSyntheticLeadingComment(nodes[0], ts.SyntaxKind.SingleLineCommentTrivia, newLinePlaceholder, false);
-		nodes[0] = ts.addSyntheticLeadingComment(nodes[0], ts.SyntaxKind.SingleLineCommentTrivia, region, false);
-		nodes[0] = ts.addSyntheticLeadingComment(nodes[0], ts.SyntaxKind.SingleLineCommentTrivia, newLinePlaceholder, false);
-		nodes[nodes.length - 1] = ts.addSyntheticTrailingComment(nodes[nodes.length - 1], ts.SyntaxKind.SingleLineCommentTrivia, cleanPlaceholder, true);
-		nodes[nodes.length - 1] = ts.addSyntheticTrailingComment(nodes[nodes.length - 1], ts.SyntaxKind.SingleLineCommentTrivia, newLinePlaceholder, true);
-		nodes[nodes.length - 1] = ts.addSyntheticTrailingComment(nodes[nodes.length - 1], ts.SyntaxKind.SingleLineCommentTrivia, endregion, true);
-	}
-}
-
 export function removeRegions(sourceCode: string)
 {
 	const newLine = "\r\n";
 	const emptyLine = "";
+	let anythingRegex = ".";
 	let regionRegex = "#region";
 	let endregionRegex = "#endregion";
-	let accessModifierRegex = "(Public|Protected|Private)";
-	let writeModifierRegex = "(Readonly|Static)";
-	let staticModifierRegex = "(Static)";
-	let abstractModifierRegex = "(Abstract)";
-	let propertiesRegex = "(Properties)";
-	let indexesRegex = "(Indexes)";
-	let accessorsRegex = "(Accessors)";
-	let constructorRegex = "(Constructors)";
-	let methodsRegex = "(Methods)";
-	let typesRegex = "(Type aliases)";
-	let interfacesRegex = "(Interfaces)";
-	let classesRegex = "(Classes)";
-	let enumsRegex = "(Enums)";
-	let functionsRegex = "(Functions)";
-	let variablesRegex = "(Variables)";
-	let countRegex = "\\([0-9]+\\)";
-	let spaceRegex = "\\s*";
-	let propertiesRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${accessModifierRegex}${spaceRegex}(${writeModifierRegex}${spaceRegex})?${propertiesRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
-	let accessorsRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${accessModifierRegex}${spaceRegex}${accessorsRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
-	let constructorRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${constructorRegex}${spaceRegex}${countRegex}${spaceRegex}`, "i");
-	let methodsRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${accessModifierRegex}${spaceRegex}(${staticModifierRegex}${spaceRegex})?(${abstractModifierRegex}${spaceRegex})?${methodsRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
-	let propertySiganturesRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}(${writeModifierRegex}${spaceRegex})?${propertiesRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
-	let indexSiganturesRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}(${writeModifierRegex}${spaceRegex})?${indexesRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
-	let methodSignaturesRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${methodsRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
-	let typesRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${typesRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
-	let interfacesRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${interfacesRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
-	let classesRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${classesRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
-	let enumsRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${enumsRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
-	let functionsRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${functionsRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
-	let variablesRegionRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${regionRegex}${spaceRegex}${variablesRegex}${spaceRegex}${countRegex}${spaceRegex}$`, "i");
+	let spaceRegex = "\\s";
 
-	let endregionsRegex = new RegExp(`^${spaceRegex}//${spaceRegex}${endregionRegex}${spaceRegex}$`, "i");
+	let startRegionsRegex = new RegExp(`^${spaceRegex}*//${spaceRegex}*${regionRegex}${spaceRegex}+${anythingRegex}+$`, "i");
+	let endRegionsRegex = new RegExp(`^${spaceRegex}*//${spaceRegex}*${endregionRegex}(${spaceRegex}+${anythingRegex}+)?$`, "i");
 	let lines: string[] = sourceCode.split(newLine);
 	let lines2: string[] = [];
 
 	for (let i = 0; i < lines.length; i++)
 	{
-		if (!propertiesRegionRegex.test(lines[i]) &&
-			!accessorsRegionRegex.test(lines[i]) &&
-			!constructorRegionRegex.test(lines[i]) &&
-			!methodsRegionRegex.test(lines[i]) &&
-			!endregionsRegex.test(lines[i]) &&
-			!propertySiganturesRegionRegex.test(lines[i]) &&
-			!indexSiganturesRegionRegex.test(lines[i]) &&
-			!methodSignaturesRegionRegex.test(lines[i]) &&
-			!typesRegionRegex.test(lines[i]) &&
-			!interfacesRegionRegex.test(lines[i]) &&
-			!classesRegionRegex.test(lines[i]) &&
-			!enumsRegionRegex.test(lines[i]) &&
-			!functionsRegionRegex.test(lines[i]) &&
-			!variablesRegionRegex.test(lines[i]))
+		if (!startRegionsRegex.test(lines[i]) &&
+			!endRegionsRegex.test(lines[i]))
 		{
 			lines2.push(lines[i]);
 		}

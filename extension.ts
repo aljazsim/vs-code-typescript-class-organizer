@@ -14,8 +14,8 @@ import * as vscode from "vscode";
 
 export function activate(context: vscode.ExtensionContext)
 {
-    context.subscriptions.push(vscode.commands.registerCommand('tsco.organize', () => organize(vscode.window.activeTextEditor, getUseRegionsConfig(), getAddPublicModifierIfMissing(), getAddRegionIdentationConfig(), getIdentationConfig())));
-    context.subscriptions.push(vscode.commands.registerCommand('tsco.organizeAll', () => organizeAll(getUseRegionsConfig(), getAddPublicModifierIfMissing(), getAddRegionIdentationConfig(), getIdentationConfig())));
+    context.subscriptions.push(vscode.commands.registerCommand('tsco.organize', () => organize(vscode.window.activeTextEditor, getUseRegionsConfig(), getAddPublicModifierIfMissing(), getAddRegionIdentationConfig(), getIdentationConfig(), getAddRegionCaptionToRegionEnd())));
+    context.subscriptions.push(vscode.commands.registerCommand('tsco.organizeAll', () => organizeAll(getUseRegionsConfig(), getAddPublicModifierIfMissing(), getAddRegionIdentationConfig(), getIdentationConfig(), getAddRegionCaptionToRegionEnd())));
 }
 
 function getUseRegionsConfig(): boolean
@@ -33,21 +33,26 @@ function getAddRegionIdentationConfig(): boolean
     return vscode.workspace.getConfiguration("tsco").get<boolean>("addRegionIdentation") === true;
 }
 
+function getAddRegionCaptionToRegionEnd(): boolean
+{
+    return vscode.workspace.getConfiguration("tsco").get<boolean>("addRegionCaptionToRegionEnd") === true;
+}
+
 function getIdentationConfig(): string
 {
     return "    ";
 }
 
-function organizeAll(useRegions: boolean, addPublicModifierIfMissing: boolean, addIdentation: boolean, identation: string)
+function organizeAll(useRegions: boolean, addPublicModifierIfMissing: boolean, addIdentation: boolean, identation: string, addRegionCaptionToRegionEnd: boolean)
 {
     vscode.workspace.findFiles("**/*.ts", "**/node_modules/**")
         .then(typescriptFiles => typescriptFiles.forEach(typescriptFile => vscode.workspace.openTextDocument(typescriptFile)
             .then(document => vscode.window.showTextDocument(document)
-                .then(editor => organize(editor, useRegions, addPublicModifierIfMissing, addIdentation, identation) !== null))));
+                .then(editor => organize(editor, useRegions, addPublicModifierIfMissing, addIdentation, identation, addRegionCaptionToRegionEnd) !== null))));
 
 }
 
-function organize(editor: vscode.TextEditor | undefined, useRegions: boolean, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, identation: string)
+function organize(editor: vscode.TextEditor | undefined, useRegions: boolean, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, identation: string, addRegionCaptionToRegionEnd: boolean)
 {
     let sourceFile: ts.SourceFile;
     let sourceCode: string;
@@ -88,7 +93,7 @@ function organize(editor: vscode.TextEditor | undefined, useRegions: boolean, ad
             if (functions.length + typeAliases.length + interfaces.length + classes.length + enums.length > 1 ||
                 functions.length > 0)
             {
-                sourceCode = print(groups, sourceCode, 0, sourceCode.length, 0, false, false, identation);
+                sourceCode = print(groups, sourceCode, 0, sourceCode.length, 0, false, false, identation, addRegionCaptionToRegionEnd);
             }
         }
 
@@ -116,7 +121,7 @@ function organize(editor: vscode.TextEditor | undefined, useRegions: boolean, ad
                     { description: "Methods", groups: [{ nodes: interfaceNode.getMethods() }], regions: true }
                 ];
 
-                sourceCode = print(groups, sourceCode, interfaceNode.membersStart, interfaceNode.membersEnd, 1, false, addRegionIdentation, identation);
+                sourceCode = print(groups, sourceCode, interfaceNode.membersStart, interfaceNode.membersEnd, 1, false, addRegionIdentation, identation, addRegionCaptionToRegionEnd);
             }
             else if (element instanceof ClassNode)
             {
@@ -188,7 +193,7 @@ function organize(editor: vscode.TextEditor | undefined, useRegions: boolean, ad
                     { description: "Private Abstract Methods", groups: [{ nodes: classNode.getPrivateAbstractMethods() }], regions: true },
                 ];
 
-                sourceCode = print(groups, sourceCode, classNode.membersStart, classNode.membersEnd, 1, addPublicModifierIfMissing, addRegionIdentation, identation);
+                sourceCode = print(groups, sourceCode, classNode.membersStart, classNode.membersEnd, 1, addPublicModifierIfMissing, addRegionIdentation, identation, addRegionCaptionToRegionEnd);
             }
         }
 
@@ -210,7 +215,7 @@ function organize(editor: vscode.TextEditor | undefined, useRegions: boolean, ad
     }
 }
 
-function print(groups: any, sourceCode: string, start: number, end: number, identationLevel: number, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, identation: string)
+function print(groups: any, sourceCode: string, start: number, end: number, identationLevel: number, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, identation: string, addRegionCaptionToRegionEnd: boolean)
 {
     let sourceCode2: string;
     let count;
@@ -289,7 +294,15 @@ function print(groups: any, sourceCode: string, start: number, end: number, iden
             if (group.regions)
             {
                 members += newLine;
-                members += `${addRegionIdentation ? identation : ""}// #endregion${newLine}`;
+
+                if (addRegionCaptionToRegionEnd)
+                {
+                    members += `${addRegionIdentation ? identation : ""}// #endregion ${group.description} (${count})${newLine}`;
+                }
+                else
+                {
+                    members += `${addRegionIdentation ? identation : ""}// #endregion${newLine}`;
+                }
             }
 
             members += newLine;

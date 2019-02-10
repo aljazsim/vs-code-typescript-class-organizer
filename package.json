@@ -57,6 +57,11 @@
           "type": "boolean",
           "default": true,
           "description": "Adds region identation."
+        },
+        "tsco.addRegionCaptionToRegionEnd": {
+          "type": "boolean",
+          "default": true,
+          "description": "Adds region caption to region end."
         }
       }
     },
