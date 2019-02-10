@@ -1,6 +1,5 @@
-import * as ts from "typescript";
-import { AccessModifier } from "./access-modifier";
 import { compareStrings } from "../utils";
+import { AccessModifier } from "./access-modifier";
 import { ConstructorNode } from "./constructor-node";
 import { ElementNode } from "./element-node";
 import { GetterNode } from "./getter-node";
@@ -9,6 +8,7 @@ import { MethodNode } from "./method-node";
 import { PropertyNode } from "./property-node";
 import { SetterNode } from "./setter-node";
 import { WriteModifier } from "./write-modifier";
+import * as ts from "typescript";
 
 export class ClassNode extends ElementNode
 {
@@ -211,77 +211,77 @@ export class ClassNode extends ElementNode
 
 	public getPublicAbstractGettersAndSetters()
 	{
-		return this.getters.concat(this.setters).filter(x => x.accessModifier === AccessModifier.public && !x.isStatic && x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.getters.concat(this.setters).filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && !x.isStatic && x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
 	}
 
 	public getPublicAbstractIndexes()
 	{
-		return this.indexes.filter(x => x.accessModifier === AccessModifier.public && !x.isStatic && x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.indexes.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && !x.isStatic && x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
 	}
 
 	public getPublicAbstractMethods()
 	{
-		return this.methods.filter(x => x.accessModifier === AccessModifier.public && !x.isStatic && x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.methods.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && !x.isStatic && x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
 	}
 
 	public getPublicConstProperties()
 	{
-		return this.properties.filter(x => x.accessModifier === AccessModifier.public && x.writeMode === WriteModifier.Const && !x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.Const && !x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
 	}
 
 	public getPublicGettersAndSetters()
 	{
-		return this.getters.concat(this.setters).filter(x => x.accessModifier === AccessModifier.public && !x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.getters.concat(this.setters).filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && !x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
 	}
 
 	public getPublicIndexes()
 	{
-		return this.indexes.filter(x => x.accessModifier === AccessModifier.public && !x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.indexes.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && !x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
 	}
 
 	public getPublicMethods()
 	{
-		return this.methods.filter(x => x.accessModifier === AccessModifier.public && !x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.methods.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && !x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
 	}
 
 	public getPublicProperties()
 	{
-		return this.properties.filter(x => x.accessModifier === AccessModifier.public && x.writeMode === WriteModifier.Writable && !x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.Writable && !x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
 	}
 
 	public getPublicReadOnlyProperties()
 	{
-		return this.properties.filter(x => x.accessModifier === AccessModifier.public && x.writeMode === WriteModifier.ReadOnly && !x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.ReadOnly && !x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
 	}
 
 	public getPublicStaticConstProperties()
 	{
-		return this.properties.filter(x => x.accessModifier === AccessModifier.public && x.writeMode === WriteModifier.Const && x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.Const && x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
 	}
 
 	public getPublicStaticGettersAndSetters()
 	{
-		return this.getters.concat(this.setters).filter(x => x.accessModifier === AccessModifier.public && x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.getters.concat(this.setters).filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
 	}
 
 	public getPublicStaticIndexes()
 	{
-		return this.indexes.filter(x => x.accessModifier === AccessModifier.public && x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.indexes.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
 	}
 
 	public getPublicStaticMethods()
 	{
-		return this.methods.filter(x => x.accessModifier === AccessModifier.public && x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.methods.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
 	}
 
 	public getPublicStaticProperties()
 	{
-		return this.properties.filter(x => x.accessModifier === AccessModifier.public && x.writeMode === WriteModifier.Writable && x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.Writable && x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
 	}
 
 	public getPublicStaticReadOnlyProperties()
 	{
-		return this.properties.filter(x => x.accessModifier === AccessModifier.public && x.writeMode === WriteModifier.ReadOnly && x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.ReadOnly && x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
 	}
 
 	// #endregion

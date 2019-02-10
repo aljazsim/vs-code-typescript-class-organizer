@@ -1,12 +1,12 @@
-import * as ts from "typescript";
 import { AccessModifier } from "./access-modifier";
 import { WriteModifier } from "./write-modifier";
+import * as ts from "typescript";
 
 export abstract class ElementNode
 {
 	// #region Properties (5)
 
-	public accessModifier: AccessModifier = AccessModifier.public;
+	public accessModifier: AccessModifier | null = null;
 	public end: number = 0;
 	public fullStart: number = 0;
 	public name: string = "";
@@ -26,7 +26,7 @@ export abstract class ElementNode
 
 	protected getAccessModifier(node: ts.PropertyDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration | ts.MethodDeclaration | ts.IndexedAccessTypeNode | ts.PropertySignature | ts.IndexSignatureDeclaration)
 	{
-		let accessModifier: AccessModifier = AccessModifier.public;
+		let accessModifier: AccessModifier | null = null;
 		let accessModifiers: ts.SyntaxKind[] = [ts.SyntaxKind.PrivateKeyword, ts.SyntaxKind.ProtectedKeyword, ts.SyntaxKind.PublicKeyword];
 		let nodeAccessModifier: ts.Modifier | undefined;
 
@@ -36,7 +36,11 @@ export abstract class ElementNode
 
 			if (nodeAccessModifier)
 			{
-				if (nodeAccessModifier.kind === ts.SyntaxKind.ProtectedKeyword)
+				if (nodeAccessModifier.kind === ts.SyntaxKind.PublicKeyword)
+				{
+					accessModifier = AccessModifier.public;
+				}
+				else if (nodeAccessModifier.kind === ts.SyntaxKind.ProtectedKeyword)
 				{
 					accessModifier = AccessModifier.protected;
 				}

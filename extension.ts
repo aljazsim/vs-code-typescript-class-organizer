@@ -1,6 +1,10 @@
 import { ClassNode } from "./src/elements/class-node";
 import { ElementNode } from "./src/elements/element-node";
+import { GetterNode } from "./src/elements/getter-node";
 import { InterfaceNode } from "./src/elements/interface-node";
+import { MethodNode } from "./src/elements/method-node";
+import { PropertyNode } from "./src/elements/property-node";
+import { SetterNode } from "./src/elements/setter-node";
 import { UnknownNode } from "./src/elements/unknown-node";
 import { formatLines, removeRegions } from "./src/regions";
 import { Transformer } from "./src/transformer";
@@ -239,17 +243,30 @@ function print(groups: any, sourceCode: string, start: number, end: number, iden
                     let comment = sourceCode.substring(node.fullStart, node.start).trim();
                     let code = sourceCode.substring(node.start, node.end).trim();
 
-                    if (addPublicModifierIfMissing &&
-                        !code.startsWith("type") &&
-                        !code.startsWith("class") &&
-                        !code.startsWith("interface") &&
-                        !code.startsWith("function") &&
-                        !code.startsWith("constructor") &&
-                        !code.startsWith("private") &&
-                        !code.startsWith("protected") &&
-                        !code.startsWith("public"))
+                    if (addPublicModifierIfMissing)
                     {
-                        code = "public " + code;
+                        if (node instanceof MethodNode ||
+                            node instanceof PropertyNode ||
+                            node instanceof GetterNode ||
+                            node instanceof SetterNode)
+                        {
+                            if (node.accessModifier === null)
+                            {
+                                let codeLines = code.split(newLine);
+
+                                for (let i = 0; i < codeLines.length; i++)
+                                {
+                                    if (!codeLines[i].trim().startsWith("@"))
+                                    {
+                                        codeLines[i] = `${identationLevel === 1 ? identation : ""}public ${codeLines[i].trimLeft()}`;
+
+                                        break;
+                                    }
+                                }
+
+                                code = codeLines.join(newLine);
+                            }
+                        }
                     }
 
                     if (comment !== "")
