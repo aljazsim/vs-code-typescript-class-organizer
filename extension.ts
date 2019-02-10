@@ -40,7 +40,7 @@ function getAddRegionCaptionToRegionEnd(): boolean
 
 function getIdentationConfig(): string
 {
-    return "    ";
+    return "\t";
 }
 
 function organizeAll(useRegions: boolean, addPublicModifierIfMissing: boolean, addIdentation: boolean, identation: string, addRegionCaptionToRegionEnd: boolean)
