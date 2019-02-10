@@ -47,11 +47,20 @@
           "type": "boolean",
           "default": true,
           "description": "Adds regions when organizing a class."
+        },
+        "tsco.addPublicModifierIfMissing": {
+          "type": "boolean",
+          "default": true,
+          "description": "Adds a public acccess modifier if missing."
+        },
+        "tsco.addRegionIdentation": {
+          "type": "boolean",
+          "default": true,
+          "description": "Adds region identation."
         }
       }
     },
-    "commands": [
-      {
+    "commands": [{
         "command": "tsco.organize",
         "title": "Organize Current File",
         "category": "TypeScript Class Organizer",
@@ -64,30 +73,24 @@
       }
     ],
     "menus": {
-      "editor/context": [
-        {
-          "command": "tsco.organize",
-          "group": "1_modification",
-          "when": "editorTextFocus && !inDebugMode && editorLangId == typescript"
-        }
-      ]
-    },
-    "keybindings": [
-      {
+      "editor/context": [{
         "command": "tsco.organize",
-        "key": "ctrl+shift+o",
-        "mac": "cmd+shift+o",
+        "group": "1_modification",
         "when": "editorTextFocus && !inDebugMode && editorLangId == typescript"
-      }
-    ],
-    "languages": [
-      {
-        "id": "typescript",
-        "extensions": [
-          ".ts"
-        ]
-      }
-    ]
+      }]
+    },
+    "keybindings": [{
+      "command": "tsco.organize",
+      "key": "ctrl+shift+o",
+      "mac": "cmd+shift+o",
+      "when": "editorTextFocus && !inDebugMode && editorLangId == typescript"
+    }],
+    "languages": [{
+      "id": "typescript",
+      "extensions": [
+        ".ts"
+      ]
+    }]
   },
   "main": "./out/extension",
   "scripts": {

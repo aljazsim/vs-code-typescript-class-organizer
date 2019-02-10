@@ -120,43 +120,33 @@ export function formatLines(sourceCode: string)
 	let closingBraceRegex = new RegExp(`^\\s*\}\\s*$`);
 
 	let lines: string[] = sourceCode.split(newLine);
-	let lines2: string[] = [];
 
-	for (let i = 0; i < lines.length; i++)
+	for (let i = 0; i < lines.length - 1; i++)
 	{
-		if (i === lines.length - 1)
-		{
-			// last line
-			lines2.push(lines[i]);
-		}
-		else if (openingBraceRegex.test(lines[i]) &&
+		if (openingBraceRegex.test(lines[i]) &&
 			newLineRegex.test(lines[i + 1]))
 		{
 			// remove empty line after {
-			lines2.push(lines[i]);
+			lines.splice(i + 1, 1);
 
-			i++;
+			i--;
 		}
 		else if (newLineRegex.test(lines[i]) &&
 			closingBraceRegex.test(lines[i + 1]))
 		{
 			// remove empty line before }
-			i++;
+			lines.splice(i, 1);
 
-			lines2.push(lines[i]);
-
+			i--;
 		}
 		else if (newLineRegex.test(lines[i]) &&
 			newLineRegex.test(lines[i + 1]))
 		{
-			// skip emptyline
-		}
-		else
-		{
-			lines2.push(lines[i]);
-		}
+			lines.splice(i, 1);
 
+			i--;
+		}
 	}
 
-	return lines2.join(newLine);
+	return lines.join(newLine);
 }
