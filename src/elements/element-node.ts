@@ -22,7 +22,7 @@ export abstract class ElementNode
 
 	// #endregion
 
-	// #region Protected Methods (4)
+	// #region Protected Methods (5)
 
 	protected getAccessModifier(node: ts.PropertyDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration | ts.MethodDeclaration | ts.IndexedAccessTypeNode | ts.PropertySignature | ts.IndexSignatureDeclaration)
 	{
@@ -30,7 +30,8 @@ export abstract class ElementNode
 		let accessModifiers: ts.SyntaxKind[] = [ts.SyntaxKind.PrivateKeyword, ts.SyntaxKind.ProtectedKeyword, ts.SyntaxKind.PublicKeyword];
 		let nodeAccessModifier: ts.Modifier | undefined;
 
-		if (node.modifiers)
+		if (node.modifiers &&
+			node.modifiers.length > 0)
 		{
 			nodeAccessModifier = node.modifiers.find((x) => accessModifiers.indexOf(x.kind) > -1);
 
@@ -54,11 +55,27 @@ export abstract class ElementNode
 		return accessModifier;
 	}
 
+	getDecorators(node: ts.ClassDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration | ts.PropertyDeclaration | ts.MethodDeclaration | ts.IndexedAccessTypeNode, sourceFile: ts.SourceFile)
+	{
+		let parametersRegex = /\(.*\)/;
+
+		if (node.decorators &&
+			node.decorators.length > 0)
+		{
+			return node.decorators.map(x => x.getText(sourceFile).replace(parametersRegex, ""));
+		}
+		else
+		{
+			return [];
+		}
+	}
+
 	protected getIsAbstract(node: ts.ClassDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration | ts.PropertyDeclaration | ts.MethodDeclaration | ts.IndexedAccessTypeNode)
 	{
 		let isAbstract = false;
 
-		if (node.modifiers)
+		if (node.modifiers &&
+			node.modifiers.length > 0)
 		{
 			isAbstract = node.modifiers.find((x) => x.kind === ts.SyntaxKind.AbstractKeyword) !== undefined;
 		}
@@ -70,7 +87,8 @@ export abstract class ElementNode
 	{
 		let isExport = false;
 
-		if (node.modifiers)
+		if (node.modifiers &&
+			node.modifiers.length > 0)
 		{
 			let tmp = node.modifiers.find((modifier, index, array) => modifier.kind === ts.SyntaxKind.ExportKeyword);
 
@@ -88,7 +106,8 @@ export abstract class ElementNode
 	{
 		let isStatic = false;
 
-		if (node.modifiers)
+		if (node.modifiers &&
+			node.modifiers.length > 0)
 		{
 			isStatic = node.modifiers.find((x) => x.kind === ts.SyntaxKind.StaticKeyword) !== undefined;
 		}
@@ -102,7 +121,8 @@ export abstract class ElementNode
 		let writeModifiers: ts.SyntaxKind[] = [ts.SyntaxKind.ConstKeyword, ts.SyntaxKind.ReadonlyKeyword];
 		let nodeWriteModifier: ts.Modifier | undefined;
 
-		if (node.modifiers)
+		if (node.modifiers &&
+			node.modifiers.length > 0)
 		{
 			nodeWriteModifier = node.modifiers.find((x) => writeModifiers.indexOf(x.kind) > -1);
 

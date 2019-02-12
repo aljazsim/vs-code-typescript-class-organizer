@@ -1,10 +1,10 @@
-import * as ts from "typescript";
 import { compareStrings } from "../utils";
 import { ElementNode } from "./element-node";
 import { IndexSignatureNode } from "./index-signature-node";
 import { MethodSignatureNode } from "./method-signature-node";
 import { PropertySignatureNode } from "./property-signature-node";
 import { WriteModifier } from "./write-modifier";
+import * as ts from "typescript";
 
 export class InterfaceNode extends ElementNode
 {

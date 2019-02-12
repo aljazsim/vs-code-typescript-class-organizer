@@ -14,8 +14,8 @@ import * as vscode from "vscode";
 
 export function activate(context: vscode.ExtensionContext)
 {
-    context.subscriptions.push(vscode.commands.registerCommand('tsco.organize', () => organize(vscode.window.activeTextEditor, getUseRegionsConfig(), getAddPublicModifierIfMissing(), getAddRegionIdentationConfig(), getAddRegionCaptionToRegionEnd())));
-    context.subscriptions.push(vscode.commands.registerCommand('tsco.organizeAll', () => organizeAll(getUseRegionsConfig(), getAddPublicModifierIfMissing(), getAddRegionIdentationConfig(), getAddRegionCaptionToRegionEnd())));
+    context.subscriptions.push(vscode.commands.registerCommand('tsco.organize', () => organize(vscode.window.activeTextEditor, getUseRegionsConfig(), getAddPublicModifierIfMissing(), getAddRegionIdentationConfig(), getAddRegionCaptionToRegionEnd(), getGroupPropertiesByDecorators())));
+    context.subscriptions.push(vscode.commands.registerCommand('tsco.organizeAll', () => organizeAll(getUseRegionsConfig(), getAddPublicModifierIfMissing(), getAddRegionIdentationConfig(), getAddRegionCaptionToRegionEnd(), getGroupPropertiesByDecorators())));
 }
 
 function getUseRegionsConfig(): boolean
@@ -36,6 +36,11 @@ function getAddRegionIdentationConfig(): boolean
 function getAddRegionCaptionToRegionEnd(): boolean
 {
     return vscode.workspace.getConfiguration("tsco").get<boolean>("addRegionCaptionToRegionEnd") === true;
+}
+
+function getGroupPropertiesByDecorators(): boolean
+{
+    return vscode.workspace.getConfiguration("tsco").get<boolean>("groupPropertiesWithDecorators") === true;
 }
 
 function getIdentation(sourceCode: string): string
@@ -63,16 +68,16 @@ function getIdentation(sourceCode: string): string
     return twoSpaces;
 }
 
-function organizeAll(useRegions: boolean, addPublicModifierIfMissing: boolean, addIdentation: boolean, addRegionCaptionToRegionEnd: boolean)
+function organizeAll(useRegions: boolean, addPublicModifierIfMissing: boolean, addIdentation: boolean, addRegionCaptionToRegionEnd: boolean, groupPropertiesWithDecorators: boolean)
 {
     vscode.workspace.findFiles("**/*.ts", "**/node_modules/**")
         .then(typescriptFiles => typescriptFiles.forEach(typescriptFile => vscode.workspace.openTextDocument(typescriptFile)
             .then(document => vscode.window.showTextDocument(document)
-                .then(editor => organize(editor, useRegions, addPublicModifierIfMissing, addIdentation, addRegionCaptionToRegionEnd) !== null))));
+                .then(editor => organize(editor, useRegions, addPublicModifierIfMissing, addIdentation, addRegionCaptionToRegionEnd, groupPropertiesWithDecorators) !== null))));
 
 }
 
-function organize(editor: vscode.TextEditor | undefined, useRegions: boolean, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, addRegionCaptionToRegionEnd: boolean)
+function organize(editor: vscode.TextEditor | undefined, useRegions: boolean, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, addRegionCaptionToRegionEnd: boolean, groupPropertiesWithDecorators: boolean)
 {
     let sourceFile: ts.SourceFile;
     let sourceCode: string;
@@ -167,12 +172,12 @@ function organize(editor: vscode.TextEditor | undefined, useRegions: boolean, ad
                             { nodes: classNode.getProtectedStaticProperties() },
                             { nodes: classNode.getProtectedProperties() },
 
-                            { nodes: classNode.getPublicStaticConstProperties() },
-                            { nodes: classNode.getPublicConstProperties() },
-                            { nodes: classNode.getPublicStaticReadOnlyProperties() },
-                            { nodes: classNode.getPublicReadOnlyProperties() },
-                            { nodes: classNode.getPublicStaticProperties() },
-                            { nodes: classNode.getPublicProperties() }
+                            { nodes: classNode.getPublicStaticConstProperties(groupPropertiesWithDecorators) },
+                            { nodes: classNode.getPublicConstProperties(groupPropertiesWithDecorators) },
+                            { nodes: classNode.getPublicStaticReadOnlyProperties(groupPropertiesWithDecorators) },
+                            { nodes: classNode.getPublicReadOnlyProperties(groupPropertiesWithDecorators) },
+                            { nodes: classNode.getPublicStaticProperties(groupPropertiesWithDecorators) },
+                            { nodes: classNode.getPublicProperties(groupPropertiesWithDecorators) }
                         ],
                         regions: true
                     },
@@ -280,19 +285,7 @@ function print(groups: any, sourceCode: string, start: number, end: number, iden
                         {
                             if (node.accessModifier === null)
                             {
-                                let codeLines = code.split(newLine);
-
-                                for (let i = 0; i < codeLines.length; i++)
-                                {
-                                    if (!codeLines[i].trim().startsWith("@"))
-                                    {
-                                        codeLines[i] = `${identationLevel === 1 ? identation : ""}public ${codeLines[i].trimLeft()}`;
-
-                                        break;
-                                    }
-                                }
-
-                                code = codeLines.join(newLine).trim();
+                                code = code.replace(node.name, `public ${node.name}`);
                             }
                         }
                     }

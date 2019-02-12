@@ -224,9 +224,16 @@ export class ClassNode extends ElementNode
 		return this.methods.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && !x.isStatic && x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
 	}
 
-	public getPublicConstProperties()
+	public getPublicConstProperties(groupWithDecorators: boolean)
 	{
-		return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.Const && !x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		if (groupWithDecorators)
+		{
+			return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.Const && !x.isStatic).sort((a, b) => compareStrings(this.getPropertyNameWithDecorators(a), this.getPropertyNameWithDecorators(b)));
+		}
+		else
+		{
+			return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.Const && !x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		}
 	}
 
 	public getPublicGettersAndSetters()
@@ -244,19 +251,40 @@ export class ClassNode extends ElementNode
 		return this.methods.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && !x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
 	}
 
-	public getPublicProperties()
+	public getPublicProperties(groupWithDecorators: boolean)
 	{
-		return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.Writable && !x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		if (groupWithDecorators)
+		{
+			return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.Writable && !x.isStatic).sort((a, b) => compareStrings(this.getPropertyNameWithDecorators(a), this.getPropertyNameWithDecorators(b)));
+		}
+		else
+		{
+			return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.Writable && !x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		}
 	}
 
-	public getPublicReadOnlyProperties()
+	public getPublicReadOnlyProperties(groupWithDecorators: boolean)
 	{
-		return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.ReadOnly && !x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		if (groupWithDecorators)
+		{
+			return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.ReadOnly && !x.isStatic).sort((a, b) => compareStrings(this.getPropertyNameWithDecorators(a), this.getPropertyNameWithDecorators(b)));
+		}
+		else
+		{
+			return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.ReadOnly && !x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		}
 	}
 
-	public getPublicStaticConstProperties()
+	public getPublicStaticConstProperties(groupWithDecorators: boolean)
 	{
-		return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.Const && x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		if (groupWithDecorators)
+		{
+			return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.Const && x.isStatic).sort((a, b) => compareStrings(this.getPropertyNameWithDecorators(a), this.getPropertyNameWithDecorators(b)));
+		}
+		else
+		{
+			return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.Const && x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		}
 	}
 
 	public getPublicStaticGettersAndSetters()
@@ -274,14 +302,44 @@ export class ClassNode extends ElementNode
 		return this.methods.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
 	}
 
-	public getPublicStaticProperties()
+	public getPublicStaticProperties(groupWithDecorators: boolean)
 	{
-		return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.Writable && x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		if (groupWithDecorators)
+		{
+			return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.Writable && x.isStatic).sort((a, b) => compareStrings(this.getPropertyNameWithDecorators(a), this.getPropertyNameWithDecorators(b)));
+		}
+		else
+		{
+			return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.Writable && x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		}
 	}
 
-	public getPublicStaticReadOnlyProperties()
+	public getPublicStaticReadOnlyProperties(groupWithDecorators: boolean)
 	{
-		return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.ReadOnly && x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		if (groupWithDecorators)
+		{
+			return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.ReadOnly && x.isStatic).sort((a, b) => compareStrings(this.getPropertyNameWithDecorators(a), this.getPropertyNameWithDecorators(b)));
+		}
+		else
+		{
+			return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.ReadOnly && x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		}
+	}
+
+	// #endregion
+
+	// #region Private Methods (1)
+
+	private getPropertyNameWithDecorators(propertyNode: PropertyNode): string
+	{
+		if (propertyNode.decorators.length > 0)
+		{
+			return propertyNode.decorators.join(", ") + " " + propertyNode.name;
+		}
+		else
+		{
+			return propertyNode.name;
+		}
 	}
 
 	// #endregion

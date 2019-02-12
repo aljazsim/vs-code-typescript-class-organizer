@@ -1,6 +1,6 @@
-import * as ts from "typescript";
 import { ElementNode } from "./element-node";
 import { WriteModifier } from "./write-modifier";
+import * as ts from "typescript";
 
 export class PropertyNode extends ElementNode
 {
@@ -9,6 +9,7 @@ export class PropertyNode extends ElementNode
 	public isAbstract: boolean;
 	public isStatic: boolean;
 	public writeMode: WriteModifier = WriteModifier.Writable;
+	public decorators: string[];
 
 	// #endregion
 
@@ -28,6 +29,7 @@ export class PropertyNode extends ElementNode
 		this.isAbstract = this.getIsAbstract(propertyNodeDeclaration);
 		this.isStatic = this.getIsStatic(propertyNodeDeclaration);
 		this.writeMode = this.getWriteMode(propertyNodeDeclaration);
+		this.decorators = this.getDecorators(propertyNodeDeclaration, sourceFile);
 	}
 
 	// #endregion

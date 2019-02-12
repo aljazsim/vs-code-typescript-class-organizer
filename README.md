@@ -37,6 +37,7 @@ Extensions supports the following configuration options:
 * `tsco.addPublicModifierIfMissing`: When true public access modifier is added. True by default.
 * `tsco.addRegionIdentation`: When true regions are idented with class members. True by default.
 * `tsco.addRegionCaptionToRegionEnd`: When true region caption is added to region end as well. True by default.
+* `tsco.groupPropertiesWithDecorators`: When true properties with decorators will come first. False by default.
 
 ## Change log
 
@@ -55,3 +56,7 @@ Extensions supports the following configuration options:
 * fixed issue when decorators were preceding class members
 * fixed issue with removing redundant empty lines
 * updated referenced packages
+
+### 1.0.10
+
+* added group properties with decorators option
