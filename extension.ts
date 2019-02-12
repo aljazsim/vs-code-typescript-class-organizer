@@ -14,8 +14,8 @@ import * as vscode from "vscode";
 
 export function activate(context: vscode.ExtensionContext)
 {
-    context.subscriptions.push(vscode.commands.registerCommand('tsco.organize', () => organize(vscode.window.activeTextEditor, getUseRegionsConfig(), getAddPublicModifierIfMissing(), getAddRegionIdentationConfig(), getIdentationConfig(), getAddRegionCaptionToRegionEnd())));
-    context.subscriptions.push(vscode.commands.registerCommand('tsco.organizeAll', () => organizeAll(getUseRegionsConfig(), getAddPublicModifierIfMissing(), getAddRegionIdentationConfig(), getIdentationConfig(), getAddRegionCaptionToRegionEnd())));
+    context.subscriptions.push(vscode.commands.registerCommand('tsco.organize', () => organize(vscode.window.activeTextEditor, getUseRegionsConfig(), getAddPublicModifierIfMissing(), getAddRegionIdentationConfig(), getAddRegionCaptionToRegionEnd())));
+    context.subscriptions.push(vscode.commands.registerCommand('tsco.organizeAll', () => organizeAll(getUseRegionsConfig(), getAddPublicModifierIfMissing(), getAddRegionIdentationConfig(), getAddRegionCaptionToRegionEnd())));
 }
 
 function getUseRegionsConfig(): boolean
@@ -38,21 +38,41 @@ function getAddRegionCaptionToRegionEnd(): boolean
     return vscode.workspace.getConfiguration("tsco").get<boolean>("addRegionCaptionToRegionEnd") === true;
 }
 
-function getIdentationConfig(): string
+function getIdentation(sourceCode: string): string
 {
-    return "\t";
+    let tab = "\t";
+    let twoSpaces = "  ";
+    let fourSpaces = "    ";
+
+    for (const sourceCodeLine of sourceCode.split("\n"))
+    {
+        if (sourceCodeLine.startsWith(tab))
+        {
+            return tab;
+        }
+        else if (sourceCodeLine.startsWith(fourSpaces))
+        {
+            return fourSpaces;
+        }
+        else if (sourceCodeLine.startsWith(twoSpaces))
+        {
+            return twoSpaces;
+        }
+    }
+
+    return twoSpaces;
 }
 
-function organizeAll(useRegions: boolean, addPublicModifierIfMissing: boolean, addIdentation: boolean, identation: string, addRegionCaptionToRegionEnd: boolean)
+function organizeAll(useRegions: boolean, addPublicModifierIfMissing: boolean, addIdentation: boolean, addRegionCaptionToRegionEnd: boolean)
 {
     vscode.workspace.findFiles("**/*.ts", "**/node_modules/**")
         .then(typescriptFiles => typescriptFiles.forEach(typescriptFile => vscode.workspace.openTextDocument(typescriptFile)
             .then(document => vscode.window.showTextDocument(document)
-                .then(editor => organize(editor, useRegions, addPublicModifierIfMissing, addIdentation, identation, addRegionCaptionToRegionEnd) !== null))));
+                .then(editor => organize(editor, useRegions, addPublicModifierIfMissing, addIdentation, addRegionCaptionToRegionEnd) !== null))));
 
 }
 
-function organize(editor: vscode.TextEditor | undefined, useRegions: boolean, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, identation: string, addRegionCaptionToRegionEnd: boolean)
+function organize(editor: vscode.TextEditor | undefined, useRegions: boolean, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, addRegionCaptionToRegionEnd: boolean)
 {
     let sourceFile: ts.SourceFile;
     let sourceCode: string;
@@ -61,11 +81,14 @@ function organize(editor: vscode.TextEditor | undefined, useRegions: boolean, ad
     let start: vscode.Position;
     let end: vscode.Position;
     let range: vscode.Range;
+    let identation: string;
 
     if (editor)
     {
         sourceCode = editor.document.getText();
         sourceCode = removeRegions(sourceCode);
+
+        identation = getIdentation(sourceCode);
 
         // organize type aliases, interfaces, classes, enums, functions and variables
         sourceFile = ts.createSourceFile(editor.document.fileName, sourceCode, ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
