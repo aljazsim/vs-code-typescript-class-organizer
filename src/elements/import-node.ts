@@ -1,5 +1,5 @@
-import * as ts from "typescript";
 import { ElementNode } from "./element-node";
+import * as ts from "typescript";
 
 export class ImportNode extends ElementNode
 {
@@ -7,7 +7,7 @@ export class ImportNode extends ElementNode
 
 	constructor(sourceFile: ts.SourceFile, importDeclaration: ts.ImportDeclaration)
 	{
-		super();
+		super(importDeclaration);
 
 		this.name = "import";
 

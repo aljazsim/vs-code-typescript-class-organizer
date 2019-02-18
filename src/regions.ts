@@ -7,15 +7,15 @@ export function removeRegions(sourceCode: string)
 	let endregionRegex = "#endregion";
 	let spaceRegex = "\\s";
 
-	let startRegionsRegex = new RegExp(`^${spaceRegex}*//${spaceRegex}*${regionRegex}${spaceRegex}+${anythingRegex}+$`, "i");
-	let endRegionsRegex = new RegExp(`^${spaceRegex}*//${spaceRegex}*${endregionRegex}(${spaceRegex}+${anythingRegex}+)?$`, "i");
+	let startRegionsRegex = new RegExp(`^//${spaceRegex}*${regionRegex}${spaceRegex}+${anythingRegex}+$`, "i");
+	let endRegionsRegex = new RegExp(`^//${spaceRegex}*${endregionRegex}(${spaceRegex}+${anythingRegex}+)?$`, "i");
 	let lines: string[] = sourceCode.split(newLine);
 	let lines2: string[] = [];
 
 	for (let i = 0; i < lines.length; i++)
 	{
-		if (!startRegionsRegex.test(lines[i]) &&
-			!endRegionsRegex.test(lines[i]))
+		if (!startRegionsRegex.test(lines[i].trim()) &&
+			!endRegionsRegex.test(lines[i].trim()))
 		{
 			lines2.push(lines[i]);
 		}

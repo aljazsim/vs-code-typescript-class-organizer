@@ -1,4 +1,6 @@
 import { AccessModifier } from "./access-modifier";
+import { PropertyNode } from "./property-node";
+import { PropertySignatureNode } from "./property-signature-node";
 import { WriteModifier } from "./write-modifier";
 import * as ts from "typescript";
 
@@ -7,6 +9,7 @@ export abstract class ElementNode
 	// #region Properties (5)
 
 	public accessModifier: AccessModifier | null = null;
+	public decorators: string[] = [];
 	public end: number = 0;
 	public fullStart: number = 0;
 	public name: string = "";
@@ -16,7 +19,7 @@ export abstract class ElementNode
 
 	// #region Constructors (1)
 
-	constructor()
+	constructor(public readonly node: ts.Node)
 	{
 	}
 
@@ -55,7 +58,7 @@ export abstract class ElementNode
 		return accessModifier;
 	}
 
-	getDecorators(node: ts.ClassDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration | ts.PropertyDeclaration | ts.MethodDeclaration | ts.IndexedAccessTypeNode, sourceFile: ts.SourceFile)
+	getDecorators(node: ts.ClassDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration | ts.PropertyDeclaration | ts.MethodDeclaration | ts.IndexedAccessTypeNode | ts.ConstructorDeclaration | ts.EnumDeclaration | ts.FunctionDeclaration | ts.IndexSignatureDeclaration | ts.MethodSignature | ts.PropertySignature | ts.TypeAliasDeclaration, sourceFile: ts.SourceFile)
 	{
 		let parametersRegex = /\(.*\)/;
 
@@ -117,7 +120,7 @@ export abstract class ElementNode
 
 	protected getWriteMode(node: ts.PropertyDeclaration | ts.VariableStatement | ts.IndexedAccessTypeNode | ts.PropertySignature | ts.IndexSignatureDeclaration)
 	{
-		let writeMode: WriteModifier = WriteModifier.Writable;
+		let writeMode: WriteModifier = WriteModifier.writable;
 		let writeModifiers: ts.SyntaxKind[] = [ts.SyntaxKind.ConstKeyword, ts.SyntaxKind.ReadonlyKeyword];
 		let nodeWriteModifier: ts.Modifier | undefined;
 
@@ -130,16 +133,59 @@ export abstract class ElementNode
 			{
 				if (nodeWriteModifier.kind === ts.SyntaxKind.ConstKeyword)
 				{
-					writeMode = WriteModifier.Const;
+					writeMode = WriteModifier.const;
 				}
 				else if (nodeWriteModifier.kind === ts.SyntaxKind.ReadonlyKeyword)
 				{
-					writeMode = WriteModifier.ReadOnly;
+					writeMode = WriteModifier.readOnly;
 				}
 			}
 		}
 
 		return writeMode;
+	}
+
+	protected isProtected(x: ElementNode)
+	{
+		return x.accessModifier === AccessModifier.protected;
+	}
+
+	protected isConstant(x: PropertyNode | PropertySignatureNode)
+	{
+		return x.writeMode === WriteModifier.const;
+	}
+
+	protected isPrivate(x: ElementNode)
+	{
+		return x.accessModifier === AccessModifier.private;
+	}
+
+	protected isWritable(x: PropertyNode | PropertySignatureNode)
+	{
+		return x.writeMode === WriteModifier.writable;
+	}
+
+	protected isReadOnly(x: PropertyNode | PropertySignatureNode)
+	{
+		return x.writeMode === WriteModifier.readOnly;
+	}
+
+	protected isPublic(x: ElementNode)
+	{
+		return x.accessModifier === AccessModifier.public || x.accessModifier === null;
+	}
+
+	protected getName(node: ElementNode, groupWithDecorators: boolean): string
+	{
+		if (groupWithDecorators)
+		{
+			if (node.decorators.length > 0)
+			{
+				return node.decorators.join(", ") + " " + node.name;
+			}
+		}
+
+		return node.name;
 	}
 
 	// #endregion

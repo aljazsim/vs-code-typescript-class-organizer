@@ -60,3 +60,9 @@ Extensions supports the following configuration options:
 ### 1.0.10
 
 * added group properties with decorators option
+
+### 1.0.11
+
+* fixed issue with duplicated regions
+* addded grouping by decorator for all elements, not just properties when groupping by decorators
+* added a new line between group with decorators and group without decorators when groupping by decorators

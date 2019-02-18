@@ -1,5 +1,5 @@
-import * as ts from "typescript";
 import { ElementNode } from "./element-node";
+import * as ts from "typescript";
 
 export class MethodNode extends ElementNode
 {
@@ -14,7 +14,7 @@ export class MethodNode extends ElementNode
 
 	constructor(sourceFile: ts.SourceFile, methodDeclaration: ts.MethodDeclaration)
 	{
-		super();
+		super(methodDeclaration);
 
 		this.name = (<ts.Identifier>methodDeclaration.name).escapedText.toString();
 
@@ -25,6 +25,7 @@ export class MethodNode extends ElementNode
 		this.accessModifier = this.getAccessModifier(methodDeclaration);
 		this.isAbstract = this.getIsAbstract(methodDeclaration);
 		this.isStatic = this.getIsStatic(methodDeclaration);
+		this.decorators = this.getDecorators(methodDeclaration, sourceFile);
 	}
 
 	// #endregion

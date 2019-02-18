@@ -1,29 +1,30 @@
-import * as ts from "typescript";
 import { ElementNode } from "./element-node";
 import { WriteModifier } from "./write-modifier";
+import * as ts from "typescript";
 
 export class PropertySignatureNode extends ElementNode
 {
 	// #region Properties (1)
 
-	public writeMode: WriteModifier = WriteModifier.Writable;
+	public writeMode: WriteModifier = WriteModifier.writable;
 
 	// #endregion
 
 	// #region Constructors (1)
 
-	constructor(sourceFile: ts.SourceFile, propertyDeclaration: ts.PropertySignature)
+	constructor(sourceFile: ts.SourceFile, propertySignatureDeclaration: ts.PropertySignature)
 	{
-		super();
+		super(propertySignatureDeclaration);
 
-		this.name = (<ts.Identifier>propertyDeclaration.name).escapedText.toString();
+		this.name = (<ts.Identifier>propertySignatureDeclaration.name).escapedText.toString();
 
-		this.fullStart = propertyDeclaration.getFullStart();
-		this.end = propertyDeclaration.getEnd();
-		this.start = propertyDeclaration.getStart(sourceFile, false);
+		this.fullStart = propertySignatureDeclaration.getFullStart();
+		this.end = propertySignatureDeclaration.getEnd();
+		this.start = propertySignatureDeclaration.getStart(sourceFile, false);
 
-		this.accessModifier = this.getAccessModifier(propertyDeclaration);
-		this.writeMode = this.getWriteMode(propertyDeclaration);
+		this.accessModifier = this.getAccessModifier(propertySignatureDeclaration);
+		this.writeMode = this.getWriteMode(propertySignatureDeclaration);
+		this.decorators = this.getDecorators(propertySignatureDeclaration, sourceFile);
 	}
 
 	// #endregion

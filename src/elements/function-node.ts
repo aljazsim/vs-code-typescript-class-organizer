@@ -1,5 +1,5 @@
-import * as ts from "typescript";
 import { ElementNode } from "./element-node";
+import * as ts from "typescript";
 
 export class FunctionNode extends ElementNode
 {
@@ -13,7 +13,7 @@ export class FunctionNode extends ElementNode
 
 	constructor(sourceFile: ts.SourceFile, functionDeclaration: ts.FunctionDeclaration)
 	{
-		super();
+		super(functionDeclaration);
 
 		this.name = (<ts.Identifier>functionDeclaration.name).escapedText.toString();
 
@@ -22,6 +22,7 @@ export class FunctionNode extends ElementNode
 		this.start = functionDeclaration.getStart(sourceFile, false);
 
 		this.isExport = this.getIsExport(functionDeclaration);
+		this.decorators = this.getDecorators(functionDeclaration, sourceFile);
 	}
 
 	// #endregion

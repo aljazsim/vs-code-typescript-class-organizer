@@ -8,28 +8,27 @@ export class PropertyNode extends ElementNode
 
 	public isAbstract: boolean;
 	public isStatic: boolean;
-	public writeMode: WriteModifier = WriteModifier.Writable;
-	public decorators: string[];
+	public writeMode: WriteModifier = WriteModifier.writable;
 
 	// #endregion
 
 	// #region Constructors (1)
 
-	constructor(sourceFile: ts.SourceFile, propertyNodeDeclaration: ts.PropertyDeclaration)
+	constructor(sourceFile: ts.SourceFile, propertyDeclaration: ts.PropertyDeclaration)
 	{
-		super();
+		super(propertyDeclaration);
 
-		this.name = (<ts.Identifier>propertyNodeDeclaration.name).escapedText.toString();
+		this.name = (<ts.Identifier>propertyDeclaration.name).escapedText.toString();
 
-		this.fullStart = propertyNodeDeclaration.getFullStart();
-		this.end = propertyNodeDeclaration.getEnd();
-		this.start = propertyNodeDeclaration.getStart(sourceFile, false);
+		this.fullStart = propertyDeclaration.getFullStart();
+		this.end = propertyDeclaration.getEnd();
+		this.start = propertyDeclaration.getStart(sourceFile, false);
 
-		this.accessModifier = this.getAccessModifier(propertyNodeDeclaration);
-		this.isAbstract = this.getIsAbstract(propertyNodeDeclaration);
-		this.isStatic = this.getIsStatic(propertyNodeDeclaration);
-		this.writeMode = this.getWriteMode(propertyNodeDeclaration);
-		this.decorators = this.getDecorators(propertyNodeDeclaration, sourceFile);
+		this.accessModifier = this.getAccessModifier(propertyDeclaration);
+		this.isAbstract = this.getIsAbstract(propertyDeclaration);
+		this.isStatic = this.getIsStatic(propertyDeclaration);
+		this.writeMode = this.getWriteMode(propertyDeclaration);
+		this.decorators = this.getDecorators(propertyDeclaration, sourceFile);
 	}
 
 	// #endregion

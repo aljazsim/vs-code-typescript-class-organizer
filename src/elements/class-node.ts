@@ -1,5 +1,4 @@
-import { compareStrings } from "../utils";
-import { AccessModifier } from "./access-modifier";
+import { sort } from "../utils";
 import { ConstructorNode } from "./constructor-node";
 import { ElementNode } from "./element-node";
 import { GetterNode } from "./getter-node";
@@ -7,7 +6,6 @@ import { IndexNode } from "./index-node";
 import { MethodNode } from "./method-node";
 import { PropertyNode } from "./property-node";
 import { SetterNode } from "./setter-node";
-import { WriteModifier } from "./write-modifier";
 import * as ts from "typescript";
 
 export class ClassNode extends ElementNode
@@ -31,7 +29,7 @@ export class ClassNode extends ElementNode
 
 	constructor(sourceFile: ts.SourceFile, classDeclaration: ts.ClassDeclaration)
 	{
-		super();
+		super(classDeclaration);
 
 		this.name = (<ts.Identifier>classDeclaration.name).escapedText.toString();
 
@@ -48,298 +46,241 @@ export class ClassNode extends ElementNode
 
 		this.isAbstract = this.getIsAbstract(classDeclaration);
 		this.isStatic = this.getIsStatic(classDeclaration);
+		this.decorators = this.getDecorators(classDeclaration, sourceFile);
 	}
 
 	// #endregion
 
 	// #region Public Methods (46)
 
-	public getConstructors()
+	public getConstructors(groupWithDecorators: boolean)
 	{
-		return this.constructors.sort((a, b) => compareStrings(a.name, b.name));
+		return this.constructors.sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getPrivateAbstractGettersAndSetters()
+	public getPrivateAbstractGettersAndSetters(groupWithDecorators: boolean)
 	{
-		return this.getters.concat(this.setters).filter(x => x.accessModifier === AccessModifier.private && !x.isStatic && x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.getters.concat(this.setters).filter(x => this.isPrivate(x) && !x.isStatic && x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getPrivateAbstractIndexes()
+	public getPrivateAbstractIndexes(groupWithDecorators: boolean)
 	{
-		return this.indexes.filter(x => x.accessModifier === AccessModifier.private && !x.isStatic && x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.indexes.filter(x => this.isPrivate(x) && !x.isStatic && x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getPrivateAbstractMethods()
+	public getPrivateAbstractMethods(groupWithDecorators: boolean)
 	{
-		return this.methods.filter(x => x.accessModifier === AccessModifier.private && !x.isStatic && x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.methods.filter(x => this.isPrivate(x) && !x.isStatic && x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getPrivateConstProperties()
+	public getPrivateConstProperties(groupWithDecorators: boolean)
 	{
-		return this.properties.filter(x => x.accessModifier === AccessModifier.private && x.writeMode === WriteModifier.Const && !x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		return this.properties.filter(x => this.isPrivate(x) && this.isConstant(x) && !x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getPrivateGettersAndSetters()
+	public getPrivateGettersAndSetters(groupWithDecorators: boolean)
 	{
-		return this.getters.concat(this.setters).filter(x => x.accessModifier === AccessModifier.private && !x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.getters.concat(this.setters).filter(x => this.isPrivate(x) && !x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getPrivateIndexes()
+	public getPrivateIndexes(groupWithDecorators: boolean)
 	{
-		return this.indexes.filter(x => x.accessModifier === AccessModifier.private && !x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.indexes.filter(x => this.isPrivate(x) && !x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getPrivateMethods()
+	public getPrivateMethods(groupWithDecorators: boolean)
 	{
-		return this.methods.filter(x => x.accessModifier === AccessModifier.private && !x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.methods.filter(x => this.isPrivate(x) && !x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getPrivateProperties()
+	public getPrivateProperties(groupWithDecorators: boolean)
 	{
-		return this.properties.filter(x => x.accessModifier === AccessModifier.private && x.writeMode === WriteModifier.Writable && !x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		return this.properties.filter(x => this.isPrivate(x) && this.isWritable(x) && !x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getPrivateReadOnlyProperties()
+	public getPrivateReadOnlyProperties(groupWithDecorators: boolean)
 	{
-		return this.properties.filter(x => x.accessModifier === AccessModifier.private && x.writeMode === WriteModifier.ReadOnly && !x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		return this.properties.filter(x => this.isPrivate(x) && this.isReadOnly(x) && !x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getPrivateStaticConstProperties()
+	public getPrivateStaticConstProperties(groupWithDecorators: boolean)
 	{
-		return this.properties.filter(x => x.accessModifier === AccessModifier.private && x.writeMode === WriteModifier.Const && x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		return this.properties.filter(x => this.isPrivate(x) && this.isConstant(x) && x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getPrivateStaticGettersAndSetters()
+	public getPrivateStaticGettersAndSetters(groupWithDecorators: boolean)
 	{
-		return this.getters.concat(this.setters).filter(x => x.accessModifier === AccessModifier.private && x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.getters.concat(this.setters).filter(x => this.isPrivate(x) && x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getPrivateStaticIndexes()
+	public getPrivateStaticIndexes(groupWithDecorators: boolean)
 	{
-		return this.indexes.filter(x => x.accessModifier === AccessModifier.private && x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.indexes.filter(x => this.isPrivate(x) && x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getPrivateStaticMethods()
+	public getPrivateStaticMethods(groupWithDecorators: boolean)
 	{
-		return this.methods.filter(x => x.accessModifier === AccessModifier.private && x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.methods.filter(x => this.isPrivate(x) && x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getPrivateStaticProperties()
+	public getPrivateStaticProperties(groupWithDecorators: boolean)
 	{
-		return this.properties.filter(x => x.accessModifier === AccessModifier.private && x.writeMode === WriteModifier.Writable && x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		return this.properties.filter(x => this.isPrivate(x) && this.isWritable(x) && x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getPrivateStaticReadOnlyProperties()
+	public getPrivateStaticReadOnlyProperties(groupWithDecorators: boolean)
 	{
-		return this.properties.filter(x => x.accessModifier === AccessModifier.private && x.writeMode === WriteModifier.ReadOnly && x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		return this.properties.filter(x => this.isPrivate(x) && this.isReadOnly(x) && x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getProtectedAbstractGettersAndSetters()
+	public getProtectedAbstractGettersAndSetters(groupWithDecorators: boolean)
 	{
-		return this.getters.concat(this.setters).filter(x => x.accessModifier === AccessModifier.protected && !x.isStatic && x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.getters.concat(this.setters).filter(x => this.isProtected(x) && !x.isStatic && x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getProtectedAbstractIndexes()
+	public getProtectedAbstractIndexes(groupWithDecorators: boolean)
 	{
-		return this.indexes.filter(x => x.accessModifier === AccessModifier.protected && !x.isStatic && x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.indexes.filter(x => this.isProtected(x) && !x.isStatic && x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getProtectedAbstractMethods()
+	public getProtectedAbstractMethods(groupWithDecorators: boolean)
 	{
-		return this.methods.filter(x => x.accessModifier === AccessModifier.protected && !x.isStatic && x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.methods.filter(x => this.isProtected(x) && !x.isStatic && x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getProtectedConstProperties()
+	public getProtectedConstProperties(groupWithDecorators: boolean)
 	{
-		return this.properties.filter(x => x.accessModifier === AccessModifier.protected && x.writeMode === WriteModifier.Const && !x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		return this.properties.filter(x => this.isProtected(x) && this.isConstant(x) && !x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getProtectedGettersAndSetters()
+	public getProtectedGettersAndSetters(groupWithDecorators: boolean)
 	{
-		return this.getters.concat(this.setters).filter(x => x.accessModifier === AccessModifier.protected && !x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.getters.concat(this.setters).filter(x => this.isProtected(x) && !x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getProtectedIndexes()
+	public getProtectedIndexes(groupWithDecorators: boolean)
 	{
-		return this.indexes.filter(x => x.accessModifier === AccessModifier.protected && !x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.indexes.filter(x => this.isProtected(x) && !x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getProtectedMethods()
+	public getProtectedMethods(groupWithDecorators: boolean)
 	{
-		return this.methods.filter(x => x.accessModifier === AccessModifier.protected && !x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.methods.filter(x => this.isProtected(x) && !x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getProtectedProperties()
+	public getProtectedProperties(groupWithDecorators: boolean)
 	{
-		return this.properties.filter(x => x.accessModifier === AccessModifier.protected && x.writeMode === WriteModifier.Writable && !x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		return this.properties.filter(x => this.isProtected(x) && this.isWritable(x) && !x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getProtectedReadOnlyProperties()
+	public getProtectedReadOnlyProperties(groupWithDecorators: boolean)
 	{
-		return this.properties.filter(x => x.accessModifier === AccessModifier.protected && x.writeMode === WriteModifier.ReadOnly && !x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		return this.properties.filter(x => this.isProtected(x) && this.isReadOnly(x) && !x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getProtectedStaticConstProperties()
+	public getProtectedStaticConstProperties(groupWithDecorators: boolean)
 	{
-		return this.properties.filter(x => x.accessModifier === AccessModifier.protected && x.writeMode === WriteModifier.Const && x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		return this.properties.filter(x => this.isProtected(x) && this.isConstant(x) && x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getProtectedStaticGettersAndSetters()
+	public getProtectedStaticGettersAndSetters(groupWithDecorators: boolean)
 	{
-		return this.getters.concat(this.setters).filter(x => x.accessModifier === AccessModifier.protected && x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.getters.concat(this.setters).filter(x => this.isProtected(x) && x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getProtectedStaticIndexes()
+	public getProtectedStaticIndexes(groupWithDecorators: boolean)
 	{
-		return this.indexes.filter(x => x.accessModifier === AccessModifier.protected && x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.indexes.filter(x => this.isProtected(x) && x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getProtectedStaticMethods()
+	public getProtectedStaticMethods(groupWithDecorators: boolean)
 	{
-		return this.methods.filter(x => x.accessModifier === AccessModifier.protected && x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.methods.filter(x => this.isProtected(x) && x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getProtectedStaticProperties()
+	public getProtectedStaticProperties(groupWithDecorators: boolean)
 	{
-		return this.properties.filter(x => x.accessModifier === AccessModifier.protected && x.writeMode === WriteModifier.Writable && x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		return this.properties.filter(x => this.isProtected(x) && this.isWritable(x) && x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getProtectedStaticReadOnlyProperties()
+	public getProtectedStaticReadOnlyProperties(groupWithDecorators: boolean)
 	{
-		return this.properties.filter(x => x.accessModifier === AccessModifier.protected && x.writeMode === WriteModifier.ReadOnly && x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
+		return this.properties.filter(x => this.isProtected(x) && this.isReadOnly(x) && x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getPublicAbstractGettersAndSetters()
+	public getPublicAbstractGettersAndSetters(groupWithDecorators: boolean)
 	{
-		return this.getters.concat(this.setters).filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && !x.isStatic && x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.getters.concat(this.setters).filter(x => this.isPublic(x) && !x.isStatic && x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getPublicAbstractIndexes()
+	public getPublicAbstractIndexes(groupWithDecorators: boolean)
 	{
-		return this.indexes.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && !x.isStatic && x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.indexes.filter(x => this.isPublic(x) && !x.isStatic && x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getPublicAbstractMethods()
+	public getPublicAbstractMethods(groupWithDecorators: boolean)
 	{
-		return this.methods.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && !x.isStatic && x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.methods.filter(x => this.isPublic(x) && !x.isStatic && x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
 	public getPublicConstProperties(groupWithDecorators: boolean)
 	{
-		if (groupWithDecorators)
-		{
-			return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.Const && !x.isStatic).sort((a, b) => compareStrings(this.getPropertyNameWithDecorators(a), this.getPropertyNameWithDecorators(b)));
-		}
-		else
-		{
-			return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.Const && !x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
-		}
+		return this.properties.filter(x => this.isPublic(x) && this.isConstant(x) && !x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getPublicGettersAndSetters()
+	public getPublicGettersAndSetters(groupWithDecorators: boolean)
 	{
-		return this.getters.concat(this.setters).filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && !x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.getters.concat(this.setters).filter(x => this.isPublic(x) && !x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getPublicIndexes()
+	public getPublicIndexes(groupWithDecorators: boolean)
 	{
-		return this.indexes.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && !x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.indexes.filter(x => this.isPublic(x) && !x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getPublicMethods()
+	public getPublicMethods(groupWithDecorators: boolean)
 	{
-		return this.methods.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && !x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.methods.filter(x => this.isPublic(x) && !x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
 	public getPublicProperties(groupWithDecorators: boolean)
 	{
-		if (groupWithDecorators)
-		{
-			return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.Writable && !x.isStatic).sort((a, b) => compareStrings(this.getPropertyNameWithDecorators(a), this.getPropertyNameWithDecorators(b)));
-		}
-		else
-		{
-			return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.Writable && !x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
-		}
+		return this.properties.filter(x => this.isPublic(x) && this.isWritable(x) && !x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
 	public getPublicReadOnlyProperties(groupWithDecorators: boolean)
 	{
-		if (groupWithDecorators)
-		{
-			return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.ReadOnly && !x.isStatic).sort((a, b) => compareStrings(this.getPropertyNameWithDecorators(a), this.getPropertyNameWithDecorators(b)));
-		}
-		else
-		{
-			return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.ReadOnly && !x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
-		}
+		return this.properties.filter(x => this.isPublic(x) && this.isReadOnly(x) && !x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
 	public getPublicStaticConstProperties(groupWithDecorators: boolean)
 	{
-		if (groupWithDecorators)
-		{
-			return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.Const && x.isStatic).sort((a, b) => compareStrings(this.getPropertyNameWithDecorators(a), this.getPropertyNameWithDecorators(b)));
-		}
-		else
-		{
-			return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.Const && x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
-		}
+		return this.indexes.filter(x => this.isPublic(x) && this.isConstant(x) && x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getPublicStaticGettersAndSetters()
+	public getPublicStaticGettersAndSetters(groupWithDecorators: boolean)
 	{
-		return this.getters.concat(this.setters).filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.getters.concat(this.setters).filter(x => this.isPublic(x) && x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getPublicStaticIndexes()
+	public getPublicStaticIndexes(groupWithDecorators: boolean)
 	{
-		return this.indexes.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.indexes.filter(x => this.isPublic(x) && x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getPublicStaticMethods()
+	public getPublicStaticMethods(groupWithDecorators: boolean)
 	{
-		return this.methods.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.isStatic && !x.isAbstract).sort((a, b) => compareStrings(a.name, b.name));
+		return this.methods.filter(x => this.isPublic(x) && x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
 	public getPublicStaticProperties(groupWithDecorators: boolean)
 	{
-		if (groupWithDecorators)
-		{
-			return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.Writable && x.isStatic).sort((a, b) => compareStrings(this.getPropertyNameWithDecorators(a), this.getPropertyNameWithDecorators(b)));
-		}
-		else
-		{
-			return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.Writable && x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
-		}
+		return this.properties.filter(x => this.isPublic(x) && this.isWritable(x) && x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
 	public getPublicStaticReadOnlyProperties(groupWithDecorators: boolean)
 	{
-		if (groupWithDecorators)
-		{
-			return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.ReadOnly && x.isStatic).sort((a, b) => compareStrings(this.getPropertyNameWithDecorators(a), this.getPropertyNameWithDecorators(b)));
-		}
-		else
-		{
-			return this.properties.filter(x => (x.accessModifier === AccessModifier.public || x.accessModifier === null) && x.writeMode === WriteModifier.ReadOnly && x.isStatic).sort((a, b) => compareStrings(a.name, b.name));
-		}
-	}
-
-	// #endregion
-
-	// #region Private Methods (1)
-
-	private getPropertyNameWithDecorators(propertyNode: PropertyNode): string
-	{
-		if (propertyNode.decorators.length > 0)
-		{
-			return propertyNode.decorators.join(", ") + " " + propertyNode.name;
-		}
-		else
-		{
-			return propertyNode.name;
-		}
+		return this.properties.filter(x => this.isPublic(x) && this.isReadOnly(x) && x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
 	// #endregion

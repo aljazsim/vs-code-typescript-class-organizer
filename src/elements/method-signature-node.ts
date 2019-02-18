@@ -1,19 +1,20 @@
-import * as ts from "typescript";
 import { ElementNode } from "./element-node";
+import * as ts from "typescript";
 
 export class MethodSignatureNode extends ElementNode
 {
 	// #region Constructors (1)
 
-	constructor(sourceFile: ts.SourceFile, methodsignatureDeclaration: ts.MethodSignature)
+	constructor(sourceFile: ts.SourceFile, methodSignatureDeclaration: ts.MethodSignature)
 	{
-		super();
+		super(methodSignatureDeclaration);
 
-		this.name = (<ts.Identifier>methodsignatureDeclaration.name).escapedText.toString();
+		this.name = (<ts.Identifier>methodSignatureDeclaration.name).escapedText.toString();
 
-		this.fullStart = methodsignatureDeclaration.getFullStart();
-		this.end = methodsignatureDeclaration.getEnd();
-		this.start = methodsignatureDeclaration.getStart(sourceFile, false);
+		this.fullStart = methodSignatureDeclaration.getFullStart();
+		this.end = methodSignatureDeclaration.getEnd();
+		this.start = methodSignatureDeclaration.getStart(sourceFile, false);
+		this.decorators = this.getDecorators(methodSignatureDeclaration, sourceFile);
 	}
 
 	// #endregion

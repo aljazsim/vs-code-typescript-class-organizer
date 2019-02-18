@@ -1,19 +1,20 @@
-import * as ts from "typescript";
 import { ElementNode } from "./element-node";
+import * as ts from "typescript";
 
 export class TypeAliasNode extends ElementNode
 {
 	// #region Constructors (1)
 
-	constructor(sourceFile: ts.SourceFile, enumDeclaration: ts.TypeAliasDeclaration)
+	constructor(sourceFile: ts.SourceFile, typeAliasDeclaration: ts.TypeAliasDeclaration)
 	{
-		super();
+		super(typeAliasDeclaration);
 
-		this.name = (<ts.Identifier>enumDeclaration.name).escapedText.toString();
+		this.name = (<ts.Identifier>typeAliasDeclaration.name).escapedText.toString();
 
-		this.fullStart = enumDeclaration.getFullStart();
-		this.end = enumDeclaration.getEnd();
-		this.start = enumDeclaration.getStart(sourceFile, false);
+		this.fullStart = typeAliasDeclaration.getFullStart();
+		this.end = typeAliasDeclaration.getEnd();
+		this.start = typeAliasDeclaration.getStart(sourceFile, false);
+		this.decorators = this.getDecorators(typeAliasDeclaration, sourceFile);
 	}
 
 	// #endregion

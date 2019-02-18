@@ -1,9 +1,8 @@
-import { compareStrings } from "../utils";
+import { sort } from "../utils";
 import { ElementNode } from "./element-node";
 import { IndexSignatureNode } from "./index-signature-node";
 import { MethodSignatureNode } from "./method-signature-node";
 import { PropertySignatureNode } from "./property-signature-node";
-import { WriteModifier } from "./write-modifier";
 import * as ts from "typescript";
 
 export class InterfaceNode extends ElementNode
@@ -22,7 +21,7 @@ export class InterfaceNode extends ElementNode
 
 	constructor(sourceFile: ts.SourceFile, interfaceDeclaration: ts.InterfaceDeclaration)
 	{
-		super();
+		super(interfaceDeclaration);
 
 		this.name = (<ts.Identifier>interfaceDeclaration.name).escapedText.toString();
 
@@ -42,29 +41,29 @@ export class InterfaceNode extends ElementNode
 
 	// #region Public Methods (5)
 
-	public getConstProperties()
+	public getConstProperties(groupWithDecorators: boolean)
 	{
-		return this.properties.filter(x => x.writeMode === WriteModifier.Const).sort((a, b) => compareStrings(a.name, b.name));
+		return this.properties.filter(x => this.isConstant(x)).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getIndexes()
+	public getIndexes(groupWithDecorators: boolean)
 	{
-		return this.indexes.sort((a, b) => compareStrings(a.name, b.name));
+		return this.indexes.sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getMethods()
+	public getMethods(groupWithDecorators: boolean)
 	{
-		return this.methods.sort((a, b) => compareStrings(a.name, b.name));
+		return this.methods.sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getProperties()
+	public getProperties(groupWithDecorators: boolean)
 	{
-		return this.properties.filter(x => x.writeMode === WriteModifier.Writable).sort((a, b) => compareStrings(a.name, b.name));
+		return this.properties.filter(x => this.isWritable(x)).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
-	public getReadOnlyProperties()
+	public getReadOnlyProperties(groupWithDecorators: boolean)
 	{
-		return this.properties.filter(x => x.writeMode === WriteModifier.ReadOnly).sort((a, b) => compareStrings(a.name, b.name));
+		return this.properties.filter(x => this.isReadOnly(x)).sort((a, b) => sort(a, b, groupWithDecorators));
 	}
 
 	// #endregion
