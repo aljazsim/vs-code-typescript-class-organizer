@@ -1,6 +1,6 @@
 export function removeRegions(sourceCode: string)
 {
-	const newLine = "\r\n";
+	const newLine = "\n";
 	const emptyLine = "";
 	let anythingRegex = ".";
 	let regionRegex = "#region";
