@@ -76,6 +76,139 @@ function organizeAll(useRegions: boolean, addPublicModifierIfMissing: boolean, a
 
 }
 
+function organize(editor: vscode.TextEditor | undefined, useRegions: boolean, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean)
+{
+    if (!editor)
+    {
+        return;
+    }
+    let edit: vscode.WorkspaceEdit;
+    let start: vscode.Position;
+    let end: vscode.Position;
+    let range: vscode.Range;
+
+    let sourceCode = editor.document.getText();
+    let fileName = editor.document.fileName;
+
+    sourceCode = organizeCode(sourceCode, fileName, useRegions, addPublicModifierIfMissing, addRegionIdentation, addRegionCaptionToRegionEnd, groupElementsWithDecorators);
+
+    start = new vscode.Position(0, 0);
+    end = new vscode.Position(editor.document.lineCount, editor.document.lineAt(editor.document.lineCount - 1).text.length);
+    range = new vscode.Range(start, end);
+
+    edit = new vscode.WorkspaceEdit();
+    edit.replace(editor.document.uri, range, sourceCode);
+
+    return vscode.workspace.applyEdit(edit);
+}
+
+function print(groups: any, sourceCode: string, start: number, end: number, identationLevel: number, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, identation: string, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean)
+{
+    let sourceCode2: string;
+    let count;
+    let members = "";
+    let newLine = "\r\n";
+
+    for (let group of groups)
+    {
+        count = 0;
+
+        for (let group2 of group.groups)
+        {
+            count += group2.nodes.length;
+        }
+
+        if (count > 0)
+        {
+            if (group.regions)
+            {
+                members += newLine;
+                members += `${addRegionIdentation ? identation : ""}// #region ${group.description} (${count})${newLine}`;
+            }
+
+            members += newLine;
+
+            for (let group2 of group.groups)
+            {
+                for (let i = 0; i < group2.nodes.length; i++)
+                {
+                    const node = group2.nodes[i];
+                    let comment = sourceCode.substring(node.fullStart, node.start).trim();
+                    let code = sourceCode.substring(node.start, node.end).trim();
+
+                    if (addPublicModifierIfMissing)
+                    {
+                        if (node instanceof MethodNode ||
+                            node instanceof PropertyNode ||
+                            node instanceof GetterNode ||
+                            node instanceof SetterNode)
+                        {
+                            if (node.accessModifier === null)
+                            {
+                                code = code.replace(`${node.name}:`, `public ${node.name}:`);
+                                code = code.replace(`${node.name} =`, `public ${node.name} =`);
+                                code = code.replace(`${node.name};`, `public ${node.name};`);
+
+                            }
+                        }
+                    }
+
+                    if (groupElementsWithDecorators)
+                    {
+                        if (i > 0)
+                        {
+                            if (group2.nodes[i - 1].decorators.length > 0 &&
+                                group2.nodes[i].decorators.length === 0)
+                            {
+                                members += newLine;
+                            }
+                        }
+                    }
+
+                    if (comment !== "")
+                    {
+                        members += `${identationLevel === 1 ? identation : ""}${comment}${newLine}`;
+                    }
+
+                    members += `${identationLevel === 1 ? identation : ""}${code}`;
+                    members += newLine;
+
+                    if (code.endsWith("}"))
+                    {
+                        members += newLine;
+                    }
+                }
+
+                members += newLine;
+            }
+
+            if (group.regions)
+            {
+                members += newLine;
+
+                if (addRegionCaptionToRegionEnd)
+                {
+                    members += `${addRegionIdentation ? identation : ""}// #endregion ${group.description} (${count})${newLine}`;
+                }
+                else
+                {
+                    members += `${addRegionIdentation ? identation : ""}// #endregion${newLine}`;
+                }
+            }
+
+            members += newLine;
+        }
+    }
+
+    sourceCode2 = sourceCode.substring(0, start).trimRight();
+    sourceCode2 += newLine;
+    sourceCode2 += (addRegionIdentation ? identation : "") + members.trim();
+    sourceCode2 += newLine;
+    sourceCode2 += sourceCode.substring(end, sourceCode.length).trimLeft();
+
+    return sourceCode2.trimLeft();
+}
+
 function organizeCode(sourceCode: string, fileName: string, useRegions: boolean, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean)
 {
     sourceCode = removeRegions(sourceCode);
@@ -219,137 +352,4 @@ function organizeCode(sourceCode: string, fileName: string, useRegions: boolean,
 
     sourceCode = formatLines(sourceCode);
     return sourceCode;
-}
-
-function organize(editor: vscode.TextEditor | undefined, useRegions: boolean, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean)
-{
-    if (!editor)
-    {
-        return;
-    }
-    let edit: vscode.WorkspaceEdit;
-    let start: vscode.Position;
-    let end: vscode.Position;
-    let range: vscode.Range;
-
-    let sourceCode = editor.document.getText();
-    let fileName = editor.document.fileName;
-
-    sourceCode = organizeCode(sourceCode, fileName, useRegions, addPublicModifierIfMissing, addRegionIdentation, addRegionCaptionToRegionEnd, groupElementsWithDecorators);
-
-    start = new vscode.Position(0, 0);
-    end = new vscode.Position(editor.document.lineCount, editor.document.lineAt(editor.document.lineCount - 1).text.length);
-    range = new vscode.Range(start, end);
-
-    edit = new vscode.WorkspaceEdit();
-    edit.replace(editor.document.uri, range, sourceCode);
-
-    return vscode.workspace.applyEdit(edit);
-}
-
-function print(groups: any, sourceCode: string, start: number, end: number, identationLevel: number, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, identation: string, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean)
-{
-    let sourceCode2: string;
-    let count;
-    let members = "";
-    let newLine = "\r\n";
-
-    for (let group of groups)
-    {
-        count = 0;
-
-        for (let group2 of group.groups)
-        {
-            count += group2.nodes.length;
-        }
-
-        if (count > 0)
-        {
-            if (group.regions)
-            {
-                members += newLine;
-                members += `${addRegionIdentation ? identation : ""}// #region ${group.description} (${count})${newLine}`;
-            }
-
-            members += newLine;
-
-            for (let group2 of group.groups)
-            {
-                for (let i = 0; i < group2.nodes.length; i++)
-                {
-                    const node = group2.nodes[i];
-                    let comment = sourceCode.substring(node.fullStart, node.start).trim();
-                    let code = sourceCode.substring(node.start, node.end).trim();
-
-                    if (addPublicModifierIfMissing)
-                    {
-                        if (node instanceof MethodNode ||
-                            node instanceof PropertyNode ||
-                            node instanceof GetterNode ||
-                            node instanceof SetterNode)
-                        {
-                            if (node.accessModifier === null)
-                            {
-                                code = code.replace(`${node.name}:`, `public ${node.name}:`);
-                                code = code.replace(`${node.name} =`, `public ${node.name} =`);
-                                code = code.replace(`${node.name};`, `public ${node.name};`);
-
-                            }
-                        }
-                    }
-
-                    if (groupElementsWithDecorators)
-                    {
-                        if (i > 0)
-                        {
-                            if (group2.nodes[i - 1].decorators.length > 0 &&
-                                group2.nodes[i].decorators.length === 0)
-                            {
-                                members += newLine;
-                            }
-                        }
-                    }
-
-                    if (comment !== "")
-                    {
-                        members += `${identationLevel === 1 ? identation : ""}${comment}${newLine}`;
-                    }
-
-                    members += `${identationLevel === 1 ? identation : ""}${code}`;
-                    members += newLine;
-
-                    if (code.endsWith("}"))
-                    {
-                        members += newLine;
-                    }
-                }
-
-                members += newLine;
-            }
-
-            if (group.regions)
-            {
-                members += newLine;
-
-                if (addRegionCaptionToRegionEnd)
-                {
-                    members += `${addRegionIdentation ? identation : ""}// #endregion ${group.description} (${count})${newLine}`;
-                }
-                else
-                {
-                    members += `${addRegionIdentation ? identation : ""}// #endregion${newLine}`;
-                }
-            }
-
-            members += newLine;
-        }
-    }
-
-    sourceCode2 = sourceCode.substring(0, start).trimRight();
-    sourceCode2 += newLine;
-    sourceCode2 += (addRegionIdentation ? identation : "") + members.trim();
-    sourceCode2 += newLine;
-    sourceCode2 += sourceCode.substring(end, sourceCode.length).trimLeft();
-
-    return sourceCode2.trimLeft();
 }
