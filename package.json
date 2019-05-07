@@ -1,123 +1,130 @@
 {
-  "name": "tsco",
-  "displayName": "TypeScript Class Organizer",
-  "description": "Groups and orders class members",
-  "version": "1.0.11",
-  "publisher": "aljazsim",
-  "author": {
-    "name": "aljazsim",
-    "url": "https://github.com/aljazsim/"
-  },
-  "icon": "doc/logo.png",
-  "galleryBanner": {
-    "color": "#4c725d",
-    "theme": "dark"
-  },
-  "bugs": {
-    "url": "https://github.com/aljazsim/vs-code-typescript-class-organizer/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/aljazsim/vs-code-typescript-class-organizer.git"
-  },
-  "homepage": "https://github.com/aljazsim/vs-code-typescript-class-organizer",
-  "engines": {
-    "vscode": "^1.22.0"
-  },
-  "license": "MIT",
-  "categories": [
-    "Formatters"
-  ],
-  "keywords": [
-    "TypeScript",
-    "organize",
-    "order",
-    "class",
-    "regions"
-  ],
-  "activationEvents": [
-    "onCommand:tsco.organize",
-    "onCommand:tsco.organizeAll"
-  ],
-  "contributes": {
-    "configuration": {
-      "title": "Typescript Class Organizer configuration",
-      "properties": {
-        "tsco.useRegions": {
-          "type": "boolean",
-          "default": true,
-          "description": "Adds regions when organizing a class."
-        },
-        "tsco.addPublicModifierIfMissing": {
-          "type": "boolean",
-          "default": true,
-          "description": "Adds a public acccess modifier if missing."
-        },
-        "tsco.addRegionIdentation": {
-          "type": "boolean",
-          "default": true,
-          "description": "Adds region identation."
-        },
-        "tsco.addRegionCaptionToRegionEnd": {
-          "type": "boolean",
-          "default": true,
-          "description": "Adds region caption to region end."
-        },
-        "tsco.groupPropertiesWithDecorators": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true properties with decorators will come first."
-        }
-      }
+    "name": "tsco",
+    "displayName": "TypeScript Class Organizer",
+    "description": "Groups and orders class members",
+    "version": "1.0.11",
+    "publisher": "aljazsim",
+    "author": {
+        "name": "aljazsim",
+        "url": "https://github.com/aljazsim/"
     },
-    "commands": [{
-        "command": "tsco.organize",
-        "title": "Organize Current File",
-        "category": "TypeScript Class Organizer",
-        "when": "editorTextFocus && !inDebugMode && editorLangId == typescript"
-      },
-      {
-        "command": "tsco.organizeAll",
-        "title": "Organize All Files",
-        "category": "TypeScript Class Organizer"
-      }
+    "icon": "doc/logo.png",
+    "galleryBanner": {
+        "color": "#4c725d",
+        "theme": "dark"
+    },
+    "bugs": {
+        "url": "https://github.com/aljazsim/vs-code-typescript-class-organizer/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/aljazsim/vs-code-typescript-class-organizer.git"
+    },
+    "homepage": "https://github.com/aljazsim/vs-code-typescript-class-organizer",
+    "engines": {
+        "vscode": "^1.22.0"
+    },
+    "license": "MIT",
+    "categories": [
+        "Formatters"
     ],
-    "menus": {
-      "editor/context": [{
-        "command": "tsco.organize",
-        "group": "1_modification",
-        "when": "editorTextFocus && !inDebugMode && editorLangId == typescript"
-      }]
+    "keywords": [
+        "TypeScript",
+        "organize",
+        "order",
+        "class",
+        "regions"
+    ],
+    "activationEvents": [
+        "onCommand:tsco.organize",
+        "onCommand:tsco.organizeAll"
+    ],
+    "contributes": {
+        "configuration": {
+            "title": "Typescript Class Organizer configuration",
+            "properties": {
+                "tsco.useRegions": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Adds regions when organizing a class."
+                },
+                "tsco.addPublicModifierIfMissing": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Adds a public acccess modifier if missing."
+                },
+                "tsco.addRegionIdentation": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Adds region identation."
+                },
+                "tsco.addRegionCaptionToRegionEnd": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Adds region caption to region end."
+                },
+                "tsco.groupPropertiesWithDecorators": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "When true properties with decorators will come first."
+                }
+            }
+        },
+        "commands": [
+            {
+                "command": "tsco.organize",
+                "title": "Organize Current File",
+                "category": "TypeScript Class Organizer",
+                "when": "editorTextFocus && !inDebugMode && editorLangId == typescript"
+            },
+            {
+                "command": "tsco.organizeAll",
+                "title": "Organize All Files",
+                "category": "TypeScript Class Organizer"
+            }
+        ],
+        "menus": {
+            "editor/context": [
+                {
+                    "command": "tsco.organize",
+                    "group": "1_modification",
+                    "when": "editorTextFocus && !inDebugMode && editorLangId == typescript"
+                }
+            ]
+        },
+        "keybindings": [
+            {
+                "command": "tsco.organize",
+                "key": "ctrl+shift+o",
+                "mac": "cmd+shift+o",
+                "when": "editorTextFocus && !inDebugMode && editorLangId == typescript"
+            }
+        ],
+        "languages": [
+            {
+                "id": "typescript",
+                "extensions": [
+                    ".ts"
+                ]
+            }
+        ]
     },
-    "keybindings": [{
-      "command": "tsco.organize",
-      "key": "ctrl+shift+o",
-      "mac": "cmd+shift+o",
-      "when": "editorTextFocus && !inDebugMode && editorLangId == typescript"
-    }],
-    "languages": [{
-      "id": "typescript",
-      "extensions": [
-        ".ts"
-      ]
-    }]
-  },
-  "main": "./out/extension",
-  "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "postinstall": "node ./node_modules/vscode/bin/install",
-    "test": "npm run compile && node ./node_modules/vscode/bin/test"
-  },
-  "devDependencies": {
-    "@types/mocha": "5.2.5",
-    "@types/node": "10.12.24",
-    "eslint": "5.13.0",
-    "tslint": "5.12.1",
-    "vscode": "1.1.29"
-  },
-  "dependencies": {
-    "typescript": "3.3.3"
-  }
+    "main": "./out/extension",
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "@types/mocha": "5.2.6",
+        "@types/node": "12.0.0",
+        "eslint": "5.16.0",
+        "tslint": "5.16.0",
+        "vscode": "1.1.34"
+    },
+    "dependencies": {
+        "typescript": "3.3.3"
+    }
 }
