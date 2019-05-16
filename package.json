@@ -70,12 +70,11 @@
                 }
             }
         },
-        "commands": [
-            {
+        "commands": [{
                 "command": "tsco.organize",
                 "title": "Organize Current File",
                 "category": "TypeScript Class Organizer",
-                "when": "editorTextFocus && !inDebugMode && editorLangId == typescript"
+                "when": "editorTextFocus && editorLangId == typescript"
             },
             {
                 "command": "tsco.organizeAll",
@@ -84,30 +83,24 @@
             }
         ],
         "menus": {
-            "editor/context": [
-                {
-                    "command": "tsco.organize",
-                    "group": "1_modification",
-                    "when": "editorTextFocus && !inDebugMode && editorLangId == typescript"
-                }
-            ]
-        },
-        "keybindings": [
-            {
+            "editor/context": [{
                 "command": "tsco.organize",
-                "key": "ctrl+shift+o",
-                "mac": "cmd+shift+o",
-                "when": "editorTextFocus && !inDebugMode && editorLangId == typescript"
-            }
-        ],
-        "languages": [
-            {
-                "id": "typescript",
-                "extensions": [
-                    ".ts"
-                ]
-            }
-        ]
+                "group": "1_modification",
+                "when": "editorTextFocus && editorLangId == typescript"
+            }]
+        },
+        "keybindings": [{
+            "command": "tsco.organize",
+            "key": "ctrl+shift+o",
+            "mac": "cmd+shift+o",
+            "when": "editorTextFocus && editorLangId == typescript"
+        }],
+        "languages": [{
+            "id": "typescript",
+            "extensions": [
+                ".ts"
+            ]
+        }]
     },
     "main": "./out/extension",
     "scripts": {
