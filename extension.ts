@@ -78,28 +78,27 @@ function organizeAll(useRegions: boolean, addPublicModifierIfMissing: boolean, a
 
 function organize(editor: vscode.TextEditor | undefined, useRegions: boolean, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean)
 {
-    if (!editor)
-    {
-        return;
-    }
     let edit: vscode.WorkspaceEdit;
     let start: vscode.Position;
     let end: vscode.Position;
     let range: vscode.Range;
 
-    let sourceCode = editor.document.getText();
-    let fileName = editor.document.fileName;
+    if (editor)
+    {
+        let sourceCode = editor.document.getText();
+        let fileName = editor.document.fileName;
 
-    sourceCode = organizeCode(sourceCode, fileName, useRegions, addPublicModifierIfMissing, addRegionIdentation, addRegionCaptionToRegionEnd, groupElementsWithDecorators);
+        sourceCode = organizeCode(sourceCode, fileName, useRegions, addPublicModifierIfMissing, addRegionIdentation, addRegionCaptionToRegionEnd, groupElementsWithDecorators);
 
-    start = new vscode.Position(0, 0);
-    end = new vscode.Position(editor.document.lineCount, editor.document.lineAt(editor.document.lineCount - 1).text.length);
-    range = new vscode.Range(start, end);
+        start = new vscode.Position(0, 0);
+        end = new vscode.Position(editor.document.lineCount, editor.document.lineAt(editor.document.lineCount - 1).text.length);
+        range = new vscode.Range(start, end);
 
-    edit = new vscode.WorkspaceEdit();
-    edit.replace(editor.document.uri, range, sourceCode);
+        edit = new vscode.WorkspaceEdit();
+        edit.replace(editor.document.uri, range, sourceCode);
 
-    return vscode.workspace.applyEdit(edit);
+        return vscode.workspace.applyEdit(edit);
+    }
 }
 
 function print(groups: any, sourceCode: string, start: number, end: number, identationLevel: number, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, identation: string, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean)
@@ -148,7 +147,7 @@ function print(groups: any, sourceCode: string, start: number, end: number, iden
                                 code = code.replace(`${node.name}:`, `public ${node.name}:`);
                                 code = code.replace(`${node.name} =`, `public ${node.name} =`);
                                 code = code.replace(`${node.name};`, `public ${node.name};`);
-
+                                code = code.replace(`${node.name}(`, `public ${node.name}(`);
                             }
                         }
                     }
@@ -220,7 +219,7 @@ function organizeCode(sourceCode: string, fileName: string, useRegions: boolean,
 
     let elements = new Transformer().analyzeSyntaxTree(sourceFile);
 
-    if (elements.filter(x => !(x instanceof UnknownNode)))
+    if (!elements.some(x => !(x instanceof UnknownNode)))
     {
         let imports = getImports(elements, groupElementsWithDecorators);
         let functions = getFunctions(elements, groupElementsWithDecorators);
