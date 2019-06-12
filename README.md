@@ -66,3 +66,9 @@ Extensions supports the following configuration options:
 * fixed issue with duplicated regions
 * addded grouping by decorator for all elements, not just properties when groupping by decorators
 * added a new line between group with decorators and group without decorators when groupping by decorators
+
+### 1.0.12
+
+* removed limitation where extension can be activated only when not in debug mode
+* fixed bug where redundant empty lines were not removed correctly
+* fix bug where public access modifier was not added to methods
