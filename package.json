@@ -2,7 +2,7 @@
     "name": "tsco",
     "displayName": "TypeScript Class Organizer",
     "description": "Groups and orders class members",
-    "version": "1.0.11",
+    "version": "1.0.12",
     "publisher": "aljazsim",
     "author": {
         "name": "aljazsim",
@@ -70,8 +70,7 @@
                 }
             }
         },
-        "commands": [
-            {
+        "commands": [{
                 "command": "tsco.organize",
                 "title": "Organize Current File",
                 "category": "TypeScript Class Organizer",
@@ -84,30 +83,24 @@
             }
         ],
         "menus": {
-            "editor/context": [
-                {
-                    "command": "tsco.organize",
-                    "group": "1_modification",
-                    "when": "editorTextFocus && editorLangId == typescript"
-                }
-            ]
-        },
-        "keybindings": [
-            {
+            "editor/context": [{
                 "command": "tsco.organize",
-                "key": "ctrl+shift+o",
-                "mac": "cmd+shift+o",
+                "group": "1_modification",
                 "when": "editorTextFocus && editorLangId == typescript"
-            }
-        ],
-        "languages": [
-            {
-                "id": "typescript",
-                "extensions": [
-                    ".ts"
-                ]
-            }
-        ]
+            }]
+        },
+        "keybindings": [{
+            "command": "tsco.organize",
+            "key": "ctrl+shift+o",
+            "mac": "cmd+shift+o",
+            "when": "editorTextFocus && editorLangId == typescript"
+        }],
+        "languages": [{
+            "id": "typescript",
+            "extensions": [
+                ".ts"
+            ]
+        }]
     },
     "main": "./out/extension",
     "scripts": {
