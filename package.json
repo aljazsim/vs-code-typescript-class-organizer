@@ -70,7 +70,8 @@
                 }
             }
         },
-        "commands": [{
+        "commands": [
+            {
                 "command": "tsco.organize",
                 "title": "Organize Current File",
                 "category": "TypeScript Class Organizer",
@@ -83,24 +84,30 @@
             }
         ],
         "menus": {
-            "editor/context": [{
-                "command": "tsco.organize",
-                "group": "1_modification",
-                "when": "editorTextFocus && editorLangId == typescript"
-            }]
-        },
-        "keybindings": [{
-            "command": "tsco.organize",
-            "key": "ctrl+shift+o",
-            "mac": "cmd+shift+o",
-            "when": "editorTextFocus && editorLangId == typescript"
-        }],
-        "languages": [{
-            "id": "typescript",
-            "extensions": [
-                ".ts"
+            "editor/context": [
+                {
+                    "command": "tsco.organize",
+                    "group": "1_modification",
+                    "when": "editorTextFocus && editorLangId == typescript"
+                }
             ]
-        }]
+        },
+        "keybindings": [
+            {
+                "command": "tsco.organize",
+                "key": "ctrl+shift+o",
+                "mac": "cmd+shift+o",
+                "when": "editorTextFocus && editorLangId == typescript"
+            }
+        ],
+        "languages": [
+            {
+                "id": "typescript",
+                "extensions": [
+                    ".ts"
+                ]
+            }
+        ]
     },
     "main": "./out/extension",
     "scripts": {
@@ -112,12 +119,12 @@
     },
     "devDependencies": {
         "@types/mocha": "5.2.7",
-        "@types/node": "12.0.8",
-        "eslint": "5.16.0",
-        "tslint": "5.17.0",
-        "vscode": "1.1.34"
+        "@types/node": "12.6.8",
+        "eslint": "6.1.0",
+        "tslint": "5.18.0",
+        "vscode": "1.1.35"
     },
     "dependencies": {
-        "typescript": "3.5.1"
+        "typescript": "3.5.3"
     }
 }
