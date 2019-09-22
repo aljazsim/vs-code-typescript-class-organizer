@@ -119,12 +119,12 @@
     },
     "devDependencies": {
         "@types/mocha": "5.2.7",
-        "@types/node": "12.6.8",
-        "eslint": "6.1.0",
+        "@types/node": "12.7.5",
+        "eslint": "6.4.0",
         "tslint": "5.20.0",
-        "vscode": "1.1.35"
+        "vscode": "1.1.36"
     },
     "dependencies": {
-        "typescript": "3.5.3"
+        "typescript": "3.6.3"
     }
 }
