@@ -48,6 +48,16 @@
                     "default": true,
                     "description": "Adds regions when organizing a class."
                 },
+                "tsco.addRowNumberInRegionName": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Add region children count on title."
+                },
+                "tsco.accessorsBeforeCtor": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "during organization : put accessor before ctor."
+                },
                 "tsco.addPublicModifierIfMissing": {
                     "type": "boolean",
                     "default": true,
