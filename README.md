@@ -76,3 +76,8 @@ Extensions supports the following configuration options:
 * removed limitation where extension can be activated only when not in debug mode
 * fixed bug where redundant empty lines were not removed correctly
 * fix bug where public access modifier was not added to methods
+
+### 1.0.13
+
+* added option of adding number of members within a region (courtisy of [pillont](https://github.com/pillont))
+* added option to output accessors before constructor (courtisy of [pillont](https://github.com/pillont))
