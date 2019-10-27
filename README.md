@@ -77,7 +77,7 @@ Extensions supports the following configuration options:
 * fixed bug where redundant empty lines were not removed correctly
 * fix bug where public access modifier was not added to methods
 
-### 1.0.13
+### 1.0.14
 
-* added option of adding number of members within a region (courtisy of [pillont](https://github.com/pillont))
-* added option to output accessors before constructor (courtisy of [pillont](https://github.com/pillont))
+* added option of adding number of members within a region (courtesy of [pillont](https://github.com/pillont))
+* added option to output accessors before constructor (courtesy of [pillont](https://github.com/pillont))
