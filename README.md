@@ -33,11 +33,15 @@ You can invoke command "TypeScript Class Organizer: Organize Current File" by us
 
 Extensions supports the following configuration options:
 
+
+
 * `tsco.useRegions`: When true regions surounding member groups are added. True by default.
 * `tsco.addPublicModifierIfMissing`: When true public access modifier is added. True by default.
 * `tsco.addRegionIdentation`: When true regions are idented with class members. True by default.
 * `tsco.addRegionCaptionToRegionEnd`: When true region caption is added to region end as well. True by default.
 * `tsco.groupPropertiesWithDecorators`: When true properties with decorators will come first. False by default.
+* `tsco.addRowNumberInRegionName`: When true region children count added on title. True by default.
+* `tsco.accessorsBeforeCtor`: When true put accessor before ctor during organization. False by default.
 
 ## Change log
 

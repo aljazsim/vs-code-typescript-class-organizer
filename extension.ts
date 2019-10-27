@@ -27,6 +27,15 @@ function getAddPublicModifierIfMissing(): boolean
     return vscode.workspace.getConfiguration("tsco").get<boolean>("addPublicModifierIfMissing") === true;
 }
 
+function getAccessorsBeforeCtor(): boolean
+{
+    return vscode.workspace.getConfiguration("tsco").get<boolean>("accessorsBeforeCtor") === true;
+}
+
+function getAddRowNumberInRegionName(): boolean
+{
+    return vscode.workspace.getConfiguration("tsco").get<boolean>("addRowNumberInRegionName") === true;
+}
 function getAddRegionIdentationConfig(): boolean
 {
     return vscode.workspace.getConfiguration("tsco").get<boolean>("addRegionIdentation") === true;
@@ -122,7 +131,11 @@ function print(groups: any, sourceCode: string, start: number, end: number, iden
             if (group.regions)
             {
                 members += newLine;
-                members += `${addRegionIdentation ? identation : ""}// #region ${group.description} (${count})${newLine}`;
+                members += `${addRegionIdentation ? identation : ""}// #region ${group.description}`;
+                if(getAddRowNumberInRegionName()) {
+                    members += ` (${count})`;
+                }
+                members += newLine;
             }
 
             members += newLine;
@@ -187,7 +200,11 @@ function print(groups: any, sourceCode: string, start: number, end: number, iden
 
                 if (addRegionCaptionToRegionEnd)
                 {
-                    members += `${addRegionIdentation ? identation : ""}// #endregion ${group.description} (${count})${newLine}`;
+                    members += `${addRegionIdentation ? identation : ""}// #endregion ${group.description}`;
+                    if(getAddRowNumberInRegionName()) {
+                        members += ` (${count})`;
+                    }
+                    members += newLine;
                 }
                 else
                 {
@@ -303,18 +320,7 @@ function organizeCode(sourceCode: string, fileName: string, useRegions: boolean,
 
                 { description: "Constructors", groups: [{ nodes: classNode.getConstructors(groupElementsWithDecorators) }], regions: true },
 
-                { description: "Public Static Accessors", groups: [{ nodes: classNode.getPublicStaticGettersAndSetters(groupElementsWithDecorators) }], regions: true },
-                { description: "Public Accessors", groups: [{ nodes: classNode.getPublicGettersAndSetters(groupElementsWithDecorators) }], regions: true },
-                { description: "Public Abstract Accessors", groups: [{ nodes: classNode.getPublicAbstractGettersAndSetters(groupElementsWithDecorators) }], regions: true },
-
-                { description: "Protected Static Accessors", groups: [{ nodes: classNode.getProtectedStaticGettersAndSetters(groupElementsWithDecorators) }], regions: true },
-                { description: "Protected Accessors", groups: [{ nodes: classNode.getProtectedGettersAndSetters(groupElementsWithDecorators) }], regions: true },
-                { description: "Protected Abstract Accessors", groups: [{ nodes: classNode.getProtectedAbstractGettersAndSetters(groupElementsWithDecorators) }], regions: true },
-
-                { description: "Private Static Accessors", groups: [{ nodes: classNode.getPrivateStaticGettersAndSetters(groupElementsWithDecorators) }], regions: true },
-                { description: "Private Accessors", groups: [{ nodes: classNode.getPrivateGettersAndSetters(groupElementsWithDecorators) }], regions: true },
-                { description: "Private Abstract Accessors", groups: [{ nodes: classNode.getPrivateAbstractGettersAndSetters(groupElementsWithDecorators) }], regions: true },
-
+               
                 { description: "Public Static Indexes", groups: [{ nodes: classNode.getPublicStaticIndexes(groupElementsWithDecorators) }], regions: true },
                 { description: "Public Indexes", groups: [{ nodes: classNode.getPublicIndexes(groupElementsWithDecorators) }], regions: true },
                 { description: "Public Abstract Indexes", groups: [{ nodes: classNode.getPublicAbstractIndexes(groupElementsWithDecorators) }], regions: true },
@@ -340,6 +346,12 @@ function organizeCode(sourceCode: string, fileName: string, useRegions: boolean,
                 { description: "Private Abstract Methods", groups: [{ nodes: classNode.getPrivateAbstractMethods(groupElementsWithDecorators) }], regions: true },
             ];
 
+            const constructorIndex=1;
+            let accessorIndex = getAccessorsBeforeCtor()
+                ? constructorIndex
+                : constructorIndex +1;
+
+            putAccessorAt(groups, classNode, groupElementsWithDecorators, accessorIndex);
             sourceCode = print(groups, sourceCode, classNode.membersStart, classNode.membersEnd, 1, addPublicModifierIfMissing, addRegionIdentation, identation, addRegionCaptionToRegionEnd, groupElementsWithDecorators);
         }
     }
@@ -351,4 +363,27 @@ function organizeCode(sourceCode: string, fileName: string, useRegions: boolean,
 
     sourceCode = formatLines(sourceCode);
     return sourceCode;
+}
+
+
+function putAccessorAt(groups:any,classNode:ClassNode, groupElementsWithDecorators: boolean, index: number){
+    
+    var accessorsItems = [ 
+        { description: "Public Static Accessors", groups: [{ nodes: classNode.getPublicStaticGettersAndSetters(groupElementsWithDecorators) }], regions: true },
+        { description: "Public Accessors", groups: [{ nodes: classNode.getPublicGettersAndSetters(groupElementsWithDecorators) }], regions: true },
+        { description: "Public Abstract Accessors", groups: [{ nodes: classNode.getPublicAbstractGettersAndSetters(groupElementsWithDecorators) }], regions: true },
+
+        { description: "Protected Static Accessors", groups: [{ nodes: classNode.getProtectedStaticGettersAndSetters(groupElementsWithDecorators) }], regions: true },
+        { description: "Protected Accessors", groups: [{ nodes: classNode.getProtectedGettersAndSetters(groupElementsWithDecorators) }], regions: true },
+        { description: "Protected Abstract Accessors", groups: [{ nodes: classNode.getProtectedAbstractGettersAndSetters(groupElementsWithDecorators) }], regions: true },
+
+        { description: "Private Static Accessors", groups: [{ nodes: classNode.getPrivateStaticGettersAndSetters(groupElementsWithDecorators) }], regions: true },
+        { description: "Private Accessors", groups: [{ nodes: classNode.getPrivateGettersAndSetters(groupElementsWithDecorators) }], regions: true },
+        { description: "Private Abstract Accessors", groups: [{ nodes: classNode.getPrivateAbstractGettersAndSetters(groupElementsWithDecorators) }], regions: true },
+    ];
+
+    (accessorsItems).forEach(element => {
+        groups.splice(index, 0, element)
+        index++;
+    });
 }
