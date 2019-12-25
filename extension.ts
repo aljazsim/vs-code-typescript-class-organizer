@@ -1,3 +1,5 @@
+import { ElementNodeGroup } from "./src/element-node-group";
+import { ElementNodeGroupConfiguration } from "./src/element-node-group-configuration";
 import { ClassNode } from "./src/elements/class-node";
 import { GetterNode } from "./src/elements/getter-node";
 import { InterfaceNode } from "./src/elements/interface-node";
@@ -5,6 +7,7 @@ import { MethodNode } from "./src/elements/method-node";
 import { PropertyNode } from "./src/elements/property-node";
 import { SetterNode } from "./src/elements/setter-node";
 import { UnknownNode } from "./src/elements/unknown-node";
+import { MemberType } from "./src/member-type";
 import { formatLines, removeRegions } from "./src/regions";
 import { Transformer } from "./src/transformer";
 import { compareNumbers, getClasses, getEnums, getFunctions, getImports, getInterfaces, getTypeAliases } from "./src/utils";
@@ -13,8 +16,8 @@ import * as vscode from "vscode";
 
 export function activate(context: vscode.ExtensionContext)
 {
-    context.subscriptions.push(vscode.commands.registerCommand('tsco.organize', () => organize(vscode.window.activeTextEditor, getUseRegionsConfig(), getAddPublicModifierIfMissing(), getAddRegionIdentationConfig(), getAddRegionCaptionToRegionEnd(), getGroupPropertiesByDecorators())));
-    context.subscriptions.push(vscode.commands.registerCommand('tsco.organizeAll', () => organizeAll(getUseRegionsConfig(), getAddPublicModifierIfMissing(), getAddRegionIdentationConfig(), getAddRegionCaptionToRegionEnd(), getGroupPropertiesByDecorators())));
+    context.subscriptions.push(vscode.commands.registerCommand('tsco.organize', () => organize(vscode.window.activeTextEditor, getMemberOrderConfig(), getUseRegionsConfig(), getAddAccessorsBeforeCtor(), getAddPublicModifierIfMissing(), getAddRegionIdentationConfig(), getAddRegionCaptionToRegionEnd(), getGroupPropertiesByDecorators())));
+    context.subscriptions.push(vscode.commands.registerCommand('tsco.organizeAll', () => organizeAll(getMemberOrderConfig(), getUseRegionsConfig(), getAddAccessorsBeforeCtor(), getAddPublicModifierIfMissing(), getAddRegionIdentationConfig(), getAddRegionCaptionToRegionEnd(), getGroupPropertiesByDecorators())));
 }
 
 function getUseRegionsConfig(): boolean
@@ -27,7 +30,7 @@ function getAddPublicModifierIfMissing(): boolean
     return vscode.workspace.getConfiguration("tsco").get<boolean>("addPublicModifierIfMissing") === true;
 }
 
-function getAccessorsBeforeCtor(): boolean
+function getAddAccessorsBeforeCtor(): boolean
 {
     return vscode.workspace.getConfiguration("tsco").get<boolean>("accessorsBeforeCtor") === true;
 }
@@ -49,6 +52,35 @@ function getAddRegionCaptionToRegionEnd(): boolean
 function getGroupPropertiesByDecorators(): boolean
 {
     return vscode.workspace.getConfiguration("tsco").get<boolean>("groupPropertiesWithDecorators") === true;
+}
+
+function getMemberOrderConfig(): ElementNodeGroupConfiguration[]
+{
+    let memberTypeOrderConfiguration = vscode.workspace.getConfiguration("tsco").get<ElementNodeGroupConfiguration[]>("memberOrder") ?? [];
+    let memberTypeOrder: ElementNodeGroupConfiguration[] = [];
+    let defaultMemberTypeOrder = Object.keys(MemberType).map(x => MemberType[x as keyof typeof MemberType]); // same order as in the enum
+
+    // add member type order from configuration (prevent duplicates)
+    memberTypeOrderConfiguration
+        .filter(x => !memberTypeOrder.some(y => y.memberType === x.memberType))
+        .forEach(x => memberTypeOrder.push(x));
+
+    // add missing member types (prevent duplicates)
+    defaultMemberTypeOrder
+        .filter(x => !memberTypeOrder.some(y => y.memberType === x))
+        .forEach(x =>
+        {
+            let defaultElementNodeGroupConfiguration = new ElementNodeGroupConfiguration();
+
+            defaultElementNodeGroupConfiguration.caption = MemberType[x];
+            defaultElementNodeGroupConfiguration.subGroups = []; // no nested groups
+            defaultElementNodeGroupConfiguration.memberType = x;
+            defaultElementNodeGroupConfiguration.isRegion = true; // self contained region
+
+            memberTypeOrder.push(defaultElementNodeGroupConfiguration);
+        });
+
+    return memberTypeOrder;
 }
 
 function getIdentation(sourceCode: string): string
@@ -76,16 +108,16 @@ function getIdentation(sourceCode: string): string
     return twoSpaces;
 }
 
-function organizeAll(useRegions: boolean, addPublicModifierIfMissing: boolean, addIdentation: boolean, addRegionCaptionToRegionEnd: boolean, groupPropertiesWithDecorators: boolean)
+function organizeAll(memberTypeOrder: ElementNodeGroupConfiguration[], useRegions: boolean, addAccessorsBeforeCtor: boolean, addPublicModifierIfMissing: boolean, addIdentation: boolean, addRegionCaptionToRegionEnd: boolean, groupPropertiesWithDecorators: boolean)
 {
     vscode.workspace.findFiles("**/*.ts", "**/node_modules/**")
         .then(typescriptFiles => typescriptFiles.forEach(typescriptFile => vscode.workspace.openTextDocument(typescriptFile)
             .then(document => vscode.window.showTextDocument(document)
-                .then(editor => organize(editor, useRegions, addPublicModifierIfMissing, addIdentation, addRegionCaptionToRegionEnd, groupPropertiesWithDecorators) !== null))));
+                .then(editor => organize(editor, memberTypeOrder, addAccessorsBeforeCtor, useRegions, addPublicModifierIfMissing, addIdentation, addRegionCaptionToRegionEnd, groupPropertiesWithDecorators) !== null))));
 
 }
 
-function organize(editor: vscode.TextEditor | undefined, useRegions: boolean, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean)
+function organize(editor: vscode.TextEditor | undefined, memberTypeOrder: ElementNodeGroupConfiguration[], useRegions: boolean, addAccessorsBeforeCtor: boolean, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean)
 {
     let edit: vscode.WorkspaceEdit;
     let start: vscode.Position;
@@ -97,7 +129,7 @@ function organize(editor: vscode.TextEditor | undefined, useRegions: boolean, ad
         let sourceCode = editor.document.getText();
         let fileName = editor.document.fileName;
 
-        sourceCode = organizeCode(sourceCode, fileName, useRegions, addPublicModifierIfMissing, addRegionIdentation, addRegionCaptionToRegionEnd, groupElementsWithDecorators);
+        sourceCode = organizeTypes(sourceCode, fileName, memberTypeOrder, useRegions, addAccessorsBeforeCtor, addPublicModifierIfMissing, addRegionIdentation, addRegionCaptionToRegionEnd, groupElementsWithDecorators);
 
         start = new vscode.Position(0, 0);
         end = new vscode.Position(editor.document.lineCount, editor.document.lineAt(editor.document.lineCount - 1).text.length);
@@ -110,7 +142,7 @@ function organize(editor: vscode.TextEditor | undefined, useRegions: boolean, ad
     }
 }
 
-function print(groups: any, sourceCode: string, start: number, end: number, identationLevel: number, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, identation: string, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean)
+function print(groups: ElementNodeGroup[], sourceCode: string, start: number, end: number, identationLevel: number, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, identation: string, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean)
 {
     let sourceCode2: string;
     let count;
@@ -121,18 +153,19 @@ function print(groups: any, sourceCode: string, start: number, end: number, iden
     {
         count = 0;
 
-        for (let group2 of group.groups)
+        for (let group2 of group.nodeSubGroups)
         {
             count += group2.nodes.length;
         }
 
         if (count > 0)
         {
-            if (group.regions)
+            if (group.isRegion)
             {
                 members += newLine;
-                members += `${addRegionIdentation ? identation : ""}// #region ${group.description}`;
-                if(getAddRowNumberInRegionName()) {
+                members += `${addRegionIdentation ? identation : ""}// #region ${group.caption}`;
+                if (getAddRowNumberInRegionName())
+                {
                     members += ` (${count})`;
                 }
                 members += newLine;
@@ -140,7 +173,7 @@ function print(groups: any, sourceCode: string, start: number, end: number, iden
 
             members += newLine;
 
-            for (let group2 of group.groups)
+            for (let group2 of group.nodeSubGroups)
             {
                 for (let i = 0; i < group2.nodes.length; i++)
                 {
@@ -194,14 +227,15 @@ function print(groups: any, sourceCode: string, start: number, end: number, iden
                 members += newLine;
             }
 
-            if (group.regions)
+            if (group.isRegion)
             {
                 members += newLine;
 
                 if (addRegionCaptionToRegionEnd)
                 {
-                    members += `${addRegionIdentation ? identation : ""}// #endregion ${group.description}`;
-                    if(getAddRowNumberInRegionName()) {
+                    members += `${addRegionIdentation ? identation : ""}// #endregion ${group.caption}`;
+                    if (getAddRowNumberInRegionName())
+                    {
                         members += ` (${count})`;
                     }
                     members += newLine;
@@ -225,7 +259,7 @@ function print(groups: any, sourceCode: string, start: number, end: number, iden
     return sourceCode2.trimLeft();
 }
 
-function organizeCode(sourceCode: string, fileName: string, useRegions: boolean, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean)
+function organizeTypes(sourceCode: string, fileName: string, memberTypeOrder: ElementNodeGroupConfiguration[], useRegions: boolean, addAccessorsBeforeCtor: boolean, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean)
 {
     sourceCode = removeRegions(sourceCode);
 
@@ -246,12 +280,12 @@ function organizeCode(sourceCode: string, fileName: string, useRegions: boolean,
         let enums = getEnums(elements, groupElementsWithDecorators);
 
         let groups = [
-            { description: "Imports", groups: [{ nodes: imports }], regions: false },
-            { description: "Type aliases", groups: [{ nodes: typeAliases }], regions: true },
-            { description: "Interfaces", groups: [{ nodes: interfaces }], regions: true },
-            { description: "Classes", groups: [{ nodes: classes }], regions: true },
-            { description: "Enums", groups: [{ nodes: enums }], regions: true },
-            { description: "Functions", groups: [{ nodes: functions }], regions: true }
+            new ElementNodeGroup("Imports", [], imports, false),
+            new ElementNodeGroup("Type aliases", [], typeAliases, true),
+            new ElementNodeGroup("Interfaces", [], interfaces, true),
+            new ElementNodeGroup("Classes", [], classes, true),
+            new ElementNodeGroup("Enums", [], enums, true),
+            new ElementNodeGroup("Functions", [], functions, true)
         ];
 
         if (functions.length + typeAliases.length + interfaces.length + classes.length + enums.length > 1 ||
@@ -271,85 +305,17 @@ function organizeCode(sourceCode: string, fileName: string, useRegions: boolean,
         if (element instanceof InterfaceNode)
         {
             let interfaceNode = <InterfaceNode>element;
-            let groups = [
-                {
-                    description: "Properties",
-                    groups: [
-                        { nodes: interfaceNode.getConstProperties(groupElementsWithDecorators) },
-                        { nodes: interfaceNode.getReadOnlyProperties(groupElementsWithDecorators) },
-                        { nodes: interfaceNode.getProperties(groupElementsWithDecorators) }
-                    ],
-                    regions: true
-                },
-                { description: "Indexes", groups: [{ nodes: interfaceNode.getIndexes(groupElementsWithDecorators) }], regions: true },
-                { description: "Methods", groups: [{ nodes: interfaceNode.getMethods(groupElementsWithDecorators) }], regions: true }
-            ];
+            let groups = organizeInterfaceMembers(interfaceNode, memberTypeOrder, groupElementsWithDecorators);
 
             sourceCode = print(groups, sourceCode, interfaceNode.membersStart, interfaceNode.membersEnd, 1, false, addRegionIdentation, identation, addRegionCaptionToRegionEnd, groupElementsWithDecorators);
         }
         else if (element instanceof ClassNode)
         {
             let classNode = <ClassNode>element;
-            let groups = [
-                {
-                    description: "Properties",
-                    groups: [
-                        { nodes: classNode.getPrivateStaticConstProperties(groupElementsWithDecorators) },
-                        { nodes: classNode.getPrivateConstProperties(groupElementsWithDecorators) },
-                        { nodes: classNode.getPrivateStaticReadOnlyProperties(groupElementsWithDecorators) },
-                        { nodes: classNode.getPrivateReadOnlyProperties(groupElementsWithDecorators) },
-                        { nodes: classNode.getPrivateStaticProperties(groupElementsWithDecorators) },
-                        { nodes: classNode.getPrivateProperties(groupElementsWithDecorators) },
+            let groups = organizeClassMembers(classNode, memberTypeOrder, groupElementsWithDecorators);
 
-                        { nodes: classNode.getProtectedStaticConstProperties(groupElementsWithDecorators) },
-                        { nodes: classNode.getProtectedConstProperties(groupElementsWithDecorators) },
-                        { nodes: classNode.getProtectedStaticReadOnlyProperties(groupElementsWithDecorators) },
-                        { nodes: classNode.getProtectedReadOnlyProperties(groupElementsWithDecorators) },
-                        { nodes: classNode.getProtectedStaticProperties(groupElementsWithDecorators) },
-                        { nodes: classNode.getProtectedProperties(groupElementsWithDecorators) },
-
-                        { nodes: classNode.getPublicStaticConstProperties(groupElementsWithDecorators) },
-                        { nodes: classNode.getPublicConstProperties(groupElementsWithDecorators) },
-                        { nodes: classNode.getPublicStaticReadOnlyProperties(groupElementsWithDecorators) },
-                        { nodes: classNode.getPublicReadOnlyProperties(groupElementsWithDecorators) },
-                        { nodes: classNode.getPublicStaticProperties(groupElementsWithDecorators) },
-                        { nodes: classNode.getPublicProperties(groupElementsWithDecorators) }
-                    ],
-                    regions: true
-                },
-
-                { description: "Constructors", groups: [{ nodes: classNode.getConstructors(groupElementsWithDecorators) }], regions: true },
-
-               
-                { description: "Public Static Indexes", groups: [{ nodes: classNode.getPublicStaticIndexes(groupElementsWithDecorators) }], regions: true },
-                { description: "Public Indexes", groups: [{ nodes: classNode.getPublicIndexes(groupElementsWithDecorators) }], regions: true },
-                { description: "Public Abstract Indexes", groups: [{ nodes: classNode.getPublicAbstractIndexes(groupElementsWithDecorators) }], regions: true },
-
-                { description: "Protected Static Indexes", groups: [{ nodes: classNode.getProtectedStaticIndexes(groupElementsWithDecorators) }], regions: true },
-                { description: "Protected Indexes", groups: [{ nodes: classNode.getProtectedIndexes(groupElementsWithDecorators) }], regions: true },
-                { description: "Protected Abstract Indexes", groups: [{ nodes: classNode.getProtectedAbstractIndexes(groupElementsWithDecorators) }], regions: true },
-
-                { description: "Private Static Indexes", groups: [{ nodes: classNode.getPrivateStaticIndexes(groupElementsWithDecorators) }], regions: true },
-                { description: "Private Indexes", groups: [{ nodes: classNode.getPrivateIndexes(groupElementsWithDecorators) }], regions: true },
-                { description: "Private Abstract Indexes", groups: [{ nodes: classNode.getPrivateAbstractIndexes(groupElementsWithDecorators) }], regions: true },
-
-                { description: "Public Static Methods", groups: [{ nodes: classNode.getPublicStaticMethods(groupElementsWithDecorators) }], regions: true },
-                { description: "Public Methods", groups: [{ nodes: classNode.getPublicMethods(groupElementsWithDecorators) }], regions: true },
-                { description: "Public Abstract Methods", groups: [{ nodes: classNode.getPublicAbstractMethods(groupElementsWithDecorators) }], regions: true },
-
-                { description: "Protected Static Methods", groups: [{ nodes: classNode.getProtectedStaticMethods(groupElementsWithDecorators) }], regions: true },
-                { description: "Protected Methods", groups: [{ nodes: classNode.getProtectedMethods(groupElementsWithDecorators) }], regions: true },
-                { description: "Protected Abstract Methods", groups: [{ nodes: classNode.getProtectedAbstractMethods(groupElementsWithDecorators) }], regions: true },
-
-                { description: "Private Static Methods", groups: [{ nodes: classNode.getPrivateStaticMethods(groupElementsWithDecorators) }], regions: true },
-                { description: "Private Methods", groups: [{ nodes: classNode.getPrivateMethods(groupElementsWithDecorators) }], regions: true },
-                { description: "Private Abstract Methods", groups: [{ nodes: classNode.getPrivateAbstractMethods(groupElementsWithDecorators) }], regions: true },
-            ];
-
-            const constructorIndex=1;
-            let accessorIndex = getAccessorsBeforeCtor()
-                ? constructorIndex
-                : constructorIndex +1;
+            const constructorIndex = 1;
+            let accessorIndex = addAccessorsBeforeCtor ? constructorIndex : constructorIndex + 1;
 
             putAccessorAt(groups, classNode, groupElementsWithDecorators, accessorIndex);
             sourceCode = print(groups, sourceCode, classNode.membersStart, classNode.membersEnd, 1, addPublicModifierIfMissing, addRegionIdentation, identation, addRegionCaptionToRegionEnd, groupElementsWithDecorators);
@@ -365,10 +331,209 @@ function organizeCode(sourceCode: string, fileName: string, useRegions: boolean,
     return sourceCode;
 }
 
+function organizeInterfaceMembers(interfaceNode: InterfaceNode, memberTypeOrder: ElementNodeGroupConfiguration[], groupElementsWithDecorators: boolean)
+{
+    let members: ElementNodeGroup[] = [];
 
-function putAccessorAt(groups:any,classNode:ClassNode, groupElementsWithDecorators: boolean, index: number){
-    
-    var accessorsItems = [ 
+    for (const memberType of memberTypeOrder)
+    {
+        if (memberType.subGroups &&
+            memberType.subGroups.length > 0 &&
+            memberType.memberType === null)
+        {
+            // nested group
+            members.push(new ElementNodeGroup(memberType.caption, organizeInterfaceMembers(interfaceNode, memberType.subGroups, groupElementsWithDecorators), [], memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.publicConstProperties)
+        {
+            // public properties
+            members.push(new ElementNodeGroup(memberType.caption, [], interfaceNode.getConstProperties(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.publicIndexes)
+        {
+            // public indexes
+            members.push(new ElementNodeGroup(memberType.caption, [], interfaceNode.getIndexes(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.publicMethods)
+        {
+            // public methods
+            members.push(new ElementNodeGroup(memberType.caption, [], interfaceNode.getMethods(groupElementsWithDecorators), memberType.isRegion));
+        }
+    }
+
+    return members;
+}
+
+function organizeClassMembers(classNode: ClassNode, memberTypeOrder: ElementNodeGroupConfiguration[], groupElementsWithDecorators: boolean): ElementNodeGroup[]
+{
+    let members: ElementNodeGroup[] = [];
+
+    for (const memberType of memberTypeOrder)
+    {
+        if (memberType.subGroups &&
+            memberType.subGroups.length > 0 &&
+            memberType.memberType === null)
+        {
+            // nested group
+            members.push(new ElementNodeGroup(memberType.caption, organizeClassMembers(classNode, memberType.subGroups, groupElementsWithDecorators), [], memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.privateStaticConstProperties)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPrivateStaticConstProperties(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.privateConstProperties)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPrivateConstProperties(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.privateStaticReadOnlyProperties)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPrivateStaticReadOnlyProperties(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.privateReadOnlyProperties)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPrivateReadOnlyProperties(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.privateStaticProperties)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPrivateStaticProperties(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.privateProperties)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPrivateProperties(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.protectedStaticConstProperties)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getProtectedStaticConstProperties(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.protectedConstProperties)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getProtectedConstProperties(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.protectedStaticReadOnlyProperties)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getProtectedStaticReadOnlyProperties(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.protectedReadOnlyProperties)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getProtectedReadOnlyProperties(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.protectedStaticProperties)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getProtectedStaticProperties(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.protectedProperties)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getProtectedProperties(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.publicStaticConstProperties)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPublicStaticConstProperties(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.publicConstProperties)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPublicConstProperties(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.publicStaticReadOnlyProperties)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPublicStaticReadOnlyProperties(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.publicReadOnlyProperties)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPublicReadOnlyProperties(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.publicStaticProperties)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPublicStaticProperties(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.publicProperties)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPublicProperties(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.constructors)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getConstructors(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.publicStaticIndexes)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPublicStaticIndexes(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.publicIndexes)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPublicIndexes(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.publicAbstractIndexes)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPublicAbstractIndexes(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.protectedStaticIndexes)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getProtectedStaticIndexes(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.protectedIndexes)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getProtectedIndexes(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.protectedAbstractIndexes)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getProtectedAbstractIndexes(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.privateStaticIndexes)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPrivateStaticIndexes(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.privateIndexes)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPrivateIndexes(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.privateAbstractIndexes)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPrivateAbstractIndexes(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.publicStaticMethods)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPublicStaticMethods(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.publicMethods)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPublicMethods(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.publicAbstractMethods)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPublicAbstractMethods(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.protectedStaticMethods)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getProtectedStaticMethods(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.protectedMethods)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getProtectedMethods(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.protectedAbstractMethods)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getProtectedAbstractMethods(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.privateStaticMethods)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPrivateStaticMethods(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.privateMethods)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPrivateMethods(groupElementsWithDecorators), memberType.isRegion));
+        }
+        else if (memberType.memberType === MemberType.privateAbstractMethods)
+        {
+            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPrivateAbstractMethods(groupElementsWithDecorators), memberType.isRegion));
+        }
+    }
+
+    return members;
+}
+
+function putAccessorAt(groups: any, classNode: ClassNode, groupElementsWithDecorators: boolean, index: number)
+{
+
+    var accessorsItems = [
         { description: "Public Static Accessors", groups: [{ nodes: classNode.getPublicStaticGettersAndSetters(groupElementsWithDecorators) }], regions: true },
         { description: "Public Accessors", groups: [{ nodes: classNode.getPublicGettersAndSetters(groupElementsWithDecorators) }], regions: true },
         { description: "Public Abstract Accessors", groups: [{ nodes: classNode.getPublicAbstractGettersAndSetters(groupElementsWithDecorators) }], regions: true },
@@ -382,8 +547,9 @@ function putAccessorAt(groups:any,classNode:ClassNode, groupElementsWithDecorato
         { description: "Private Abstract Accessors", groups: [{ nodes: classNode.getPrivateAbstractGettersAndSetters(groupElementsWithDecorators) }], regions: true },
     ];
 
-    (accessorsItems).forEach(element => {
-        groups.splice(index, 0, element)
+    (accessorsItems).forEach(element =>
+    {
+        groups.splice(index, 0, element);
         index++;
     });
 }

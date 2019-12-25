@@ -77,6 +77,310 @@
                     "type": "boolean",
                     "default": false,
                     "description": "When true properties with decorators will come first."
+                },
+                "tsco.memberOrder": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "title": "member group",
+                        "properties": {
+                            "caption": {
+                                "type": "string",
+                                "description": "Group caption (outputed in the region name if this goroup is a region and if using regions)."
+                            },
+                            "isRegion": {
+                                "type": "boolean",
+                                "description": "True if this group should be outputed as a region"
+                            },
+                            "memberType": {
+                                "type": "string",
+                                "description": "Type of the member (avoid using duplicated member types).",
+                                "enum": [
+                                    "privateStaticConstProperties",
+                                    "privateConstProperties",
+                                    "privateStaticReadOnlyProperties",
+                                    "privateReadOnlyProperties",
+                                    "privateStaticProperties",
+                                    "privateProperties",
+                                    "protectedStaticConstProperties",
+                                    "protectedConstProperties",
+                                    "protectedStaticReadOnlyProperties",
+                                    "protectedReadOnlyProperties",
+                                    "protectedStaticProperties",
+                                    "protectedProperties",
+                                    "publicStaticConstProperties",
+                                    "publicConstProperties",
+                                    "publicStaticReadOnlyProperties",
+                                    "publicReadOnlyProperties",
+                                    "publicStaticProperties",
+                                    "publicProperties",
+                                    "constructors",
+                                    "publicStaticIndexes",
+                                    "publicIndexes",
+                                    "publicAbstractIndexes",
+                                    "protectedStaticIndexes",
+                                    "protectedIndexes",
+                                    "protectedAbstractIndexes",
+                                    "privateStaticIndexes",
+                                    "privateIndexes",
+                                    "privateAbstractIndexes",
+                                    "publicStaticMethods",
+                                    "publicMethods",
+                                    "publicAbstractMethods",
+                                    "protectedStaticMethods",
+                                    "protectedMethods",
+                                    "protectedAbstractMethods",
+                                    "privateStaticMethods",
+                                    "privateMethods",
+                                    "privateAbstractMethods"
+                                ]
+                            },
+                            "subGroups": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "title": "member group",
+                                    "properties": {
+                                        "caption": {
+                                            "type": "string",
+                                            "description": "Group caption (outputed in the region name if this goroup is a region and if using regions)."
+                                        },
+                                        "isRegion": {
+                                            "type": "boolean",
+                                            "description": "True if this group should be outputed as a region"
+                                        },
+                                        "memberType": {
+                                            "type": "string",
+                                            "description": "Type of the member (avoid using duplicated member types).",
+                                            "enum": [
+                                                "privateStaticConstProperties",
+                                                "privateConstProperties",
+                                                "privateStaticReadOnlyProperties",
+                                                "privateReadOnlyProperties",
+                                                "privateStaticProperties",
+                                                "privateProperties",
+                                                "protectedStaticConstProperties",
+                                                "protectedConstProperties",
+                                                "protectedStaticReadOnlyProperties",
+                                                "protectedReadOnlyProperties",
+                                                "protectedStaticProperties",
+                                                "protectedProperties",
+                                                "publicStaticConstProperties",
+                                                "publicConstProperties",
+                                                "publicStaticReadOnlyProperties",
+                                                "publicReadOnlyProperties",
+                                                "publicStaticProperties",
+                                                "publicProperties",
+                                                "constructors",
+                                                "publicStaticIndexes",
+                                                "publicIndexes",
+                                                "publicAbstractIndexes",
+                                                "protectedStaticIndexes",
+                                                "protectedIndexes",
+                                                "protectedAbstractIndexes",
+                                                "privateStaticIndexes",
+                                                "privateIndexes",
+                                                "privateAbstractIndexes",
+                                                "publicStaticMethods",
+                                                "publicMethods",
+                                                "publicAbstractMethods",
+                                                "protectedStaticMethods",
+                                                "protectedMethods",
+                                                "protectedAbstractMethods",
+                                                "privateStaticMethods",
+                                                "privateMethods",
+                                                "privateAbstractMethods"
+                                            ]
+                                        },
+                                        "subGroups": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "title": "member group",
+                                                "properties": {
+                                                    "description": {
+                                                        "type": "string",
+                                                        "description": "Group description (outputed in the region name if this goroup is a region and if using regions)."
+                                                    }
+                                                }
+                                            },
+                                            "default": [],
+                                            "description": "Nested member type sub-groups."
+                                        }
+                                    }
+                                }
+                            },
+                            "default": [],
+                            "description": "Nested member type sub-groups."
+                        }
+                    },
+                    "default": [
+                        {
+                            "caption": "Properties",
+                            "isRegion": true,
+                            "subGroups": [
+                                {
+                                    "memberType": "privateStaticConstProperties"
+                                },
+                                {
+                                    "memberType": "privateConstProperties"
+                                },
+                                {
+                                    "memberType": "privateStaticReadOnlyProperties"
+                                },
+                                {
+                                    "memberType": "privateReadOnlyProperties"
+                                },
+                                {
+                                    "memberType": "privateStaticProperties"
+                                },
+                                {
+                                    "memberType": "privateProperties"
+                                },
+                                {
+                                    "memberType": "privateProperties"
+                                },
+                                {
+                                    "memberType": "protectedStaticConstProperties"
+                                },
+                                {
+                                    "memberType": "protectedConstProperties"
+                                },
+                                {
+                                    "memberType": "protectedStaticReadOnlyProperties"
+                                },
+                                {
+                                    "memberType": "protectedReadOnlyProperties"
+                                },
+                                {
+                                    "memberType": "protectedStaticProperties"
+                                },
+                                {
+                                    "memberType": "protectedProperties"
+                                },
+                                {
+                                    "memberType": "protectedProperties"
+                                },
+                                {
+                                    "memberType": "publicStaticConstProperties"
+                                },
+                                {
+                                    "memberType": "publicConstProperties"
+                                },
+                                {
+                                    "memberType": "publicStaticReadOnlyProperties"
+                                },
+                                {
+                                    "memberType": "publicReadOnlyProperties"
+                                },
+                                {
+                                    "memberType": "publicStaticProperties"
+                                },
+                                {
+                                    "memberType": "publicProperties"
+                                },
+                                {
+                                    "memberType": "publicProperties"
+                                }
+                            ]
+                        },
+                        {
+                            "caption": "Constructors",
+                            "isRegion": true,
+                            "memberType": "constructors"
+                        },
+                        {
+                            "caption": "Public Static Indexers",
+                            "isRegion": true,
+                            "memberType": "publicStaticIndexes"
+                        },
+                        {
+                            "caption": "Public Indexers",
+                            "isRegion": true,
+                            "memberType": "publicIndexes"
+                        },
+                        {
+                            "caption": "Public Abstract Indexers",
+                            "isRegion": true,
+                            "memberType": "publicAbstractIndexes"
+                        },
+                        {
+                            "caption": "Protected Static Indexers",
+                            "isRegion": true,
+                            "memberType": "protectedStaticIndexes"
+                        },
+                        {
+                            "caption": "Protected Indexers",
+                            "isRegion": true,
+                            "memberType": "protectedIndexes"
+                        },
+                        {
+                            "caption": "Protected Abstract Indexers",
+                            "isRegion": true,
+                            "memberType": "protectedAbstractIndexes"
+                        },
+                        {
+                            "caption": "Private Static Indexers",
+                            "isRegion": true,
+                            "memberType": "privateStaticIndexes"
+                        },
+                        {
+                            "caption": "Private Indexers",
+                            "isRegion": true,
+                            "memberType": "privateIndexes"
+                        },
+                        {
+                            "caption": "Private Abstract Indexers",
+                            "isRegion": true,
+                            "memberType": "privateAbstractIndexes"
+                        },
+                        {
+                            "caption": "Public Static Methods",
+                            "isRegion": true,
+                            "memberType": "publicStaticMethods"
+                        },
+                        {
+                            "caption": "Public Methods",
+                            "isRegion": true,
+                            "memberType": "publicMethods"
+                        },
+                        {
+                            "caption": "Public Abstract Methods",
+                            "isRegion": true,
+                            "memberType": "publicAbstractMethods"
+                        },
+                        {
+                            "caption": "Protected Static Methods",
+                            "isRegion": true,
+                            "memberType": "protectedStaticMethods"
+                        },
+                        {
+                            "caption": "Protected Methods",
+                            "isRegion": true,
+                            "memberType": "protectedMethods"
+                        },
+                        {
+                            "caption": "Protected Abstract Methods",
+                            "isRegion": true,
+                            "memberType": "protectedAbstractMethods"
+                        },
+                        {
+                            "caption": "Private Static Methods",
+                            "isRegion": true,
+                            "memberType": "privateStaticMethods"
+                        },
+                        {
+                            "caption": "Private Methods",
+                            "isRegion": true,
+                            "memberType": "privateMethods"
+                        },
+                        {
+                            "caption": "Private Abstract Methods",
+                            "isRegion": true,
+                            "memberType": "privateAbstractMethods"
+                        }
+                    ],
+                    "description": "Order of member types."
                 }
             }
         },
