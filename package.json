@@ -238,9 +238,6 @@
                                     "memberType": "privateProperties"
                                 },
                                 {
-                                    "memberType": "privateProperties"
-                                },
-                                {
                                     "memberType": "protectedStaticConstProperties"
                                 },
                                 {
@@ -259,9 +256,6 @@
                                     "memberType": "protectedProperties"
                                 },
                                 {
-                                    "memberType": "protectedProperties"
-                                },
-                                {
                                     "memberType": "publicStaticConstProperties"
                                 },
                                 {
@@ -275,9 +269,6 @@
                                 },
                                 {
                                     "memberType": "publicStaticProperties"
-                                },
-                                {
-                                    "memberType": "publicProperties"
                                 },
                                 {
                                     "memberType": "publicProperties"

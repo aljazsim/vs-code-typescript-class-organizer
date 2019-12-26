@@ -1,6 +1,7 @@
 import { ElementNodeGroup } from "./src/element-node-group";
 import { ElementNodeGroupConfiguration } from "./src/element-node-group-configuration";
 import { ClassNode } from "./src/elements/class-node";
+import { ElementNode } from "./src/elements/element-node";
 import { GetterNode } from "./src/elements/getter-node";
 import { InterfaceNode } from "./src/elements/interface-node";
 import { MethodNode } from "./src/elements/method-node";
@@ -16,8 +17,8 @@ import * as vscode from "vscode";
 
 export function activate(context: vscode.ExtensionContext)
 {
-    context.subscriptions.push(vscode.commands.registerCommand('tsco.organize', () => organize(vscode.window.activeTextEditor, getMemberOrderConfig(), getUseRegionsConfig(), getAddAccessorsBeforeCtor(), getAddPublicModifierIfMissing(), getAddRegionIdentationConfig(), getAddRegionCaptionToRegionEnd(), getGroupPropertiesByDecorators())));
-    context.subscriptions.push(vscode.commands.registerCommand('tsco.organizeAll', () => organizeAll(getMemberOrderConfig(), getUseRegionsConfig(), getAddAccessorsBeforeCtor(), getAddPublicModifierIfMissing(), getAddRegionIdentationConfig(), getAddRegionCaptionToRegionEnd(), getGroupPropertiesByDecorators())));
+    context.subscriptions.push(vscode.commands.registerCommand('tsco.organize', () => organize(vscode.window.activeTextEditor, getMemberOrderConfig(), getUseRegionsConfig(), getAddRowNumberInRegionName(), getAddAccessorsBeforeCtor(), getAddPublicModifierIfMissing(), getAddRegionIdentationConfig(), getAddRegionCaptionToRegionEnd(), getGroupPropertiesByDecorators())));
+    context.subscriptions.push(vscode.commands.registerCommand('tsco.organizeAll', () => organizeAll(getMemberOrderConfig(), getUseRegionsConfig(), getAddRowNumberInRegionName(), getAddAccessorsBeforeCtor(), getAddPublicModifierIfMissing(), getAddRegionIdentationConfig(), getAddRegionCaptionToRegionEnd(), getGroupPropertiesByDecorators())));
 }
 
 function getUseRegionsConfig(): boolean
@@ -56,18 +57,19 @@ function getGroupPropertiesByDecorators(): boolean
 
 function getMemberOrderConfig(): ElementNodeGroupConfiguration[]
 {
-    let memberTypeOrderConfiguration = vscode.workspace.getConfiguration("tsco").get<ElementNodeGroupConfiguration[]>("memberOrder") ?? [];
+    let memberTypeOrderConfiguration = vscode.workspace.getConfiguration("tsco").get<ElementNodeGroupConfiguration[]>("memberOrder") || [];
     let memberTypeOrder: ElementNodeGroupConfiguration[] = [];
-    let defaultMemberTypeOrder = Object.keys(MemberType).map(x => MemberType[x as keyof typeof MemberType]); // same order as in the enum
+    let defaultMemberTypeOrder = Object.keys(MemberType) // same order as in the enum
+        .filter(x => !isNaN(parseInt(x, 10))) // do not include int value
+        .map(x => <MemberType>parseInt(x, 10));
 
-    // add member type order from configuration (prevent duplicates)
-    memberTypeOrderConfiguration
-        .filter(x => !memberTypeOrder.some(y => y.memberType === x.memberType))
-        .forEach(x => memberTypeOrder.push(x));
+    // map member type order from configuration
+    memberTypeOrderConfiguration.forEach(x => memberTypeOrder.push(parseElementNodeGroupConfiguration(x)));
 
     // add missing member types (prevent duplicates)
     defaultMemberTypeOrder
-        .filter(x => !memberTypeOrder.some(y => y.memberType === x))
+        .filter(x => !memberTypeOrder.some(y => y.subGroups.length === 0 && y.memberType === x) &&
+            !memberTypeOrder.some(y => y.subGroups.length > 0 && y.subGroups.some(z => z.memberType === x)))
         .forEach(x =>
         {
             let defaultElementNodeGroupConfiguration = new ElementNodeGroupConfiguration();
@@ -81,6 +83,27 @@ function getMemberOrderConfig(): ElementNodeGroupConfiguration[]
         });
 
     return memberTypeOrder;
+}
+
+function parseElementNodeGroupConfiguration(x: any)
+{
+    let elementNodeGroupConfiguration = new ElementNodeGroupConfiguration();
+
+    elementNodeGroupConfiguration.caption = x.caption || null;
+    elementNodeGroupConfiguration.memberType = x.memberType ? MemberType[x.memberType as keyof typeof MemberType] : null;
+    elementNodeGroupConfiguration.isRegion = x.isRegion || false;
+    elementNodeGroupConfiguration.subGroups = [];
+
+    if (x.subGroups &&
+        x.subGroups.length > 0)
+    {
+        for (const subElementNodeGroupConfiguration of x.subGroups)
+        {
+            elementNodeGroupConfiguration.subGroups.push(parseElementNodeGroupConfiguration(subElementNodeGroupConfiguration));
+        }
+    }
+
+    return elementNodeGroupConfiguration;
 }
 
 function getIdentation(sourceCode: string): string
@@ -108,16 +131,16 @@ function getIdentation(sourceCode: string): string
     return twoSpaces;
 }
 
-function organizeAll(memberTypeOrder: ElementNodeGroupConfiguration[], useRegions: boolean, addAccessorsBeforeCtor: boolean, addPublicModifierIfMissing: boolean, addIdentation: boolean, addRegionCaptionToRegionEnd: boolean, groupPropertiesWithDecorators: boolean)
+function organizeAll(memberTypeOrder: ElementNodeGroupConfiguration[], useRegions: boolean, addRowNumberInRegionName: boolean, addAccessorsBeforeCtor: boolean, addPublicModifierIfMissing: boolean, addIdentation: boolean, addRegionCaptionToRegionEnd: boolean, groupPropertiesWithDecorators: boolean)
 {
     vscode.workspace.findFiles("**/*.ts", "**/node_modules/**")
         .then(typescriptFiles => typescriptFiles.forEach(typescriptFile => vscode.workspace.openTextDocument(typescriptFile)
             .then(document => vscode.window.showTextDocument(document)
-                .then(editor => organize(editor, memberTypeOrder, addAccessorsBeforeCtor, useRegions, addPublicModifierIfMissing, addIdentation, addRegionCaptionToRegionEnd, groupPropertiesWithDecorators) !== null))));
+                .then(editor => organize(editor, memberTypeOrder, addAccessorsBeforeCtor, useRegions, addRowNumberInRegionName, addPublicModifierIfMissing, addIdentation, addRegionCaptionToRegionEnd, groupPropertiesWithDecorators) !== null))));
 
 }
 
-function organize(editor: vscode.TextEditor | undefined, memberTypeOrder: ElementNodeGroupConfiguration[], useRegions: boolean, addAccessorsBeforeCtor: boolean, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean)
+function organize(editor: vscode.TextEditor | undefined, memberTypeOrder: ElementNodeGroupConfiguration[], useRegions: boolean, addRowNumberInRegionName: boolean, addAccessorsBeforeCtor: boolean, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean)
 {
     let edit: vscode.WorkspaceEdit;
     let start: vscode.Position;
@@ -129,7 +152,7 @@ function organize(editor: vscode.TextEditor | undefined, memberTypeOrder: Elemen
         let sourceCode = editor.document.getText();
         let fileName = editor.document.fileName;
 
-        sourceCode = organizeTypes(sourceCode, fileName, memberTypeOrder, useRegions, addAccessorsBeforeCtor, addPublicModifierIfMissing, addRegionIdentation, addRegionCaptionToRegionEnd, groupElementsWithDecorators);
+        sourceCode = organizeTypes(sourceCode, fileName, memberTypeOrder, useRegions, addRowNumberInRegionName, addAccessorsBeforeCtor, addPublicModifierIfMissing, addRegionIdentation, addRegionCaptionToRegionEnd, groupElementsWithDecorators);
 
         start = new vscode.Position(0, 0);
         end = new vscode.Position(editor.document.lineCount, editor.document.lineAt(editor.document.lineCount - 1).text.length);
@@ -142,20 +165,32 @@ function organize(editor: vscode.TextEditor | undefined, memberTypeOrder: Elemen
     }
 }
 
-function print(groups: ElementNodeGroup[], sourceCode: string, start: number, end: number, identationLevel: number, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, identation: string, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean)
+function print(groups: ElementNodeGroup[], sourceCode: string, start: number, end: number, identationLevel: number, addRowNumberInRegionName: boolean, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, identation: string, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean)
 {
     let sourceCode2: string;
-    let count;
+    let count = 0;
     let members = "";
     let newLine = "\r\n";
+    let nodeGroups: ElementNode[][] = [];
 
     for (let group of groups)
     {
-        count = 0;
-
-        for (let group2 of group.nodeSubGroups)
+        if (group.nodes &&
+            group.nodes.length > 0)
         {
-            count += group2.nodes.length;
+            count = group.nodes.length;
+            nodeGroups = [group.nodes];
+        }
+        else if (group.nodeSubGroups &&
+            group.nodeSubGroups.length > 0)
+        {
+            count = group.nodeSubGroups.reduce((sum, x) => sum + x.nodes.length, 0);
+            nodeGroups = group.nodeSubGroups.map(x => x.nodes).filter(x => x.length > 0);
+        }
+        else
+        {
+            count = 0;
+            nodeGroups = [];
         }
 
         if (count > 0)
@@ -163,21 +198,19 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
             if (group.isRegion)
             {
                 members += newLine;
-                members += `${addRegionIdentation ? identation : ""}// #region ${group.caption}`;
-                if (getAddRowNumberInRegionName())
-                {
-                    members += ` (${count})`;
-                }
+                members += `${addRegionIdentation ? identation : ""}// #region`;
+                members += group.caption ? ` ${group.caption}` : "";
+                members += addRowNumberInRegionName ? ` (${count})` : "";
                 members += newLine;
             }
 
             members += newLine;
 
-            for (let group2 of group.nodeSubGroups)
+            for (let nodeGroup of nodeGroups)
             {
-                for (let i = 0; i < group2.nodes.length; i++)
+                for (let i = 0; i < nodeGroup.length; i++)
                 {
-                    const node = group2.nodes[i];
+                    const node = nodeGroup[i];
                     let comment = sourceCode.substring(node.fullStart, node.start).trim();
                     let code = sourceCode.substring(node.start, node.end).trim();
 
@@ -202,8 +235,8 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
                     {
                         if (i > 0)
                         {
-                            if (group2.nodes[i - 1].decorators.length > 0 &&
-                                group2.nodes[i].decorators.length === 0)
+                            if (nodeGroup[i - 1].decorators.length > 0 &&
+                                nodeGroup[i].decorators.length === 0)
                             {
                                 members += newLine;
                             }
@@ -230,20 +263,10 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
             if (group.isRegion)
             {
                 members += newLine;
-
-                if (addRegionCaptionToRegionEnd)
-                {
-                    members += `${addRegionIdentation ? identation : ""}// #endregion ${group.caption}`;
-                    if (getAddRowNumberInRegionName())
-                    {
-                        members += ` (${count})`;
-                    }
-                    members += newLine;
-                }
-                else
-                {
-                    members += `${addRegionIdentation ? identation : ""}// #endregion${newLine}`;
-                }
+                members += `${addRegionIdentation ? identation : ""}// #endregion`;
+                members += addRegionCaptionToRegionEnd ? ` ${group.caption}` : "";
+                members += addRowNumberInRegionName ? ` (${count})` : "";
+                members += newLine;
             }
 
             members += newLine;
@@ -259,7 +282,7 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
     return sourceCode2.trimLeft();
 }
 
-function organizeTypes(sourceCode: string, fileName: string, memberTypeOrder: ElementNodeGroupConfiguration[], useRegions: boolean, addAccessorsBeforeCtor: boolean, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean)
+function organizeTypes(sourceCode: string, fileName: string, memberTypeOrder: ElementNodeGroupConfiguration[], useRegions: boolean, addRowNumberInRegionName: boolean, addAccessorsBeforeCtor: boolean, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean)
 {
     sourceCode = removeRegions(sourceCode);
 
@@ -291,7 +314,7 @@ function organizeTypes(sourceCode: string, fileName: string, memberTypeOrder: El
         if (functions.length + typeAliases.length + interfaces.length + classes.length + enums.length > 1 ||
             functions.length > 0)
         {
-            sourceCode = print(groups, sourceCode, 0, sourceCode.length, 0, false, false, identation, addRegionCaptionToRegionEnd, groupElementsWithDecorators);
+            sourceCode = print(groups, sourceCode, 0, sourceCode.length, 0, addRowNumberInRegionName, false, false, identation, addRegionCaptionToRegionEnd, groupElementsWithDecorators);
         }
     }
 
@@ -307,7 +330,7 @@ function organizeTypes(sourceCode: string, fileName: string, memberTypeOrder: El
             let interfaceNode = <InterfaceNode>element;
             let groups = organizeInterfaceMembers(interfaceNode, memberTypeOrder, groupElementsWithDecorators);
 
-            sourceCode = print(groups, sourceCode, interfaceNode.membersStart, interfaceNode.membersEnd, 1, false, addRegionIdentation, identation, addRegionCaptionToRegionEnd, groupElementsWithDecorators);
+            sourceCode = print(groups, sourceCode, interfaceNode.membersStart, interfaceNode.membersEnd, 1, addRowNumberInRegionName, false, addRegionIdentation, identation, addRegionCaptionToRegionEnd, groupElementsWithDecorators);
         }
         else if (element instanceof ClassNode)
         {
@@ -318,7 +341,7 @@ function organizeTypes(sourceCode: string, fileName: string, memberTypeOrder: El
             let accessorIndex = addAccessorsBeforeCtor ? constructorIndex : constructorIndex + 1;
 
             putAccessorAt(groups, classNode, groupElementsWithDecorators, accessorIndex);
-            sourceCode = print(groups, sourceCode, classNode.membersStart, classNode.membersEnd, 1, addPublicModifierIfMissing, addRegionIdentation, identation, addRegionCaptionToRegionEnd, groupElementsWithDecorators);
+            sourceCode = print(groups, sourceCode, classNode.membersStart, classNode.membersEnd, 1, addRowNumberInRegionName, addPublicModifierIfMissing, addRegionIdentation, identation, addRegionCaptionToRegionEnd, groupElementsWithDecorators);
         }
     }
 
