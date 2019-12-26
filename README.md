@@ -33,8 +33,6 @@ You can invoke command "TypeScript Class Organizer: Organize Current File" by us
 
 Extensions supports the following configuration options:
 
-
-
 * `tsco.useRegions`: When true regions surounding member groups are added. True by default.
 * `tsco.addPublicModifierIfMissing`: When true public access modifier is added. True by default.
 * `tsco.addRegionIdentation`: When true regions are idented with class members. True by default.
@@ -42,6 +40,199 @@ Extensions supports the following configuration options:
 * `tsco.groupPropertiesWithDecorators`: When true properties with decorators will come first. False by default.
 * `tsco.addRowNumberInRegionName`: When true region children count added on title. True by default.
 * `tsco.accessorsBeforeCtor`: When true put accessor before ctor during organization. False by default.
+* `tsco.memberOrder`: Configuration of grouping and ordering of members.
+
+### Configuration of grouping and ordering of members
+
+By default members are groupped and ordered in the following way:
+
+* properties,
+  * private static const properties,
+  * private const properties,
+  * private static readonly properties,
+  * private readonly properties,
+  * private static properties,
+  * private properties,
+  * protected static const properties,
+  * protected const properties,
+  * protected static readonly properties,
+  * protected readonly properties,
+  * protected static properties,
+  * protected properties,
+  * public staticconst properties,
+  * public const properties,
+  * public static readonly properties,
+  * public readonly properties,
+  * public static properties,
+  * public properties,
+* constructors,
+* public static indexes,
+* public indexes,
+* public abstract indexes,
+* protected static indexes,
+* protected indexes,
+* protected abstract indexes,
+* private static indexes,
+* private indexes,
+* private abstract indexes,
+* public static methods,
+* public methods,
+* public abstract methods,
+* protected static methods,
+* protected methods,
+* protected abstract methods,
+* private static methods,
+* private methods,
+* private abstract methods.
+
+This configuration can ge changed by using the `tsco.memberOrder` setting in settings.json. Members can be groupped seperately or groupped together with other member groups in a two level hierarchy. Every group has a property:
+
+* `caption` (only for top level groups): the caption will be outputted if `tsco.useRegions` is set to true,
+* `memberType` (top and bottom level groups): the type of the member in the group (privateStaticConstProperties, privateConstProperties, privateStaticReadOnlyProperties, privateReadOnlyProperties, privateStaticProperties, privateProperties, protectedStaticConstProperties, protectedConstProperties, protectedStaticReadOnlyProperties, protectedReadOnlyProperties, protectedStaticProperties, protectedProperties, publicStaticConstProperties, publicConstProperties, publicStaticReadOnlyProperties, publicReadOnlyProperties, publicStaticProperties, publicProperties, constructors, publicStaticIndexes, publicIndexes,
+publicAbstractIndexes, protectedStaticIndexes, protectedIndexes, protectedAbstractIndexes, privateStaticIndexes, privateIndexes, privateAbstractIndexes, publicStaticMethods, publicMethods, publicAbstractMethods, protectedStaticMethods, protectedMethods, protectedAbstractMethods, privateStaticMethods, privateMethods, privateAbstractMethods),
+* `subGroups` (only for top level groups): the array of member types to be included in this group.
+
+Example of the default `tsco.memberOrder` setting:
+
+``` json
+[
+    {
+        "caption": "Properties",
+        "subGroups": [
+            {
+                "memberType": "privateStaticConstProperties"
+            },
+            {
+                "memberType": "privateConstProperties"
+            },
+            {
+                "memberType": "privateStaticReadOnlyProperties"
+            },
+            {
+                "memberType": "privateReadOnlyProperties"
+            },
+            {
+                "memberType": "privateStaticProperties"
+            },
+            {
+                "memberType": "privateProperties"
+            },
+            {
+                "memberType": "protectedStaticConstProperties"
+            },
+            {
+                "memberType": "protectedConstProperties"
+            },
+            {
+                "memberType": "protectedStaticReadOnlyProperties"
+            },
+            {
+                "memberType": "protectedReadOnlyProperties"
+            },
+            {
+                "memberType": "protectedStaticProperties"
+            },
+            {
+                "memberType": "protectedProperties"
+            },
+            {
+                "memberType": "publicStaticConstProperties"
+            },
+            {
+                "memberType": "publicConstProperties"
+            },
+            {
+                "memberType": "publicStaticReadOnlyProperties"
+            },
+            {
+                "memberType": "publicReadOnlyProperties"
+            },
+            {
+                "memberType": "publicStaticProperties"
+            },
+            {
+                "memberType": "publicProperties"
+            }
+        ]
+    },
+    {
+        "caption": "Constructors",
+        "memberType": "constructors"
+    },
+    {
+        "caption": "Public Static Indexers",
+        "memberType": "publicStaticIndexes"
+    },
+    {
+        "caption": "Public Indexers",
+        "memberType": "publicIndexes"
+    },
+    {
+        "caption": "Public Abstract Indexers",
+        "memberType": "publicAbstractIndexes"
+    },
+    {
+        "caption": "Protected Static Indexers",
+        "memberType": "protectedStaticIndexes"
+    },
+    {
+        "caption": "Protected Indexers",
+        "memberType": "protectedIndexes"
+    },
+    {
+        "caption": "Protected Abstract Indexers",
+        "memberType": "protectedAbstractIndexes"
+    },
+    {
+        "caption": "Private Static Indexers",
+        "memberType": "privateStaticIndexes"
+    },
+    {
+        "caption": "Private Indexers",
+        "memberType": "privateIndexes"
+    },
+    {
+        "caption": "Private Abstract Indexers",
+        "memberType": "privateAbstractIndexes"
+    },
+    {
+        "caption": "Public Static Methods",
+        "memberType": "publicStaticMethods"
+    },
+    {
+        "caption": "Public Methods",
+        "memberType": "publicMethods"
+    },
+    {
+        "caption": "Public Abstract Methods",
+        "memberType": "publicAbstractMethods"
+    },
+    {
+        "caption": "Protected Static Methods",
+        "memberType": "protectedStaticMethods"
+    },
+    {
+        "caption": "Protected Methods",
+        "memberType": "protectedMethods"
+    },
+    {
+        "caption": "Protected Abstract Methods",
+        "memberType": "protectedAbstractMethods"
+    },
+    {
+        "caption": "Private Static Methods",
+        "memberType": "privateStaticMethods"
+    },
+    {
+        "caption": "Private Methods",
+        "memberType": "privateMethods"
+    },
+    {
+        "caption": "Private Abstract Methods",
+        "memberType": "privateAbstractMethods"
+    }
+]
+```
 
 ## Change log
 
@@ -81,3 +272,7 @@ Extensions supports the following configuration options:
 
 * added option of adding number of members within a region (courtesy of [pillont](https://github.com/pillont))
 * added option to output accessors before constructor (courtesy of [pillont](https://github.com/pillont))
+
+### 10.0.15
+
+* add option to customize grouping and ordering of members

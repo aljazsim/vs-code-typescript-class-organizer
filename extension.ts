@@ -85,13 +85,13 @@ function getMemberOrderConfig(): ElementNodeGroupConfiguration[]
     return memberTypeOrder;
 }
 
-function parseElementNodeGroupConfiguration(x: any)
+function parseElementNodeGroupConfiguration(x: any, level = 0)
 {
     let elementNodeGroupConfiguration = new ElementNodeGroupConfiguration();
 
-    elementNodeGroupConfiguration.caption = x.caption || null;
+    elementNodeGroupConfiguration.caption = level === 0 ? x.caption || null : null;
     elementNodeGroupConfiguration.memberType = x.memberType ? MemberType[x.memberType as keyof typeof MemberType] : null;
-    elementNodeGroupConfiguration.isRegion = x.isRegion || false;
+    elementNodeGroupConfiguration.isRegion = level === 0;
     elementNodeGroupConfiguration.subGroups = [];
 
     if (x.subGroups &&
@@ -99,7 +99,7 @@ function parseElementNodeGroupConfiguration(x: any)
     {
         for (const subElementNodeGroupConfiguration of x.subGroups)
         {
-            elementNodeGroupConfiguration.subGroups.push(parseElementNodeGroupConfiguration(subElementNodeGroupConfiguration));
+            elementNodeGroupConfiguration.subGroups.push(parseElementNodeGroupConfiguration(subElementNodeGroupConfiguration, 1));
         }
     }
 
