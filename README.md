@@ -259,8 +259,8 @@ Example of the default `tsco.memberOrder` setting:
 ### 1.0.11
 
 * fixed issue with duplicated regions
-* addded grouping by decorator for all elements, not just properties when groupping by decorators
-* added a new line between group with decorators and group without decorators when groupping by decorators
+* addded grouping by decorator for all elements, not just properties when grouping by decorators
+* added a new line between group with decorators and group without decorators when grouping by decorators
 
 ### 1.0.12
 
