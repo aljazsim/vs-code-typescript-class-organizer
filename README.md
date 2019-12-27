@@ -3,6 +3,7 @@
 VS Code extension for keeping your TypeScript code organized by grouping and ordering class members.
 
 ## Features
+
 Organize currently opened TypeScript file or all TypeScript files in your project.
 
 ![TypeScript Class Organizer](./doc/demo1.gif "TypeScript Class Organizer")
@@ -10,6 +11,7 @@ Organize currently opened TypeScript file or all TypeScript files in your projec
 ## Usage
 
 ### Command Palette
+
 From the command palette you can:
 
 * organize current TypeScript file by invoking command "TypeScript Class Organizer: Organize Current File",
@@ -98,138 +100,140 @@ Example of the default `tsco.memberOrder` setting:
 [
     {
         "caption": "Properties",
-        "subGroups": [
-            {
-                "memberType": "privateStaticConstProperties"
-            },
-            {
-                "memberType": "privateConstProperties"
-            },
-            {
-                "memberType": "privateStaticReadOnlyProperties"
-            },
-            {
-                "memberType": "privateReadOnlyProperties"
-            },
-            {
-                "memberType": "privateStaticProperties"
-            },
-            {
-                "memberType": "privateProperties"
-            },
-            {
-                "memberType": "protectedStaticConstProperties"
-            },
-            {
-                "memberType": "protectedConstProperties"
-            },
-            {
-                "memberType": "protectedStaticReadOnlyProperties"
-            },
-            {
-                "memberType": "protectedReadOnlyProperties"
-            },
-            {
-                "memberType": "protectedStaticProperties"
-            },
-            {
-                "memberType": "protectedProperties"
-            },
-            {
-                "memberType": "publicStaticConstProperties"
-            },
-            {
-                "memberType": "publicConstProperties"
-            },
-            {
-                "memberType": "publicStaticReadOnlyProperties"
-            },
-            {
-                "memberType": "publicReadOnlyProperties"
-            },
-            {
-                "memberType": "publicStaticProperties"
-            },
-            {
-                "memberType": "publicProperties"
-            }
+        "memberTypes": [
+            "privateStaticConstProperties",
+            "privateConstProperties",
+            "privateStaticReadOnlyProperties",
+            "privateReadOnlyProperties",
+            "privateStaticProperties",
+            "privateProperties",
+            "protectedStaticConstProperties",
+            "protectedConstProperties",
+            "protectedStaticReadOnlyProperties",
+            "protectedReadOnlyProperties",
+            "protectedStaticProperties",
+            "protectedProperties",
+            "publicStaticConstProperties",
+            "publicConstProperties",
+            "publicStaticReadOnlyProperties",
+            "publicReadOnlyProperties",
+            "publicStaticProperties",
+            "publicProperties"
         ]
     },
     {
         "caption": "Constructors",
-        "memberType": "constructors"
+        "memberTypes": [
+            "constructors"
+        ]
     },
     {
         "caption": "Public Static Indexers",
-        "memberType": "publicStaticIndexes"
+        "memberTypes": [
+            "publicStaticIndexes"
+        ]
     },
     {
         "caption": "Public Indexers",
-        "memberType": "publicIndexes"
+        "memberTypes": [
+            "publicIndexes"
+        ]
     },
     {
         "caption": "Public Abstract Indexers",
-        "memberType": "publicAbstractIndexes"
+        "memberTypes": [
+            "publicAbstractIndexes"
+        ]
     },
     {
         "caption": "Protected Static Indexers",
-        "memberType": "protectedStaticIndexes"
+        "memberTypes": [
+            "protectedStaticIndexes"
+        ]
     },
     {
         "caption": "Protected Indexers",
-        "memberType": "protectedIndexes"
+        "memberTypes": [
+            "protectedIndexes"
+        ]
     },
     {
         "caption": "Protected Abstract Indexers",
-        "memberType": "protectedAbstractIndexes"
+        "memberTypes": [
+            "protectedAbstractIndexes"
+        ]
     },
     {
         "caption": "Private Static Indexers",
-        "memberType": "privateStaticIndexes"
+        "memberTypes": [
+            "privateStaticIndexes"
+        ]
     },
     {
         "caption": "Private Indexers",
-        "memberType": "privateIndexes"
+        "memberTypes": [
+            "privateIndexes"
+        ]
     },
     {
         "caption": "Private Abstract Indexers",
-        "memberType": "privateAbstractIndexes"
+        "memberTypes": [
+            "privateAbstractIndexes"
+        ]
     },
     {
         "caption": "Public Static Methods",
-        "memberType": "publicStaticMethods"
+        "memberTypes": [
+            "publicStaticMethods"
+        ]
     },
     {
         "caption": "Public Methods",
-        "memberType": "publicMethods"
+        "memberTypes": [
+            "publicMethods"
+        ]
     },
     {
         "caption": "Public Abstract Methods",
-        "memberType": "publicAbstractMethods"
+        "memberTypes": [
+            "publicAbstractMethods"
+        ]
     },
     {
         "caption": "Protected Static Methods",
-        "memberType": "protectedStaticMethods"
+        "memberTypes": [
+            "protectedStaticMethods"
+        ]
     },
     {
         "caption": "Protected Methods",
-        "memberType": "protectedMethods"
+        "memberTypes": [
+            "protectedMethods"
+        ]
     },
     {
         "caption": "Protected Abstract Methods",
-        "memberType": "protectedAbstractMethods"
+        "memberTypes": [
+            "protectedAbstractMethods"
+        ]
     },
     {
         "caption": "Private Static Methods",
-        "memberType": "privateStaticMethods"
+        "memberTypes": [
+            "privateStaticMethods"
+        ]
     },
     {
         "caption": "Private Methods",
-        "memberType": "privateMethods"
+        "memberTypes": [
+            "privateMethods"
+        ]
     },
     {
         "caption": "Private Abstract Methods",
-        "memberType": "privateAbstractMethods"
+        "memberTypes": [
+            "privateAbstractMethods"
+        ]
     }
 ]
 ```

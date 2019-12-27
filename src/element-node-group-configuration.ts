@@ -5,9 +5,7 @@ export class ElementNodeGroupConfiguration
     // #region Properties (4)
 
     public caption: string = "";
-    public subGroups: ElementNodeGroupConfiguration[] = [];
-    public isRegion: boolean = true;
-    public memberType: MemberType | null = null;
+    public memberTypes: MemberType[] = [];
 
     // #endregion Properties (4)
 }

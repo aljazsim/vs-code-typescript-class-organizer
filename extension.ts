@@ -68,16 +68,13 @@ function getMemberOrderConfig(): ElementNodeGroupConfiguration[]
 
     // add missing member types (prevent duplicates)
     defaultMemberTypeOrder
-        .filter(x => !memberTypeOrder.some(y => y.subGroups.length === 0 && y.memberType === x) &&
-            !memberTypeOrder.some(y => y.subGroups.length > 0 && y.subGroups.some(z => z.memberType === x)))
+        .filter(x => !memberTypeOrder.some(y => y.memberTypes && y.memberTypes.length > 0 && y.memberTypes.some(z => z === x)))
         .forEach(x =>
         {
             let defaultElementNodeGroupConfiguration = new ElementNodeGroupConfiguration();
 
             defaultElementNodeGroupConfiguration.caption = MemberType[x];
-            defaultElementNodeGroupConfiguration.subGroups = []; // no nested groups
-            defaultElementNodeGroupConfiguration.memberType = x;
-            defaultElementNodeGroupConfiguration.isRegion = true; // self contained region
+            defaultElementNodeGroupConfiguration.memberTypes = [x];
 
             memberTypeOrder.push(defaultElementNodeGroupConfiguration);
         });
@@ -85,23 +82,12 @@ function getMemberOrderConfig(): ElementNodeGroupConfiguration[]
     return memberTypeOrder;
 }
 
-function parseElementNodeGroupConfiguration(x: any, level = 0)
+function parseElementNodeGroupConfiguration(x: any)
 {
     let elementNodeGroupConfiguration = new ElementNodeGroupConfiguration();
 
-    elementNodeGroupConfiguration.caption = level === 0 ? x.caption || null : null;
-    elementNodeGroupConfiguration.memberType = x.memberType ? MemberType[x.memberType as keyof typeof MemberType] : null;
-    elementNodeGroupConfiguration.isRegion = level === 0;
-    elementNodeGroupConfiguration.subGroups = [];
-
-    if (x.subGroups &&
-        x.subGroups.length > 0)
-    {
-        for (const subElementNodeGroupConfiguration of x.subGroups)
-        {
-            elementNodeGroupConfiguration.subGroups.push(parseElementNodeGroupConfiguration(subElementNodeGroupConfiguration, 1));
-        }
-    }
+    elementNodeGroupConfiguration.caption = x.caption;
+    elementNodeGroupConfiguration.memberTypes = (x.memberTypes as string[]).map(y => MemberType[y as keyof typeof MemberType]);
 
     return elementNodeGroupConfiguration;
 }
@@ -356,201 +342,213 @@ function organizeTypes(sourceCode: string, fileName: string, memberTypeOrder: El
 
 function organizeInterfaceMembers(interfaceNode: InterfaceNode, memberTypeOrder: ElementNodeGroupConfiguration[], groupElementsWithDecorators: boolean)
 {
-    let members: ElementNodeGroup[] = [];
+    let regions: ElementNodeGroup[] = [];
+    let memberGroups: ElementNodeGroup[];
 
-    for (const memberType of memberTypeOrder)
+    for (const memberTypeGroup of memberTypeOrder)
     {
-        if (memberType.subGroups &&
-            memberType.subGroups.length > 0 &&
-            memberType.memberType === null)
+        memberGroups = [];
+
+        for (const memberType of memberTypeGroup.memberTypes)
         {
-            // nested group
-            members.push(new ElementNodeGroup(memberType.caption, organizeInterfaceMembers(interfaceNode, memberType.subGroups, groupElementsWithDecorators), [], memberType.isRegion));
+            if (memberType === MemberType.publicConstProperties)
+            {
+                // public const properties
+                memberGroups.push(new ElementNodeGroup(null, [], interfaceNode.getConstProperties(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.publicReadOnlyProperties)
+            {
+                // public readonly methods
+                memberGroups.push(new ElementNodeGroup(null, [], interfaceNode.getReadOnlyProperties(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.publicProperties)
+            {
+                // public methods
+                memberGroups.push(new ElementNodeGroup(null, [], interfaceNode.getProperties(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.publicIndexes)
+            {
+                // public indexes
+                memberGroups.push(new ElementNodeGroup(null, [], interfaceNode.getIndexes(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.publicMethods)
+            {
+                // public methods
+                memberGroups.push(new ElementNodeGroup(null, [], interfaceNode.getMethods(groupElementsWithDecorators), false));
+            }
         }
-        else if (memberType.memberType === MemberType.publicConstProperties)
-        {
-            // public properties
-            members.push(new ElementNodeGroup(memberType.caption, [], interfaceNode.getConstProperties(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.publicIndexes)
-        {
-            // public indexes
-            members.push(new ElementNodeGroup(memberType.caption, [], interfaceNode.getIndexes(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.publicMethods)
-        {
-            // public methods
-            members.push(new ElementNodeGroup(memberType.caption, [], interfaceNode.getMethods(groupElementsWithDecorators), memberType.isRegion));
-        }
+
+        regions.push(new ElementNodeGroup(memberTypeGroup.caption, memberGroups, [], true));
     }
 
-    return members;
+    return regions;
 }
 
 function organizeClassMembers(classNode: ClassNode, memberTypeOrder: ElementNodeGroupConfiguration[], groupElementsWithDecorators: boolean): ElementNodeGroup[]
 {
-    let members: ElementNodeGroup[] = [];
+    let regions: ElementNodeGroup[] = [];
+    let memberGroups: ElementNodeGroup[];
 
-    for (const memberType of memberTypeOrder)
+    for (const memberTypeGroup of memberTypeOrder)
     {
-        if (memberType.subGroups &&
-            memberType.subGroups.length > 0 &&
-            memberType.memberType === null)
+        memberGroups = [];
+
+        for (const memberType of memberTypeGroup.memberTypes)
         {
-            // nested group
-            members.push(new ElementNodeGroup(memberType.caption, organizeClassMembers(classNode, memberType.subGroups, groupElementsWithDecorators), [], memberType.isRegion));
+            if (memberType === MemberType.privateStaticConstProperties)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPrivateStaticConstProperties(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.privateConstProperties)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPrivateConstProperties(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.privateStaticReadOnlyProperties)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPrivateStaticReadOnlyProperties(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.privateReadOnlyProperties)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPrivateReadOnlyProperties(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.privateStaticProperties)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPrivateStaticProperties(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.privateProperties)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPrivateProperties(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.protectedStaticConstProperties)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getProtectedStaticConstProperties(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.protectedConstProperties)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getProtectedConstProperties(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.protectedStaticReadOnlyProperties)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getProtectedStaticReadOnlyProperties(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.protectedReadOnlyProperties)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getProtectedReadOnlyProperties(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.protectedStaticProperties)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getProtectedStaticProperties(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.protectedProperties)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getProtectedProperties(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.publicStaticConstProperties)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPublicStaticConstProperties(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.publicConstProperties)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPublicConstProperties(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.publicStaticReadOnlyProperties)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPublicStaticReadOnlyProperties(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.publicReadOnlyProperties)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPublicReadOnlyProperties(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.publicStaticProperties)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPublicStaticProperties(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.publicProperties)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPublicProperties(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.constructors)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getConstructors(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.publicStaticIndexes)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPublicStaticIndexes(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.publicIndexes)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPublicIndexes(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.publicAbstractIndexes)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPublicAbstractIndexes(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.protectedStaticIndexes)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getProtectedStaticIndexes(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.protectedIndexes)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getProtectedIndexes(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.protectedAbstractIndexes)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getProtectedAbstractIndexes(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.privateStaticIndexes)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPrivateStaticIndexes(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.privateIndexes)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPrivateIndexes(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.privateAbstractIndexes)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPrivateAbstractIndexes(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.publicStaticMethods)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPublicStaticMethods(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.publicMethods)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPublicMethods(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.publicAbstractMethods)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPublicAbstractMethods(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.protectedStaticMethods)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getProtectedStaticMethods(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.protectedMethods)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getProtectedMethods(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.protectedAbstractMethods)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getProtectedAbstractMethods(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.privateStaticMethods)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPrivateStaticMethods(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.privateMethods)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPrivateMethods(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.privateAbstractMethods)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPrivateAbstractMethods(groupElementsWithDecorators), false));
+            }
         }
-        else if (memberType.memberType === MemberType.privateStaticConstProperties)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPrivateStaticConstProperties(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.privateConstProperties)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPrivateConstProperties(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.privateStaticReadOnlyProperties)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPrivateStaticReadOnlyProperties(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.privateReadOnlyProperties)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPrivateReadOnlyProperties(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.privateStaticProperties)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPrivateStaticProperties(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.privateProperties)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPrivateProperties(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.protectedStaticConstProperties)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getProtectedStaticConstProperties(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.protectedConstProperties)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getProtectedConstProperties(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.protectedStaticReadOnlyProperties)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getProtectedStaticReadOnlyProperties(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.protectedReadOnlyProperties)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getProtectedReadOnlyProperties(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.protectedStaticProperties)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getProtectedStaticProperties(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.protectedProperties)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getProtectedProperties(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.publicStaticConstProperties)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPublicStaticConstProperties(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.publicConstProperties)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPublicConstProperties(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.publicStaticReadOnlyProperties)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPublicStaticReadOnlyProperties(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.publicReadOnlyProperties)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPublicReadOnlyProperties(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.publicStaticProperties)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPublicStaticProperties(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.publicProperties)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPublicProperties(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.constructors)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getConstructors(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.publicStaticIndexes)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPublicStaticIndexes(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.publicIndexes)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPublicIndexes(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.publicAbstractIndexes)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPublicAbstractIndexes(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.protectedStaticIndexes)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getProtectedStaticIndexes(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.protectedIndexes)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getProtectedIndexes(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.protectedAbstractIndexes)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getProtectedAbstractIndexes(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.privateStaticIndexes)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPrivateStaticIndexes(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.privateIndexes)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPrivateIndexes(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.privateAbstractIndexes)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPrivateAbstractIndexes(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.publicStaticMethods)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPublicStaticMethods(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.publicMethods)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPublicMethods(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.publicAbstractMethods)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPublicAbstractMethods(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.protectedStaticMethods)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getProtectedStaticMethods(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.protectedMethods)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getProtectedMethods(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.protectedAbstractMethods)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getProtectedAbstractMethods(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.privateStaticMethods)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPrivateStaticMethods(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.privateMethods)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPrivateMethods(groupElementsWithDecorators), memberType.isRegion));
-        }
-        else if (memberType.memberType === MemberType.privateAbstractMethods)
-        {
-            members.push(new ElementNodeGroup(memberType.caption, [], classNode.getPrivateAbstractMethods(groupElementsWithDecorators), memberType.isRegion));
-        }
+
+        regions.push(new ElementNodeGroup(memberTypeGroup.caption, memberGroups, [], true));
     }
 
-    return members;
+    return regions;
 }
 
 function putAccessorAt(groups: any, classNode: ClassNode, groupElementsWithDecorators: boolean, index: number)

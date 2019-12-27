@@ -4,7 +4,7 @@ export class ElementNodeGroup
 {
     // #region Constructors (1)
 
-    constructor(public caption: string, public nodeSubGroups: ElementNodeGroup[], public nodes: ElementNode[], public isRegion: boolean)
+    constructor(public caption: string | null, public nodeSubGroups: ElementNodeGroup[], public nodes: ElementNode[], public isRegion: boolean)
     {
     }
 
