@@ -182,6 +182,60 @@ Example of the default `tsco.memberOrder` setting:
         ]
     },
     {
+        "caption": "Public Static Accessors",
+        "memberTypes": [
+            "publicStaticGettersAndSetters"
+        ]
+    },
+    {
+        "caption": "Public Accessors",
+        "memberTypes": [
+            "publicGettersAndSetters"
+        ]
+    },
+    {
+        "caption": "Public Abstract Accessors",
+        "memberTypes": [
+            "publicAbstractGettersAndSetters"
+        ]
+    },
+    {
+        "caption": "Protected Static Accessors",
+        "memberTypes": [
+            "protectedStaticGettersAndSetters"
+        ]
+    },
+    {
+        "caption": "Protected Accessors",
+        "memberTypes": [
+            "protectedGettersAndSetters"
+        ]
+    },
+    {
+        "caption": "Protected Abstract Accessors",
+        "memberTypes": [
+            "protectedAbstractGettersAndSetters"
+        ]
+    },
+    {
+        "caption": "Private Static Accessors",
+        "memberTypes": [
+            "privateStaticGettersAndSetters"
+        ]
+    },
+    {
+        "caption": "Private Accessors",
+        "memberTypes": [
+            "privateGettersAndSetters"
+        ]
+    },
+    {
+        "caption": "Private Abstract Accessors",
+        "memberTypes": [
+            "privateAbstractGettersAndSetters"
+        ]
+    },
+    {
         "caption": "Public Static Methods",
         "memberTypes": [
             "publicStaticMethods"

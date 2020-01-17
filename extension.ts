@@ -323,10 +323,6 @@ function organizeTypes(sourceCode: string, fileName: string, memberTypeOrder: El
             let classNode = <ClassNode>element;
             let groups = organizeClassMembers(classNode, memberTypeOrder, groupElementsWithDecorators);
 
-            const constructorIndex = 1;
-            let accessorIndex = addAccessorsBeforeCtor ? constructorIndex : constructorIndex + 1;
-
-            putAccessorAt(groups, classNode, groupElementsWithDecorators, accessorIndex);
             sourceCode = print(groups, sourceCode, classNode.membersStart, classNode.membersEnd, 1, addRowNumberInRegionName, addPublicModifierIfMissing, addRegionIdentation, identation, addRegionCaptionToRegionEnd, groupElementsWithDecorators);
         }
     }
@@ -507,6 +503,42 @@ function organizeClassMembers(classNode: ClassNode, memberTypeOrder: ElementNode
             {
                 memberGroups.push(new ElementNodeGroup(null, [], classNode.getPrivateAbstractIndexes(groupElementsWithDecorators), false));
             }
+            else if (memberType === MemberType.publicStaticGettersAndSetters)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPublicStaticGettersAndSetters(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.publicGettersAndSetters)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPublicGettersAndSetters(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.publicAbstractGettersAndSetters)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPublicAbstractGettersAndSetters(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.protectedStaticGettersAndSetters)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getProtectedStaticGettersAndSetters(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.protectedGettersAndSetters)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getProtectedGettersAndSetters(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.protectedAbstractGettersAndSetters)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getProtectedAbstractGettersAndSetters(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.privateStaticGettersAndSetters)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPrivateStaticGettersAndSetters(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.privateGettersAndSetters)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPrivateGettersAndSetters(groupElementsWithDecorators), false));
+            }
+            else if (memberType === MemberType.privateAbstractGettersAndSetters)
+            {
+                memberGroups.push(new ElementNodeGroup(null, [], classNode.getPrivateAbstractGettersAndSetters(groupElementsWithDecorators), false));
+            }
             else if (memberType === MemberType.publicStaticMethods)
             {
                 memberGroups.push(new ElementNodeGroup(null, [], classNode.getPublicStaticMethods(groupElementsWithDecorators), false));
@@ -549,28 +581,4 @@ function organizeClassMembers(classNode: ClassNode, memberTypeOrder: ElementNode
     }
 
     return regions;
-}
-
-function putAccessorAt(groups: any, classNode: ClassNode, groupElementsWithDecorators: boolean, index: number)
-{
-
-    var accessorsItems = [
-        { description: "Public Static Accessors", groups: [{ nodes: classNode.getPublicStaticGettersAndSetters(groupElementsWithDecorators) }], regions: true },
-        { description: "Public Accessors", groups: [{ nodes: classNode.getPublicGettersAndSetters(groupElementsWithDecorators) }], regions: true },
-        { description: "Public Abstract Accessors", groups: [{ nodes: classNode.getPublicAbstractGettersAndSetters(groupElementsWithDecorators) }], regions: true },
-
-        { description: "Protected Static Accessors", groups: [{ nodes: classNode.getProtectedStaticGettersAndSetters(groupElementsWithDecorators) }], regions: true },
-        { description: "Protected Accessors", groups: [{ nodes: classNode.getProtectedGettersAndSetters(groupElementsWithDecorators) }], regions: true },
-        { description: "Protected Abstract Accessors", groups: [{ nodes: classNode.getProtectedAbstractGettersAndSetters(groupElementsWithDecorators) }], regions: true },
-
-        { description: "Private Static Accessors", groups: [{ nodes: classNode.getPrivateStaticGettersAndSetters(groupElementsWithDecorators) }], regions: true },
-        { description: "Private Accessors", groups: [{ nodes: classNode.getPrivateGettersAndSetters(groupElementsWithDecorators) }], regions: true },
-        { description: "Private Abstract Accessors", groups: [{ nodes: classNode.getPrivateAbstractGettersAndSetters(groupElementsWithDecorators) }], regions: true },
-    ];
-
-    (accessorsItems).forEach(element =>
-    {
-        groups.splice(index, 0, element);
-        index++;
-    });
 }
