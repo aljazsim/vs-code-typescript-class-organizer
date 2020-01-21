@@ -334,3 +334,7 @@ Example of the default `tsco.memberOrder` setting:
 ### 10.0.15
 
 * add option to customize grouping and ordering of members
+
+### 10.0.16
+
+* fix bug where accessors (getters and setters) got removed when organizing a class

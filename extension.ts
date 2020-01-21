@@ -73,13 +73,24 @@ function getMemberOrderConfig(): ElementNodeGroupConfiguration[]
         {
             let defaultElementNodeGroupConfiguration = new ElementNodeGroupConfiguration();
 
-            defaultElementNodeGroupConfiguration.caption = MemberType[x];
+            defaultElementNodeGroupConfiguration.caption = convertPascalCaseToTitleCase(MemberType[x]);
             defaultElementNodeGroupConfiguration.memberTypes = [x];
 
             memberTypeOrder.push(defaultElementNodeGroupConfiguration);
         });
 
     return memberTypeOrder;
+}
+
+function convertPascalCaseToTitleCase(value: string)
+{
+    if (value &&
+        value.length > 1)
+    {
+        value = value.replace(/(?:^|\.?)([A-Z])/g, (x, y) => " " + y);
+    }
+
+    return value;
 }
 
 function parseElementNodeGroupConfiguration(x: any)
@@ -202,17 +213,26 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
 
                     if (addPublicModifierIfMissing)
                     {
-                        if (node instanceof MethodNode ||
-                            node instanceof PropertyNode ||
-                            node instanceof GetterNode ||
-                            node instanceof SetterNode)
+                        if (node.accessModifier === null)
                         {
-                            if (node.accessModifier === null)
+                            if (node instanceof MethodNode)
                             {
-                                code = code.replace(`${node.name}:`, `public ${node.name}:`);
-                                code = code.replace(`${node.name} =`, `public ${node.name} =`);
-                                code = code.replace(`${node.name};`, `public ${node.name};`);
-                                code = code.replace(`${node.name}(`, `public ${node.name}(`);
+                                code = code.replace(new RegExp(`${node.name}\\s*\\(`), `public ${node.name}(`);
+                            }
+                            else if (node instanceof PropertyNode)
+                            {
+                                code = code.replace(new RegExp(`${node.name}\\s*:`), `public ${node.name}:`);
+                                code = code.replace(new RegExp(`${node.name}\\s*=`), `public ${node.name} =`);
+                                code = code.replace(new RegExp(`${node.name}\\s*;`), `public ${node.name} =;`);
+                            }
+                            else if (node instanceof GetterNode)
+                            {
+                                code = code.replace(new RegExp(`get\\s*${node.name}\\s*\\(`), `public get ${node.name}(`);
+
+                            }
+                            else if (node instanceof SetterNode)
+                            {
+                                code = code.replace(new RegExp(`set\\s*${node.name}\\s*\\(`), `public set ${node.name}(`);
                             }
                         }
                     }
