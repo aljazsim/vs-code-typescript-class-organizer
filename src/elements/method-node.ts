@@ -12,7 +12,7 @@ export class MethodNode extends ElementNode
 
 	// #region Constructors (1)
 
-	constructor(sourceFile: ts.SourceFile, methodDeclaration: ts.MethodDeclaration)
+	constructor(sourceFile: ts.SourceFile, methodDeclaration: ts.MethodDeclaration | ts.PropertyDeclaration)
 	{
 		super(methodDeclaration);
 

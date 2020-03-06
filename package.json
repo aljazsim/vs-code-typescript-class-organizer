@@ -2,7 +2,7 @@
     "name": "tsco",
     "displayName": "TypeScript Class Organizer",
     "description": "Groups and orders class members",
-    "version": "1.0.16",
+    "version": "1.0.17",
     "publisher": "aljazsim",
     "author": {
         "name": "aljazsim",
@@ -374,13 +374,14 @@
             }
         ]
     },
-    "main": "./out/extension",
+    "main": "./out/extension.js",
     "scripts": {
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
         "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+        "test": "npm run compile && node ./node_modules/vscode/bin/test",
+        "package": "npx vsce package"
     },
     "devDependencies": {
         "@types/mocha": "5.2.7",
@@ -390,6 +391,6 @@
         "vscode": "1.1.36"
     },
     "dependencies": {
-        "typescript": "3.6.3"
+        "typescript": "^3.8.3"
     }
 }

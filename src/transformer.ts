@@ -79,7 +79,11 @@ export class Transformer
 				}
 				else if (ts.isPropertyDeclaration(member))
 				{
-					(<ClassNode>elements[elements.length - 1]).properties.push(new PropertyNode(sourceFile, member));
+					if ( member.initializer?.kind === ts.SyntaxKind.ArrowFunction) {
+						(<ClassNode>elements[elements.length - 1]).methods.push(new MethodNode(sourceFile, member));
+					} else {
+						(<ClassNode>elements[elements.length - 1]).properties.push(new PropertyNode(sourceFile, member));
+					}
 				}
 				else if (ts.isGetAccessorDeclaration(member))
 				{
