@@ -1,58 +1,41 @@
-import { ElementNodeGroup } from "./src/element-node-group";
-import { ElementNodeGroupConfiguration } from "./src/element-node-group-configuration";
-import { ClassNode } from "./src/elements/class-node";
-import { ElementNode } from "./src/elements/element-node";
-import { GetterNode } from "./src/elements/getter-node";
-import { InterfaceNode } from "./src/elements/interface-node";
-import { MethodNode } from "./src/elements/method-node";
-import { PropertyNode } from "./src/elements/property-node";
-import { SetterNode } from "./src/elements/setter-node";
-import { UnknownNode } from "./src/elements/unknown-node";
-import { MemberType } from "./src/member-type";
-import { formatLines, removeRegions } from "./src/regions";
-import { Transformer } from "./src/transformer";
-import { compareNumbers, getClasses, getEnums, getFunctions, getImports, getInterfaces, getTypeAliases } from "./src/utils";
-import * as ts from "typescript";
-import * as vscode from "vscode";
+import { Configuration } from './src/configuration';
+import { ElementNodeGroup } from './src/element-node-group';
+import { ElementNodeGroupConfiguration } from './src/element-node-group-configuration';
+import { ClassNode } from './src/elements/class-node';
+import { ElementNode } from './src/elements/element-node';
+import { GetterNode } from './src/elements/getter-node';
+import { InterfaceNode } from './src/elements/interface-node';
+import { MethodNode } from './src/elements/method-node';
+import { PropertyNode } from './src/elements/property-node';
+import { SetterNode } from './src/elements/setter-node';
+import { UnknownNode } from './src/elements/unknown-node';
+import { MemberType } from './src/member-type';
+import { formatLines, removeRegions } from './src/regions';
+import { Transformer } from './src/transformer';
+import { compareNumbers, getClasses, getEnums, getFunctions, getImports, getInterfaces, getTypeAliases } from './src/utils';
+import * as ts from 'typescript';
+import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext)
 {
-    context.subscriptions.push(vscode.commands.registerCommand('tsco.organize', () => organize(vscode.window.activeTextEditor, getMemberOrderConfig(), getUseRegionsConfig(), getAddRowNumberInRegionName(), getAddAccessorsBeforeCtor(), getAddPublicModifierIfMissing(), getAddRegionIdentationConfig(), getAddRegionCaptionToRegionEnd(), getGroupPropertiesByDecorators())));
-    context.subscriptions.push(vscode.commands.registerCommand('tsco.organizeAll', () => organizeAll(getMemberOrderConfig(), getUseRegionsConfig(), getAddRowNumberInRegionName(), getAddAccessorsBeforeCtor(), getAddPublicModifierIfMissing(), getAddRegionIdentationConfig(), getAddRegionCaptionToRegionEnd(), getGroupPropertiesByDecorators())));
+    context.subscriptions.push(vscode.commands.registerCommand('tsco.organize', () => organize(vscode.window.activeTextEditor, getConfiguration())));
+    context.subscriptions.push(vscode.commands.registerCommand('tsco.organizeAll', () => organizeAll(getConfiguration())));
 }
 
-function getUseRegionsConfig(): boolean
+function getConfiguration()
 {
-    return vscode.workspace.getConfiguration("tsco").get<boolean>("useRegions") === true;
-}
+    let configuration = vscode.workspace.getConfiguration("tsco");
 
-function getAddPublicModifierIfMissing(): boolean
-{
-    return vscode.workspace.getConfiguration("tsco").get<boolean>("addPublicModifierIfMissing") === true;
-}
-
-function getAddAccessorsBeforeCtor(): boolean
-{
-    return vscode.workspace.getConfiguration("tsco").get<boolean>("accessorsBeforeCtor") === true;
-}
-
-function getAddRowNumberInRegionName(): boolean
-{
-    return vscode.workspace.getConfiguration("tsco").get<boolean>("addRowNumberInRegionName") === true;
-}
-function getAddRegionIdentationConfig(): boolean
-{
-    return vscode.workspace.getConfiguration("tsco").get<boolean>("addRegionIdentation") === true;
-}
-
-function getAddRegionCaptionToRegionEnd(): boolean
-{
-    return vscode.workspace.getConfiguration("tsco").get<boolean>("addRegionCaptionToRegionEnd") === true;
-}
-
-function getGroupPropertiesByDecorators(): boolean
-{
-    return vscode.workspace.getConfiguration("tsco").get<boolean>("groupPropertiesWithDecorators") === true;
+    return new Configuration(
+        configuration.get<boolean>("useRegions") === true,
+        configuration.get<boolean>("addPublicModifierIfMissing") === true,
+        configuration.get<boolean>("accessorsBeforeCtor") === true,
+        configuration.get<boolean>("addRowNumberInRegionName") === true,
+        configuration.get<boolean>("addRegionIndentation") === true,
+        configuration.get<boolean>("addRegionCaptionToRegionEnd") === true,
+        configuration.get<boolean>("groupPropertiesWithDecorators") === true,
+        configuration.get<boolean>("treatArrowFunctionPropertiesAsMethods") === true,
+        getMemberOrderConfig());
 }
 
 function getMemberOrderConfig(): ElementNodeGroupConfiguration[]
@@ -64,7 +47,7 @@ function getMemberOrderConfig(): ElementNodeGroupConfiguration[]
         .map(x => <MemberType>parseInt(x, 10));
 
     // map member type order from configuration
-    memberTypeOrderConfiguration.forEach(x => memberTypeOrder.push(parseElementNodeGroupConfiguration(x)));
+    memberTypeOrderConfiguration.forEach((x: any) => memberTypeOrder.push(parseElementNodeGroupConfiguration(x)));
 
     // add missing member types (prevent duplicates)
     defaultMemberTypeOrder
@@ -103,7 +86,7 @@ function parseElementNodeGroupConfiguration(x: any)
     return elementNodeGroupConfiguration;
 }
 
-function getIdentation(sourceCode: string): string
+function getIndentation(sourceCode: string): string
 {
     let tab = "\t";
     let twoSpaces = "  ";
@@ -128,16 +111,16 @@ function getIdentation(sourceCode: string): string
     return twoSpaces;
 }
 
-function organizeAll(memberTypeOrder: ElementNodeGroupConfiguration[], useRegions: boolean, addRowNumberInRegionName: boolean, addAccessorsBeforeCtor: boolean, addPublicModifierIfMissing: boolean, addIdentation: boolean, addRegionCaptionToRegionEnd: boolean, groupPropertiesWithDecorators: boolean)
+function organizeAll(configuration: Configuration)
 {
     vscode.workspace.findFiles("**/*.ts", "**/node_modules/**")
         .then(typescriptFiles => typescriptFiles.forEach(typescriptFile => vscode.workspace.openTextDocument(typescriptFile)
             .then(document => vscode.window.showTextDocument(document)
-                .then(editor => organize(editor, memberTypeOrder, addAccessorsBeforeCtor, useRegions, addRowNumberInRegionName, addPublicModifierIfMissing, addIdentation, addRegionCaptionToRegionEnd, groupPropertiesWithDecorators) !== null))));
+                .then(editor => organize(editor, configuration) !== null))));
 
 }
 
-function organize(editor: vscode.TextEditor | undefined, memberTypeOrder: ElementNodeGroupConfiguration[], useRegions: boolean, addRowNumberInRegionName: boolean, addAccessorsBeforeCtor: boolean, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean)
+function organize(editor: vscode.TextEditor | undefined, configuration: Configuration)
 {
     let edit: vscode.WorkspaceEdit;
     let start: vscode.Position;
@@ -149,7 +132,7 @@ function organize(editor: vscode.TextEditor | undefined, memberTypeOrder: Elemen
         let sourceCode = editor.document.getText();
         let fileName = editor.document.fileName;
 
-        sourceCode = organizeTypes(sourceCode, fileName, memberTypeOrder, useRegions, addRowNumberInRegionName, addAccessorsBeforeCtor, addPublicModifierIfMissing, addRegionIdentation, addRegionCaptionToRegionEnd, groupElementsWithDecorators);
+        sourceCode = organizeTypes(sourceCode, fileName, configuration);
 
         start = new vscode.Position(0, 0);
         end = new vscode.Position(editor.document.lineCount, editor.document.lineAt(editor.document.lineCount - 1).text.length);
@@ -162,7 +145,7 @@ function organize(editor: vscode.TextEditor | undefined, memberTypeOrder: Elemen
     }
 }
 
-function print(groups: ElementNodeGroup[], sourceCode: string, start: number, end: number, identationLevel: number, addRowNumberInRegionName: boolean, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, identation: string, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean)
+function print(groups: ElementNodeGroup[], sourceCode: string, start: number, end: number, IndentationLevel: number, addRowNumberInRegionName: boolean, addPublicModifierIfMissing: boolean, addRegionIndentation: boolean, Indentation: string, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean)
 {
     let sourceCode2: string;
     let count = 0;
@@ -195,7 +178,7 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
             if (group.isRegion)
             {
                 members += newLine;
-                members += `${addRegionIdentation ? identation : ""}// #region`;
+                members += `${addRegionIndentation ? Indentation : ""}// #region`;
                 members += group.caption ? ` ${group.caption}` : "";
                 members += addRowNumberInRegionName ? ` (${count})` : "";
                 members += newLine;
@@ -251,10 +234,10 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
 
                     if (comment !== "")
                     {
-                        members += `${identationLevel === 1 ? identation : ""}${comment}${newLine}`;
+                        members += `${IndentationLevel === 1 ? Indentation : ""}${comment}${newLine}`;
                     }
 
-                    members += `${identationLevel === 1 ? identation : ""}${code}`;
+                    members += `${IndentationLevel === 1 ? Indentation : ""}${code}`;
                     members += newLine;
 
                     if (code.endsWith("}"))
@@ -269,7 +252,7 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
             if (group.isRegion)
             {
                 members += newLine;
-                members += `${addRegionIdentation ? identation : ""}// #endregion`;
+                members += `${addRegionIndentation ? Indentation : ""}// #endregion`;
                 members += addRegionCaptionToRegionEnd ? ` ${group.caption}` : "";
                 members += addRowNumberInRegionName ? ` (${count})` : "";
                 members += newLine;
@@ -281,32 +264,32 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
 
     sourceCode2 = sourceCode.substring(0, start).trimRight();
     sourceCode2 += newLine;
-    sourceCode2 += (addRegionIdentation ? identation : "") + members.trim();
+    sourceCode2 += (addRegionIndentation ? Indentation : "") + members.trim();
     sourceCode2 += newLine;
     sourceCode2 += sourceCode.substring(end, sourceCode.length).trimLeft();
 
     return sourceCode2.trimLeft();
 }
 
-function organizeTypes(sourceCode: string, fileName: string, memberTypeOrder: ElementNodeGroupConfiguration[], useRegions: boolean, addRowNumberInRegionName: boolean, addAccessorsBeforeCtor: boolean, addPublicModifierIfMissing: boolean, addRegionIdentation: boolean, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean)
+function organizeTypes(sourceCode: string, fileName: string, configuration: Configuration)
 {
     sourceCode = removeRegions(sourceCode);
 
-    let identation = getIdentation(sourceCode);
+    let indentation = getIndentation(sourceCode);
 
     // organize type aliases, interfaces, classes, enums, functions and variables
     let sourceFile = ts.createSourceFile(fileName, sourceCode, ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
 
-    let elements = new Transformer().analyzeSyntaxTree(sourceFile);
+    let elements = new Transformer().analyzeSyntaxTree(sourceFile, configuration.treatArrowFunctionPropertiesAsMethods);
 
     if (!elements.some(x => !(x instanceof UnknownNode)))
     {
-        let imports = getImports(elements, groupElementsWithDecorators);
-        let functions = getFunctions(elements, groupElementsWithDecorators);
-        let typeAliases = getTypeAliases(elements, groupElementsWithDecorators);
-        let interfaces = getInterfaces(elements, groupElementsWithDecorators);
-        let classes = getClasses(elements, groupElementsWithDecorators);
-        let enums = getEnums(elements, groupElementsWithDecorators);
+        let imports = getImports(elements, configuration.groupPropertiesWithDecorators);
+        let functions = getFunctions(elements, configuration.groupPropertiesWithDecorators);
+        let typeAliases = getTypeAliases(elements, configuration.groupPropertiesWithDecorators);
+        let interfaces = getInterfaces(elements, configuration.groupPropertiesWithDecorators);
+        let classes = getClasses(elements, configuration.groupPropertiesWithDecorators);
+        let enums = getEnums(elements, configuration.groupPropertiesWithDecorators);
 
         let groups = [
             new ElementNodeGroup("Imports", [], imports, false),
@@ -320,34 +303,34 @@ function organizeTypes(sourceCode: string, fileName: string, memberTypeOrder: El
         if (functions.length + typeAliases.length + interfaces.length + classes.length + enums.length > 1 ||
             functions.length > 0)
         {
-            sourceCode = print(groups, sourceCode, 0, sourceCode.length, 0, addRowNumberInRegionName, false, false, identation, addRegionCaptionToRegionEnd, groupElementsWithDecorators);
+            sourceCode = print(groups, sourceCode, 0, sourceCode.length, 0, configuration.addRowNumberInRegionName, false, false, indentation, configuration.addRegionCaptionToRegionEnd, configuration.groupPropertiesWithDecorators);
         }
     }
 
     // organize members of interfaces and classes
     sourceFile = ts.createSourceFile(fileName, sourceCode, ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
 
-    elements = new Transformer().analyzeSyntaxTree(sourceFile);
+    elements = new Transformer().analyzeSyntaxTree(sourceFile, configuration.treatArrowFunctionPropertiesAsMethods);
 
     for (let element of elements.sort((a, b) => compareNumbers(a.fullStart, b.fullStart) * -1))
     {
         if (element instanceof InterfaceNode)
         {
             let interfaceNode = <InterfaceNode>element;
-            let groups = organizeInterfaceMembers(interfaceNode, memberTypeOrder, groupElementsWithDecorators);
+            let groups = organizeInterfaceMembers(interfaceNode, configuration.memberOrder, configuration.groupPropertiesWithDecorators);
 
-            sourceCode = print(groups, sourceCode, interfaceNode.membersStart, interfaceNode.membersEnd, 1, addRowNumberInRegionName, false, addRegionIdentation, identation, addRegionCaptionToRegionEnd, groupElementsWithDecorators);
+            sourceCode = print(groups, sourceCode, interfaceNode.membersStart, interfaceNode.membersEnd, 1, configuration.addRowNumberInRegionName, false, configuration.addRegionIndentation, indentation, configuration.addRegionCaptionToRegionEnd, configuration.groupPropertiesWithDecorators);
         }
         else if (element instanceof ClassNode)
         {
             let classNode = <ClassNode>element;
-            let groups = organizeClassMembers(classNode, memberTypeOrder, groupElementsWithDecorators);
+            let groups = organizeClassMembers(classNode, configuration.memberOrder, configuration.groupPropertiesWithDecorators);
 
-            sourceCode = print(groups, sourceCode, classNode.membersStart, classNode.membersEnd, 1, addRowNumberInRegionName, addPublicModifierIfMissing, addRegionIdentation, identation, addRegionCaptionToRegionEnd, groupElementsWithDecorators);
+            sourceCode = print(groups, sourceCode, classNode.membersStart, classNode.membersEnd, 1, configuration.addRowNumberInRegionName, configuration.addPublicModifierIfMissing, configuration.addRegionIndentation, indentation, configuration.addRegionCaptionToRegionEnd, configuration.groupPropertiesWithDecorators);
         }
     }
 
-    if (!useRegions)
+    if (!configuration.useRegions)
     {
         sourceCode = removeRegions(sourceCode);
     }
