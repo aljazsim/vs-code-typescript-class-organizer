@@ -43,6 +43,7 @@ Extensions supports the following configuration options:
 - `tsco.addRowNumberInRegionName`: When true region children count added on title. True by default.
 - `tsco.accessorsBeforeCtor`: When true put accessor before ctor during organization. False by default.
 - `tsco.memberOrder`: Configuration of grouping and ordering of members.
+- `tsco.treatArrowFunctionPropertiesAsMethods`: When true arrow function properties will be treated as methods.
 
 ### Configuration of grouping and ordering of members
 
@@ -291,3 +292,7 @@ Example of the default `tsco.memberOrder` setting:
 ### 10.0.16
 
 - fix bug where accessors (getters and setters) got removed when organizing a class
+
+### 10.0.17
+
+- added option to treat arrow function properties as methods (courtesy of [testpossessed](https://github.com/testpossessed))
