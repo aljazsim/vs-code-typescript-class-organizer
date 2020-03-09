@@ -1,0 +1,16 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    "files.exclude": {
+        ".vscode": false,
+        "node_modules": false,
+        ".git_ignore": false,
+        "out": false
+    },
+    "search.exclude": {
+        ".vscode": true,
+        "node_modules": true,
+        ".git_ignore": true,
+        "out": true
+    },
+    "cSpell.enabled": false
+}
