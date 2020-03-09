@@ -82,7 +82,7 @@ export class Transformer
                     if (treatArrowFunctionPropertiesAsMethods &&
                         member.initializer?.kind === ts.SyntaxKind.ArrowFunction)
                     {
-                        (<ClassNode>elements[elements.length - 1]).methods.push(new MethodNode(sourceFile, member));
+                        (<ClassNode>elements[elements.length - 1]).methods.push(new PropertyNode(sourceFile, member));
                     }
                     else
                     {

@@ -244,6 +244,13 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
                     {
                         members += newLine;
                     }
+                    else if (nodeGroup.length - 1 > i &&
+                        nodeGroup[i] instanceof PropertyNode &&
+                        nodeGroup[i + 1] instanceof MethodNode)
+                    {
+                        // arrow function property folowed by a method -> add a new line in between
+                        members += newLine;
+                    }
                 }
 
                 members += newLine;
