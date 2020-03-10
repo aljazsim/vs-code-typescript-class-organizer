@@ -34,6 +34,7 @@ You can invoke command "TypeScript Class Organizer: Organize Current File" by us
 ## Configuration
 
 Extensions supports the following configuration options:
+
 - `tsco.useRegions`: When true regions surrounding member groups are added. True by default.
 - `tsco.addPublicModifierIfMissing`: When true public access modifier is added. True by default.
 - `tsco.addRegionIndentation`: When true regions are indented with class members. True by default.
@@ -295,3 +296,4 @@ Example of the default `tsco.memberOrder` setting:
 ### 10.0.17
 
 - added option to treat arrow function properties as methods (courtesy of [testpossessed](https://github.com/testpossessed))
+- fix bug where assync methods were not assigned a public access modifier correctly

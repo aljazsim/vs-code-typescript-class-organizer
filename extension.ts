@@ -200,7 +200,14 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
                         {
                             if (node instanceof MethodNode)
                             {
-                                code = code.replace(new RegExp(`${node.name}\\s*\\(`), `public ${node.name}(`);
+                                if (code.startsWith("async"))
+                                {
+                                    code = code.replace(new RegExp(`async\\s*${node.name}\\s*\\(`), `public async ${node.name}(`);
+                                }
+                                else
+                                {
+                                    code = code.replace(new RegExp(`${node.name}\\s*\\(`), `public ${node.name}(`);
+                                }
                             }
                             else if (node instanceof PropertyNode)
                             {
