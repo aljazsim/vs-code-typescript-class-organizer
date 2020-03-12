@@ -194,6 +194,10 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
                     let comment = sourceCode.substring(node.fullStart, node.start).trim();
                     let code = sourceCode.substring(node.start, node.end).trim();
 
+                    if(node instanceof PropertyNode  && node.isArrowFunction) {
+                        code += newLine;
+                    }
+
                     if (addPublicModifierIfMissing)
                     {
                         if (node.accessModifier === null)
