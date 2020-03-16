@@ -1,399 +1,399 @@
 {
-  "name": "tsco",
-  "displayName": "TypeScript Class Organizer",
-  "description": "Groups and orders class members",
-  "version": "1.0.18",
-  "publisher": "aljazsim",
-  "author": {
-    "name": "aljazsim",
-    "url": "https://github.com/aljazsim/"
-  },
-  "icon": "doc/logo.png",
-  "galleryBanner": {
-    "color": "#4c725d",
-    "theme": "dark"
-  },
-  "bugs": {
-    "url": "https://github.com/aljazsim/vs-code-typescript-class-organizer/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/aljazsim/vs-code-typescript-class-organizer.git"
-  },
-  "homepage": "https://github.com/aljazsim/vs-code-typescript-class-organizer",
-  "engines": {
-    "vscode": "^1.22.0"
-  },
-  "license": "MIT",
-  "categories": [
-    "Formatters"
-  ],
-  "keywords": [
-    "TypeScript",
-    "organize",
-    "order",
-    "class",
-    "regions"
-  ],
-  "activationEvents": [
-    "onCommand:tsco.organize",
-    "onCommand:tsco.organizeAll"
-  ],
-  "contributes": {
-    "configuration": {
-      "title": "Typescript Class Organizer configuration",
-      "properties": {
-        "tsco.useRegions": {
-          "type": "boolean",
-          "default": true,
-          "description": "Adds regions when organizing a class."
-        },
-        "tsco.addRowNumberInRegionName": {
-          "type": "boolean",
-          "default": true,
-          "description": "Add region children count on title."
-        },
-        "tsco.accessorsBeforeCtor": {
-          "type": "boolean",
-          "default": false,
-          "description": "during organization : put accessor before ctor."
-        },
-        "tsco.addPublicModifierIfMissing": {
-          "type": "boolean",
-          "default": true,
-          "description": "Adds a public access modifier if missing."
-        },
-        "tsco.addRegionIndentation": {
-          "type": "boolean",
-          "default": true,
-          "description": "Adds region Indentation."
-        },
-        "tsco.addRegionCaptionToRegionEnd": {
-          "type": "boolean",
-          "default": true,
-          "description": "Adds region caption to region end."
-        },
-        "tsco.groupPropertiesWithDecorators": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true properties with decorators will come first."
-        },
-        "tsco.treatArrowFunctionPropertiesAsMethods": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true arrow function properties will be treated as methods."
-        },
-        "tsco.memberOrder": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "title": "member group",
+    "name": "tsco",
+    "displayName": "TypeScript Class Organizer",
+    "description": "Groups and orders class members",
+    "version": "1.0.18",
+    "publisher": "aljazsim",
+    "author": {
+        "name": "aljazsim",
+        "url": "https://github.com/aljazsim/"
+    },
+    "icon": "doc/logo.png",
+    "galleryBanner": {
+        "color": "#4c725d",
+        "theme": "dark"
+    },
+    "bugs": {
+        "url": "https://github.com/aljazsim/vs-code-typescript-class-organizer/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/aljazsim/vs-code-typescript-class-organizer.git"
+    },
+    "homepage": "https://github.com/aljazsim/vs-code-typescript-class-organizer",
+    "engines": {
+        "vscode": "^1.22.0"
+    },
+    "license": "MIT",
+    "categories": [
+        "Formatters"
+    ],
+    "keywords": [
+        "TypeScript",
+        "organize",
+        "order",
+        "class",
+        "regions"
+    ],
+    "activationEvents": [
+        "onCommand:tsco.organize",
+        "onCommand:tsco.organizeAll"
+    ],
+    "contributes": {
+        "configuration": {
+            "title": "Typescript Class Organizer configuration",
             "properties": {
-              "caption": {
-                "type": "string",
-                "description": "Group caption (outputted in the region name if this group is a region and if using regions)."
-              },
-              "memberTypes": {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "description": "Type of the member (avoid using duplicated member types).",
-                  "enum": [
-                    "privateStaticConstProperties",
-                    "privateConstProperties",
-                    "privateStaticReadOnlyProperties",
-                    "privateReadOnlyProperties",
-                    "privateStaticProperties",
-                    "privateProperties",
-                    "protectedStaticConstProperties",
-                    "protectedConstProperties",
-                    "protectedStaticReadOnlyProperties",
-                    "protectedReadOnlyProperties",
-                    "protectedStaticProperties",
-                    "protectedProperties",
-                    "publicStaticConstProperties",
-                    "publicConstProperties",
-                    "publicStaticReadOnlyProperties",
-                    "publicReadOnlyProperties",
-                    "publicStaticProperties",
-                    "publicProperties",
-                    "constructors",
-                    "publicStaticIndexes",
-                    "publicIndexes",
-                    "publicAbstractIndexes",
-                    "protectedStaticIndexes",
-                    "protectedIndexes",
-                    "protectedAbstractIndexes",
-                    "privateStaticIndexes",
-                    "privateIndexes",
-                    "privateAbstractIndexes",
-                    "publicStaticMethods",
-                    "publicMethods",
-                    "publicAbstractMethods",
-                    "protectedStaticMethods",
-                    "protectedMethods",
-                    "protectedAbstractMethods",
-                    "privateStaticMethods",
-                    "privateMethods",
-                    "privateAbstractMethods"
-                  ]
+                "tsco.useRegions": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Adds regions when organizing a class."
+                },
+                "tsco.addRowNumberInRegionName": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Add region children count on title."
+                },
+                "tsco.accessorsBeforeCtor": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "during organization : put accessor before ctor."
+                },
+                "tsco.addPublicModifierIfMissing": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Adds a public access modifier if missing."
+                },
+                "tsco.addRegionIndentation": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Adds region Indentation."
+                },
+                "tsco.addRegionCaptionToRegionEnd": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Adds region caption to region end."
+                },
+                "tsco.groupPropertiesWithDecorators": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "When true properties with decorators will come first."
+                },
+                "tsco.treatArrowFunctionPropertiesAsMethods": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "When true arrow function properties will be treated as methods."
+                },
+                "tsco.memberOrder": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "title": "member group",
+                        "properties": {
+                            "caption": {
+                                "type": "string",
+                                "description": "Group caption (outputted in the region name if this group is a region and if using regions)."
+                            },
+                            "memberTypes": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "description": "Type of the member (avoid using duplicated member types).",
+                                    "enum": [
+                                        "privateStaticConstProperties",
+                                        "privateConstProperties",
+                                        "privateStaticReadOnlyProperties",
+                                        "privateReadOnlyProperties",
+                                        "privateStaticProperties",
+                                        "privateProperties",
+                                        "protectedStaticConstProperties",
+                                        "protectedConstProperties",
+                                        "protectedStaticReadOnlyProperties",
+                                        "protectedReadOnlyProperties",
+                                        "protectedStaticProperties",
+                                        "protectedProperties",
+                                        "publicStaticConstProperties",
+                                        "publicConstProperties",
+                                        "publicStaticReadOnlyProperties",
+                                        "publicReadOnlyProperties",
+                                        "publicStaticProperties",
+                                        "publicProperties",
+                                        "constructors",
+                                        "publicStaticIndexes",
+                                        "publicIndexes",
+                                        "publicAbstractIndexes",
+                                        "protectedStaticIndexes",
+                                        "protectedIndexes",
+                                        "protectedAbstractIndexes",
+                                        "privateStaticIndexes",
+                                        "privateIndexes",
+                                        "privateAbstractIndexes",
+                                        "publicStaticMethods",
+                                        "publicMethods",
+                                        "publicAbstractMethods",
+                                        "protectedStaticMethods",
+                                        "protectedMethods",
+                                        "protectedAbstractMethods",
+                                        "privateStaticMethods",
+                                        "privateMethods",
+                                        "privateAbstractMethods"
+                                    ]
+                                }
+                            },
+                            "default": [],
+                            "description": "Nested member type sub-groups."
+                        }
+                    },
+                    "default": [
+                        {
+                            "caption": "Properties",
+                            "memberTypes": [
+                                "privateStaticConstProperties",
+                                "privateConstProperties",
+                                "privateStaticReadOnlyProperties",
+                                "privateReadOnlyProperties",
+                                "privateStaticProperties",
+                                "privateProperties",
+                                "protectedStaticConstProperties",
+                                "protectedConstProperties",
+                                "protectedStaticReadOnlyProperties",
+                                "protectedReadOnlyProperties",
+                                "protectedStaticProperties",
+                                "protectedProperties",
+                                "publicStaticConstProperties",
+                                "publicConstProperties",
+                                "publicStaticReadOnlyProperties",
+                                "publicReadOnlyProperties",
+                                "publicStaticProperties",
+                                "publicProperties"
+                            ]
+                        },
+                        {
+                            "caption": "Constructors",
+                            "memberTypes": [
+                                "constructors"
+                            ]
+                        },
+                        {
+                            "caption": "Public Static Indexers",
+                            "memberTypes": [
+                                "publicStaticIndexes"
+                            ]
+                        },
+                        {
+                            "caption": "Public Indexers",
+                            "memberTypes": [
+                                "publicIndexes"
+                            ]
+                        },
+                        {
+                            "caption": "Public Abstract Indexers",
+                            "memberTypes": [
+                                "publicAbstractIndexes"
+                            ]
+                        },
+                        {
+                            "caption": "Protected Static Indexers",
+                            "memberTypes": [
+                                "protectedStaticIndexes"
+                            ]
+                        },
+                        {
+                            "caption": "Protected Indexers",
+                            "memberTypes": [
+                                "protectedIndexes"
+                            ]
+                        },
+                        {
+                            "caption": "Protected Abstract Indexers",
+                            "memberTypes": [
+                                "protectedAbstractIndexes"
+                            ]
+                        },
+                        {
+                            "caption": "Private Static Indexers",
+                            "memberTypes": [
+                                "privateStaticIndexes"
+                            ]
+                        },
+                        {
+                            "caption": "Private Indexers",
+                            "memberTypes": [
+                                "privateIndexes"
+                            ]
+                        },
+                        {
+                            "caption": "Private Abstract Indexers",
+                            "memberTypes": [
+                                "privateAbstractIndexes"
+                            ]
+                        },
+                        {
+                            "caption": "Public Static Accessors",
+                            "memberTypes": [
+                                "publicStaticGettersAndSetters"
+                            ]
+                        },
+                        {
+                            "caption": "Public Accessors",
+                            "memberTypes": [
+                                "publicGettersAndSetters"
+                            ]
+                        },
+                        {
+                            "caption": "Public Abstract Accessors",
+                            "memberTypes": [
+                                "publicAbstractGettersAndSetters"
+                            ]
+                        },
+                        {
+                            "caption": "Protected Static Accessors",
+                            "memberTypes": [
+                                "protectedStaticGettersAndSetters"
+                            ]
+                        },
+                        {
+                            "caption": "Protected Accessors",
+                            "memberTypes": [
+                                "protectedGettersAndSetters"
+                            ]
+                        },
+                        {
+                            "caption": "Protected Abstract Accessors",
+                            "memberTypes": [
+                                "protectedAbstractGettersAndSetters"
+                            ]
+                        },
+                        {
+                            "caption": "Private Static Accessors",
+                            "memberTypes": [
+                                "privateStaticGettersAndSetters"
+                            ]
+                        },
+                        {
+                            "caption": "Private Accessors",
+                            "memberTypes": [
+                                "privateGettersAndSetters"
+                            ]
+                        },
+                        {
+                            "caption": "Private Abstract Accessors",
+                            "memberTypes": [
+                                "privateAbstractGettersAndSetters"
+                            ]
+                        },
+                        {
+                            "caption": "Public Static Methods",
+                            "memberTypes": [
+                                "publicStaticMethods"
+                            ]
+                        },
+                        {
+                            "caption": "Public Methods",
+                            "memberTypes": [
+                                "publicMethods"
+                            ]
+                        },
+                        {
+                            "caption": "Public Abstract Methods",
+                            "memberTypes": [
+                                "publicAbstractMethods"
+                            ]
+                        },
+                        {
+                            "caption": "Protected Static Methods",
+                            "memberTypes": [
+                                "protectedStaticMethods"
+                            ]
+                        },
+                        {
+                            "caption": "Protected Methods",
+                            "memberTypes": [
+                                "protectedMethods"
+                            ]
+                        },
+                        {
+                            "caption": "Protected Abstract Methods",
+                            "memberTypes": [
+                                "protectedAbstractMethods"
+                            ]
+                        },
+                        {
+                            "caption": "Private Static Methods",
+                            "memberTypes": [
+                                "privateStaticMethods"
+                            ]
+                        },
+                        {
+                            "caption": "Private Methods",
+                            "memberTypes": [
+                                "privateMethods"
+                            ]
+                        },
+                        {
+                            "caption": "Private Abstract Methods",
+                            "memberTypes": [
+                                "privateAbstractMethods"
+                            ]
+                        }
+                    ],
+                    "description": "Order of member types."
                 }
-              },
-              "default": [],
-              "description": "Nested member type sub-groups."
             }
-          },
-          "default": [
+        },
+        "commands": [
             {
-              "caption": "Properties",
-              "memberTypes": [
-                "privateStaticConstProperties",
-                "privateConstProperties",
-                "privateStaticReadOnlyProperties",
-                "privateReadOnlyProperties",
-                "privateStaticProperties",
-                "privateProperties",
-                "protectedStaticConstProperties",
-                "protectedConstProperties",
-                "protectedStaticReadOnlyProperties",
-                "protectedReadOnlyProperties",
-                "protectedStaticProperties",
-                "protectedProperties",
-                "publicStaticConstProperties",
-                "publicConstProperties",
-                "publicStaticReadOnlyProperties",
-                "publicReadOnlyProperties",
-                "publicStaticProperties",
-                "publicProperties"
-              ]
+                "command": "tsco.organize",
+                "title": "Organize Current File",
+                "category": "TypeScript Class Organizer",
+                "when": "editorTextFocus && editorLangId == typescript"
             },
             {
-              "caption": "Constructors",
-              "memberTypes": [
-                "constructors"
-              ]
-            },
-            {
-              "caption": "Public Static Indexers",
-              "memberTypes": [
-                "publicStaticIndexes"
-              ]
-            },
-            {
-              "caption": "Public Indexers",
-              "memberTypes": [
-                "publicIndexes"
-              ]
-            },
-            {
-              "caption": "Public Abstract Indexers",
-              "memberTypes": [
-                "publicAbstractIndexes"
-              ]
-            },
-            {
-              "caption": "Protected Static Indexers",
-              "memberTypes": [
-                "protectedStaticIndexes"
-              ]
-            },
-            {
-              "caption": "Protected Indexers",
-              "memberTypes": [
-                "protectedIndexes"
-              ]
-            },
-            {
-              "caption": "Protected Abstract Indexers",
-              "memberTypes": [
-                "protectedAbstractIndexes"
-              ]
-            },
-            {
-              "caption": "Private Static Indexers",
-              "memberTypes": [
-                "privateStaticIndexes"
-              ]
-            },
-            {
-              "caption": "Private Indexers",
-              "memberTypes": [
-                "privateIndexes"
-              ]
-            },
-            {
-              "caption": "Private Abstract Indexers",
-              "memberTypes": [
-                "privateAbstractIndexes"
-              ]
-            },
-            {
-              "caption": "Public Static Accessors",
-              "memberTypes": [
-                "publicStaticGettersAndSetters"
-              ]
-            },
-            {
-              "caption": "Public Accessors",
-              "memberTypes": [
-                "publicGettersAndSetters"
-              ]
-            },
-            {
-              "caption": "Public Abstract Accessors",
-              "memberTypes": [
-                "publicAbstractGettersAndSetters"
-              ]
-            },
-            {
-              "caption": "Protected Static Accessors",
-              "memberTypes": [
-                "protectedStaticGettersAndSetters"
-              ]
-            },
-            {
-              "caption": "Protected Accessors",
-              "memberTypes": [
-                "protectedGettersAndSetters"
-              ]
-            },
-            {
-              "caption": "Protected Abstract Accessors",
-              "memberTypes": [
-                "protectedAbstractGettersAndSetters"
-              ]
-            },
-            {
-              "caption": "Private Static Accessors",
-              "memberTypes": [
-                "privateStaticGettersAndSetters"
-              ]
-            },
-            {
-              "caption": "Private Accessors",
-              "memberTypes": [
-                "privateGettersAndSetters"
-              ]
-            },
-            {
-              "caption": "Private Abstract Accessors",
-              "memberTypes": [
-                "privateAbstractGettersAndSetters"
-              ]
-            },
-            {
-              "caption": "Public Static Methods",
-              "memberTypes": [
-                "publicStaticMethods"
-              ]
-            },
-            {
-              "caption": "Public Methods",
-              "memberTypes": [
-                "publicMethods"
-              ]
-            },
-            {
-              "caption": "Public Abstract Methods",
-              "memberTypes": [
-                "publicAbstractMethods"
-              ]
-            },
-            {
-              "caption": "Protected Static Methods",
-              "memberTypes": [
-                "protectedStaticMethods"
-              ]
-            },
-            {
-              "caption": "Protected Methods",
-              "memberTypes": [
-                "protectedMethods"
-              ]
-            },
-            {
-              "caption": "Protected Abstract Methods",
-              "memberTypes": [
-                "protectedAbstractMethods"
-              ]
-            },
-            {
-              "caption": "Private Static Methods",
-              "memberTypes": [
-                "privateStaticMethods"
-              ]
-            },
-            {
-              "caption": "Private Methods",
-              "memberTypes": [
-                "privateMethods"
-              ]
-            },
-            {
-              "caption": "Private Abstract Methods",
-              "memberTypes": [
-                "privateAbstractMethods"
-              ]
+                "command": "tsco.organizeAll",
+                "title": "Organize All Files",
+                "category": "TypeScript Class Organizer"
             }
-          ],
-          "description": "Order of member types."
-        }
-      }
-    },
-    "commands": [
-      {
-        "command": "tsco.organize",
-        "title": "Organize Current File",
-        "category": "TypeScript Class Organizer",
-        "when": "editorTextFocus && editorLangId == typescript"
-      },
-      {
-        "command": "tsco.organizeAll",
-        "title": "Organize All Files",
-        "category": "TypeScript Class Organizer"
-      }
-    ],
-    "menus": {
-      "editor/context": [
-        {
-          "command": "tsco.organize",
-          "group": "1_modification",
-          "when": "editorTextFocus && editorLangId == typescript"
-        }
-      ]
-    },
-    "keybindings": [
-      {
-        "command": "tsco.organize",
-        "key": "ctrl+shift+o",
-        "mac": "cmd+shift+o",
-        "when": "editorTextFocus && editorLangId == typescript"
-      }
-    ],
-    "languages": [
-      {
-        "id": "typescript",
-        "extensions": [
-          ".ts"
+        ],
+        "menus": {
+            "editor/context": [
+                {
+                    "command": "tsco.organize",
+                    "group": "1_modification",
+                    "when": "editorTextFocus && editorLangId == typescript"
+                }
+            ]
+        },
+        "keybindings": [
+            {
+                "command": "tsco.organize",
+                "key": "ctrl+shift+o",
+                "mac": "cmd+shift+o",
+                "when": "editorTextFocus && editorLangId == typescript"
+            }
+        ],
+        "languages": [
+            {
+                "id": "typescript",
+                "extensions": [
+                    ".ts"
+                ]
+            }
         ]
-      }
-    ]
-  },
-  "main": "./out/extension",
-  "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "postinstall": "node ./node_modules/vscode/bin/install",
-    "test": "npm run compile && node ./node_modules/vscode/bin/test"
-  },
-  "devDependencies": {
-    "@types/mocha": "7.0.2",
-    "@types/node": "13.9.0",
-    "eslint": "6.8.0",
-    "vscode": "1.1.36"
-  },
-  "dependencies": {
-    "typescript": "3.8.3"
-  }
+    },
+    "main": "./out/extension",
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "@types/mocha": "7.0.2",
+        "@types/node": "13.9.1",
+        "eslint": "6.8.0",
+        "vscode": "1.1.36"
+    },
+    "dependencies": {
+        "typescript": "3.8.3"
+    }
 }
