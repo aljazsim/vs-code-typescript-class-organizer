@@ -1,20 +1,20 @@
-import { Configuration } from './src/configuration';
-import { ElementNodeGroup } from './src/element-node-group';
-import { ElementNodeGroupConfiguration } from './src/element-node-group-configuration';
-import { ClassNode } from './src/elements/class-node';
-import { ElementNode } from './src/elements/element-node';
-import { GetterNode } from './src/elements/getter-node';
-import { InterfaceNode } from './src/elements/interface-node';
-import { MethodNode } from './src/elements/method-node';
-import { PropertyNode } from './src/elements/property-node';
-import { SetterNode } from './src/elements/setter-node';
-import { UnknownNode } from './src/elements/unknown-node';
-import { MemberType } from './src/member-type';
-import { formatLines, removeRegions } from './src/regions';
-import { Transformer } from './src/transformer';
-import { compareNumbers, getClasses, getEnums, getFunctions, getImports, getInterfaces, getTypeAliases } from './src/utils';
-import * as ts from 'typescript';
-import * as vscode from 'vscode';
+import { Configuration } from "./src/configuration";
+import { ElementNodeGroup } from "./src/element-node-group";
+import { ElementNodeGroupConfiguration } from "./src/element-node-group-configuration";
+import { ClassNode } from "./src/elements/class-node";
+import { ElementNode } from "./src/elements/element-node";
+import { GetterNode } from "./src/elements/getter-node";
+import { InterfaceNode } from "./src/elements/interface-node";
+import { MethodNode } from "./src/elements/method-node";
+import { PropertyNode } from "./src/elements/property-node";
+import { SetterNode } from "./src/elements/setter-node";
+import { UnknownNode } from "./src/elements/unknown-node";
+import { MemberType } from "./src/member-type";
+import { formatLines, removeRegions } from "./src/regions";
+import { Transformer } from "./src/transformer";
+import { compareNumbers, getClasses, getEnums, getFunctions, getImports, getInterfaces, getTypeAliases } from "./src/utils";
+import * as ts from "typescript";
+import * as vscode from "vscode";
 
 export function activate(context: vscode.ExtensionContext)
 {
@@ -194,10 +194,6 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
                     let comment = sourceCode.substring(node.fullStart, node.start).trim();
                     let code = sourceCode.substring(node.start, node.end).trim();
 
-                    if(node instanceof PropertyNode  && node.isArrowFunction) {
-                        code += newLine;
-                    }
-
                     if (addPublicModifierIfMissing)
                     {
                         if (node.accessModifier === null)
@@ -217,7 +213,7 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
                             {
                                 code = code.replace(new RegExp(`${node.name}\\s*:`), `public ${node.name}:`);
                                 code = code.replace(new RegExp(`${node.name}\\s*=`), `public ${node.name} =`);
-                                code = code.replace(new RegExp(`${node.name}\\s*;`), `public ${node.name} =;`);
+                                code = code.replace(new RegExp(`${node.name}\\s*;`), `public ${node.name};`);
                             }
                             else if (node instanceof GetterNode)
                             {
@@ -255,11 +251,10 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
                     {
                         members += newLine;
                     }
-                    else if (nodeGroup.length - 1 > i &&
-                        nodeGroup[i] instanceof PropertyNode &&
-                        nodeGroup[i + 1] instanceof MethodNode)
+                    else if (node instanceof PropertyNode &&
+                        node.isArrowFunction)
                     {
-                        // arrow function property folowed by a method -> add a new line in between
+                        // arrow function property -> add a new line
                         members += newLine;
                     }
                 }
