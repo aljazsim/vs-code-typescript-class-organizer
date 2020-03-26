@@ -44,6 +44,7 @@ Extensions supports the following configuration options:
 - `tsco.accessorsBeforeCtor`: When true put accessor before ctor during organization. False by default.
 - `tsco.memberOrder`: Configuration of grouping and ordering of members.
 - `tsco.treatArrowFunctionPropertiesAsMethods`: When true arrow function properties will be treated as methods.
+- `tsco.organizeOnSave`: When true file will get organized automatically whenever saved. False by default.
 
 ### Configuration of grouping and ordering of members
 
@@ -297,3 +298,7 @@ Example of the default `tsco.memberOrder` setting:
 
 - added option to treat arrow function properties as methods (courtesy of [testpossessed](https://github.com/testpossessed))
 - fix bug where assync methods were not assigned a public access modifier correctly
+
+### 10.0.19
+
+- added option organize file on save

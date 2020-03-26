@@ -16,10 +16,26 @@ import { compareNumbers, getClasses, getEnums, getFunctions, getImports, getInte
 import * as ts from "typescript";
 import * as vscode from "vscode";
 
+let configuration = getConfiguration();
+
 export function activate(context: vscode.ExtensionContext)
 {
-    context.subscriptions.push(vscode.commands.registerCommand('tsco.organize', () => organize(vscode.window.activeTextEditor, getConfiguration())));
-    context.subscriptions.push(vscode.commands.registerCommand('tsco.organizeAll', () => organizeAll(getConfiguration())));
+    context.subscriptions.push(vscode.commands.registerCommand('tsco.organize', () => organize(vscode.window.activeTextEditor, configuration)));
+    context.subscriptions.push(vscode.commands.registerCommand('tsco.organizeAll', () => organizeAll(configuration)));
+
+    vscode.workspace.onDidChangeConfiguration(e => configuration = getConfiguration())
+
+    vscode.workspace.onWillSaveTextDocument(e =>
+    {
+        if (vscode.window.activeTextEditor &&
+            vscode.window.activeTextEditor.document.fileName == e.document.fileName)
+        {
+            if (configuration.organizeOnSave)
+            {
+                organize(vscode.window.activeTextEditor, getConfiguration());
+            }
+        }
+    });
 }
 
 function getConfiguration()
@@ -35,6 +51,7 @@ function getConfiguration()
         configuration.get<boolean>("addRegionCaptionToRegionEnd") === true,
         configuration.get<boolean>("groupPropertiesWithDecorators") === true,
         configuration.get<boolean>("treatArrowFunctionPropertiesAsMethods") === true,
+        configuration.get<boolean>("organizeOnSave") === true,
         getMemberOrderConfig());
 }
 

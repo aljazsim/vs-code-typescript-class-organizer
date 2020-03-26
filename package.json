@@ -2,7 +2,7 @@
     "name": "tsco",
     "displayName": "TypeScript Class Organizer",
     "description": "Groups and orders class members",
-    "version": "1.0.18",
+    "version": "1.0.19",
     "publisher": "aljazsim",
     "author": {
         "name": "aljazsim",
@@ -36,6 +36,7 @@
         "regions"
     ],
     "activationEvents": [
+        "onLanguage:typescript",
         "onCommand:tsco.organize",
         "onCommand:tsco.organizeAll"
     ],
@@ -82,6 +83,11 @@
                     "type": "boolean",
                     "default": false,
                     "description": "When true arrow function properties will be treated as methods."
+                },
+                "tsco.organizeOnSave": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "When true file will get organized automatically whenever saved."
                 },
                 "tsco.memberOrder": {
                     "type": "array",
