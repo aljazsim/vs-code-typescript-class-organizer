@@ -299,10 +299,10 @@ Example of the default `tsco.memberOrder` setting:
 - added option to treat arrow function properties as methods (courtesy of [testpossessed](https://github.com/testpossessed))
 - fix bug where assync methods were not assigned a public access modifier correctly
 
-### 10.0.20
+### 10.0.19
 
 - added option organize file on save
 
-### 10.0.19
+### 10.0.21
 
 - fixed issue where static members without an access modifier were not correctly decorated with the public access modifier
