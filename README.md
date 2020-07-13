@@ -302,3 +302,7 @@ Example of the default `tsco.memberOrder` setting:
 ### 10.0.20
 
 - added option organize file on save
+
+### 10.0.19
+
+- fixed issue where static members without an access modifier were not correctly decorated with the public access modifier
