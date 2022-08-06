@@ -307,7 +307,7 @@ Example of the default `tsco.memberOrder` setting:
 
 - fixed issue where static members without an access modifier were not correctly decorated with the public access modifier
 
-### 10.0.22
+### 10.0.23
 
 - fixed issue where a redundant empty line was added when organising arrow type method properties
 - fixed issue where default access modifier is not correctly set
