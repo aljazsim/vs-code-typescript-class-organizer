@@ -22,7 +22,7 @@
     },
     "homepage": "https://github.com/aljazsim/vs-code-typescript-class-organizer",
     "engines": {
-        "vscode": "^1.22.0"
+        "vscode": "^1.69.1"
     },
     "license": "MIT",
     "categories": [
@@ -33,7 +33,8 @@
         "organize",
         "order",
         "class",
-        "regions"
+        "regions",
+        "members"
     ],
     "activationEvents": [
         "onLanguage:typescript",
