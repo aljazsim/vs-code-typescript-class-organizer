@@ -2,7 +2,7 @@
     "name": "tsco",
     "displayName": "TypeScript Class Organizer",
     "description": "Groups and orders class members",
-    "version": "1.0.21",
+    "version": "1.0.22",
     "publisher": "aljazsim",
     "author": {
         "name": "aljazsim",
@@ -394,12 +394,12 @@
         "test": "npm run compile && node ./node_modules/vscode/bin/test"
     },
     "devDependencies": {
-        "@types/mocha": "7.0.2",
-        "@types/node": "13.13.5",
-        "eslint": "7.0.0",
-        "vscode": "1.1.37"
+        "@types/mocha": "9.1.1",
+        "@types/node": "18.6.4",
+        "eslint": "8.21.0",
+        "vscode": "^0.9.9"
     },
     "dependencies": {
-        "typescript": "3.8.3"
+        "typescript": "4.7.4"
     }
 }
