@@ -162,7 +162,7 @@ function organize(editor: vscode.TextEditor | undefined, configuration: Configur
     }
 }
 
-function print(groups: ElementNodeGroup[], sourceCode: string, start: number, end: number, IndentationLevel: number, addRowNumberInRegionName: boolean, addPublicModifierIfMissing: boolean, addRegionIndentation: boolean, Indentation: string, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean)
+function print(groups: ElementNodeGroup[], sourceCode: string, start: number, end: number, IndentationLevel: number, addRowNumberInRegionName: boolean, addPublicModifierIfMissing: boolean, addRegionIndentation: boolean, Indentation: string, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean, treatArrowFunctionPropertiesAsMethods: boolean)
 {
     let sourceCode2: string;
     let count = 0;
@@ -306,7 +306,8 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
                         members += newLine;
                     }
                     else if (node instanceof PropertyNode &&
-                        node.isArrowFunction)
+                        node.isArrowFunction &&
+                        treatArrowFunctionPropertiesAsMethods)
                     {
                         // arrow function property -> add a new line
                         members += newLine;
@@ -329,13 +330,13 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
         }
     }
 
-    sourceCode2 = sourceCode.substring(0, start).trimRight();
+    sourceCode2 = sourceCode.substring(0, start).trimEnd();
     sourceCode2 += newLine;
     sourceCode2 += (addRegionIndentation ? Indentation : "") + members.trim();
     sourceCode2 += newLine;
-    sourceCode2 += sourceCode.substring(end, sourceCode.length).trimLeft();
+    sourceCode2 += sourceCode.substring(end, sourceCode.length).trimStart();
 
-    return sourceCode2.trimLeft();
+    return sourceCode2.trimStart();
 }
 
 function organizeTypes(sourceCode: string, fileName: string, configuration: Configuration)
@@ -370,7 +371,7 @@ function organizeTypes(sourceCode: string, fileName: string, configuration: Conf
         if (functions.length + typeAliases.length + interfaces.length + classes.length + enums.length > 1 ||
             functions.length > 0)
         {
-            sourceCode = print(groups, sourceCode, 0, sourceCode.length, 0, configuration.addRowNumberInRegionName, false, false, indentation, configuration.addRegionCaptionToRegionEnd, configuration.groupPropertiesWithDecorators);
+            sourceCode = print(groups, sourceCode, 0, sourceCode.length, 0, configuration.addRowNumberInRegionName, false, false, indentation, configuration.addRegionCaptionToRegionEnd, configuration.groupPropertiesWithDecorators, configuration.treatArrowFunctionPropertiesAsMethods);
         }
     }
 
@@ -386,14 +387,14 @@ function organizeTypes(sourceCode: string, fileName: string, configuration: Conf
             let interfaceNode = <InterfaceNode>element;
             let groups = organizeInterfaceMembers(interfaceNode, configuration.memberOrder, configuration.groupPropertiesWithDecorators);
 
-            sourceCode = print(groups, sourceCode, interfaceNode.membersStart, interfaceNode.membersEnd, 1, configuration.addRowNumberInRegionName, false, configuration.addRegionIndentation, indentation, configuration.addRegionCaptionToRegionEnd, configuration.groupPropertiesWithDecorators);
+            sourceCode = print(groups, sourceCode, interfaceNode.membersStart, interfaceNode.membersEnd, 1, configuration.addRowNumberInRegionName, false, configuration.addRegionIndentation, indentation, configuration.addRegionCaptionToRegionEnd, configuration.groupPropertiesWithDecorators, configuration.treatArrowFunctionPropertiesAsMethods);
         }
         else if (element instanceof ClassNode)
         {
             let classNode = <ClassNode>element;
             let groups = organizeClassMembers(classNode, configuration.memberOrder, configuration.groupPropertiesWithDecorators);
 
-            sourceCode = print(groups, sourceCode, classNode.membersStart, classNode.membersEnd, 1, configuration.addRowNumberInRegionName, configuration.addPublicModifierIfMissing, configuration.addRegionIndentation, indentation, configuration.addRegionCaptionToRegionEnd, configuration.groupPropertiesWithDecorators);
+            sourceCode = print(groups, sourceCode, classNode.membersStart, classNode.membersEnd, 1, configuration.addRowNumberInRegionName, configuration.addPublicModifierIfMissing, configuration.addRegionIndentation, indentation, configuration.addRegionCaptionToRegionEnd, configuration.groupPropertiesWithDecorators, configuration.treatArrowFunctionPropertiesAsMethods);
         }
     }
 
