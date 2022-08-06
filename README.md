@@ -310,3 +310,5 @@ Example of the default `tsco.memberOrder` setting:
 ### 10.0.22
 
 - fixed issue where a redundant empty line was added when organising arrow type method properties
+- fix issue where default access modifier is not correctly set
+- trigger organizing members only if manually saving the file and not if autosave is on in VS Code (courtesy of [Donny Verduijn](https://github.com/DonnyVerduijn))
