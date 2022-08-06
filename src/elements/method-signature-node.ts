@@ -9,7 +9,7 @@ export class MethodSignatureNode extends ElementNode
     {
         super(methodSignatureDeclaration);
 
-        this.name = (<ts.Identifier>methodSignatureDeclaration.name).escapedText.toString();
+        this.name = (<ts.Identifier>methodSignatureDeclaration.name).escapedText?.toString() ?? sourceFile.getFullText().substring(methodSignatureDeclaration.name.pos, methodSignatureDeclaration.name.end).trim();
 
         this.fullStart = methodSignatureDeclaration.getFullStart();
         this.end = methodSignatureDeclaration.getEnd();
