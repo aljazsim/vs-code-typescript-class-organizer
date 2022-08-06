@@ -27,7 +27,8 @@ export function activate(context: vscode.ExtensionContext)
 
     vscode.workspace.onWillSaveTextDocument(e =>
     {
-        if (vscode.window.activeTextEditor &&
+        if (e.reason === vscode.TextDocumentSaveReason.Manual && 
+            vscode.window.activeTextEditor &&
             vscode.window.activeTextEditor.document.fileName == e.document.fileName)
         {
             if (configuration.organizeOnSave)
