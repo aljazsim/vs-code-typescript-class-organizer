@@ -9,7 +9,7 @@ export class TypeAliasNode extends ElementNode
     {
         super(typeAliasDeclaration);
 
-        this.name = (<ts.Identifier>typeAliasDeclaration.name).escapedText.toString();
+        this.name = (<ts.Identifier>typeAliasDeclaration.name).escapedText?.toString() ?? sourceFile.getFullText().substring(typeAliasDeclaration.name.pos, typeAliasDeclaration.name.end).trim();
 
         this.fullStart = typeAliasDeclaration.getFullStart();
         this.end = typeAliasDeclaration.getEnd();

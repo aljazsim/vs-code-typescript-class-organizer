@@ -9,7 +9,7 @@ export class EnumNode extends ElementNode
     {
         super(enumDeclaration);
 
-        this.name = (<ts.Identifier>enumDeclaration.name).escapedText.toString();
+        this.name = (<ts.Identifier>enumDeclaration.name).escapedText?.toString() ?? sourceFile.getFullText().substring(enumDeclaration.name.pos, enumDeclaration.name.end).trim();
 
         this.fullStart = enumDeclaration.getFullStart();
         this.end = enumDeclaration.getEnd();

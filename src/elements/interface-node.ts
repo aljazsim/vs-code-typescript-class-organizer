@@ -23,7 +23,7 @@ export class InterfaceNode extends ElementNode
     {
         super(interfaceDeclaration);
 
-        this.name = (<ts.Identifier>interfaceDeclaration.name).escapedText.toString();
+        this.name = (<ts.Identifier>interfaceDeclaration.name).escapedText?.toString() ?? sourceFile.getFullText().substring(interfaceDeclaration.name.pos, interfaceDeclaration.name.end).trim();
 
         this.fullStart = interfaceDeclaration.getFullStart();
         this.end = interfaceDeclaration.getEnd();

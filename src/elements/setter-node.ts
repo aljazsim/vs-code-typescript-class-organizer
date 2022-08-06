@@ -16,7 +16,7 @@ export class SetterNode extends ElementNode
     {
         super(setterDeclaration);
 
-        this.name = (<ts.Identifier>setterDeclaration.name).escapedText.toString();
+        this.name = (<ts.Identifier>setterDeclaration.name).escapedText?.toString() ?? sourceFile.getFullText().substring(setterDeclaration.name.pos, setterDeclaration.name.end);
 
         this.fullStart = setterDeclaration.getFullStart();
         this.end = setterDeclaration.getEnd();

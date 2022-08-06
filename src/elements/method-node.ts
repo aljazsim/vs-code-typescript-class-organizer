@@ -16,7 +16,7 @@ export class MethodNode extends ElementNode
     {
         super(methodDeclaration);
 
-        this.name = (<ts.Identifier>methodDeclaration.name).escapedText.toString();
+        this.name = (<ts.Identifier>methodDeclaration.name).escapedText?.toString() ?? sourceFile.getFullText().substring(methodDeclaration.name.pos, methodDeclaration.name.end).trim();
 
         this.fullStart = methodDeclaration.getFullStart();
         this.end = methodDeclaration.getEnd();

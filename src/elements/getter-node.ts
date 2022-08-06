@@ -16,8 +16,7 @@ export class GetterNode extends ElementNode
     {
         super(getterDeclaration);
 
-        this.name = (<ts.Identifier>getterDeclaration.name).escapedText.toString();
-
+        this.name = (<ts.Identifier>getterDeclaration.name).escapedText?.toString() ?? sourceFile.getFullText().substring(getterDeclaration.name.pos, getterDeclaration.name.end).trim();
         this.fullStart = getterDeclaration.getFullStart();
         this.end = getterDeclaration.getEnd();
         this.start = getterDeclaration.getStart(sourceFile, false);

@@ -19,7 +19,7 @@ export class PropertyNode extends ElementNode
     {
         super(propertyDeclaration);
 
-        this.name = (<ts.Identifier>propertyDeclaration.name).escapedText.toString();
+        this.name = (<ts.Identifier>propertyDeclaration.name).escapedText?.toString() ?? sourceFile.getFullText().substring(propertyDeclaration.name.pos, propertyDeclaration.name.end);
 
         this.fullStart = propertyDeclaration.getFullStart();
         this.end = propertyDeclaration.getEnd();
