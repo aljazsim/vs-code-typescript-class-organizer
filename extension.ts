@@ -218,11 +218,7 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
                             if (node instanceof MethodNode ||
                                 node instanceof PropertyNode)
                             {
-                                if (node.name.startsWith("#"))
-                                {
-                                    code = `private ${code}`;
-                                }
-                                else
+                                if (!node.name.startsWith("#"))
                                 {
                                     code = `public ${code}`;
                                 }

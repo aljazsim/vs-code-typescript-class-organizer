@@ -316,4 +316,4 @@ Example of the default `tsco.memberOrder` setting:
 
 ### 1.0.24
 
-- add support for # notation for properties and methods
+- add support for private identifiers for properties and methods
