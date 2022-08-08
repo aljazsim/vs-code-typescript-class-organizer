@@ -1,5 +1,6 @@
 import { ElementNode } from "./element-node";
 import * as ts from "typescript";
+import { AccessModifier } from "./access-modifier";
 
 export class MethodNode extends ElementNode
 {
@@ -8,7 +9,7 @@ export class MethodNode extends ElementNode
     public isAbstract: boolean;
     public isStatic: boolean;
 
-    // #endregion
+    // #endregion Properties (2)
 
     // #region Constructors (1)
 
@@ -26,7 +27,13 @@ export class MethodNode extends ElementNode
         this.isAbstract = this.getIsAbstract(methodDeclaration);
         this.isStatic = this.getIsStatic(methodDeclaration);
         this.decorators = this.getDecorators(methodDeclaration, sourceFile);
+
+        if (this.name.startsWith("#"))
+        {
+            // methods starting with # are private by default!
+            this.accessModifier = AccessModifier.private;
+        }
     }
 
-    // #endregion
+    // #endregion Constructors (1)
 }

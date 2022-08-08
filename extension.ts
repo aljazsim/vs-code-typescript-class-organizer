@@ -215,19 +215,73 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
                     {
                         if (node.accessModifier === null)
                         {
-                            if (node instanceof MethodNode ||
-                                node instanceof PropertyNode)
+                            if (node instanceof MethodNode)
                             {
-                                if (!node.name.startsWith("#"))
+                                if (new RegExp(`static\\s*async\\s*${node.name}`).test(code))
                                 {
-                                    code = `public ${code}`;
+                                    code = code.replace(new RegExp(`static\\s*async\\s*${node.name}\\s*\\(`), `public static async ${node.name}(`);
+                                }
+                                else if (new RegExp(`static\\s*${node.name}`).test(code))
+                                {
+                                    code = code.replace(new RegExp(`static\\s*${node.name}\\s*\\(`), `public static ${node.name}(`);
+                                }
+                                else if (new RegExp(`async\\s*${node.name}`).test(code))
+                                {
+                                    code = code.replace(new RegExp(`async\\s*${node.name}\\s*\\(`), `public async ${node.name}(`);
+                                }
+                                else
+                                {
+                                    code = code.replace(new RegExp(`${node.name}\\s*\\(`), `public ${node.name}(`);
                                 }
                             }
-
-                            if (node instanceof GetterNode ||
-                                node instanceof SetterNode)
+                            else if (node instanceof PropertyNode)
                             {
-                                code = `public ${code}`;
+                                if (new RegExp(`static\\s*readonly\\s*${node.name}`).test(code))
+                                {
+                                    code = code.replace(new RegExp(`static\\s*readonly\\s*${node.name}\\s*:`), `public static readonly ${node.name}:`);
+                                    code = code.replace(new RegExp(`static\\s*readonly\\s*${node.name}\\s*=`), `public static readonly ${node.name} =`);
+                                    code = code.replace(new RegExp(`static\\s*readonly\\s*${node.name}\\s*;`), `public static readonly ${node.name};`);
+                                }
+                                else if (new RegExp(`static\\s*${node.name}`).test(code))
+                                {
+                                    code = code.replace(new RegExp(`static\\s*${node.name}\\s*:`), `public static ${node.name}:`);
+                                    code = code.replace(new RegExp(`static\\s*${node.name}\\s*=`), `public static ${node.name} =`);
+                                    code = code.replace(new RegExp(`static\\s*${node.name}\\s*;`), `public static ${node.name};`);
+                                }
+                                else if (new RegExp(`readonly\\s*${node.name}`).test(code))
+                                {
+                                    code = code.replace(new RegExp(`readonly\\s*${node.name}\\s*:`), `public readonly ${node.name}:`);
+                                    code = code.replace(new RegExp(`readonly\\s*${node.name}\\s*=`), `public readonly ${node.name} =`);
+                                    code = code.replace(new RegExp(`readonly\\s*${node.name}\\s*;`), `public readonly ${node.name};`);
+                                }
+                                else
+                                {
+                                    code = code.replace(new RegExp(`${node.name}\\s*:`), `public ${node.name}:`);
+                                    code = code.replace(new RegExp(`${node.name}\\s*=`), `public ${node.name} =`);
+                                    code = code.replace(new RegExp(`${node.name}\\s*;`), `public ${node.name};`);
+                                }
+                            }
+                            else if (node instanceof GetterNode)
+                            {
+                                if (new RegExp(`static\\s*get\\s*${node.name}`).test(code))
+                                {
+                                    code = code.replace(new RegExp(`static\\s*get\\s*${node.name}\\s*\\(`), `public static get ${node.name}(`);
+                                }
+                                else
+                                {
+                                    code = code.replace(new RegExp(`get\\s*${node.name}\\s*\\(`), `public get ${node.name}(`);
+                                }
+                            }
+                            else if (node instanceof SetterNode)
+                            {
+                                if (new RegExp(`static\\s*set\\s*${node.name}`).test(code))
+                                {
+                                    code = code.replace(new RegExp(`static\\s*set\\s*${node.name}\\s*\\(`), `public static set ${node.name}(`);
+                                }
+                                else
+                                {
+                                    code = code.replace(new RegExp(`set\\s*${node.name}\\s*\\(`), `public set ${node.name}(`);
+                                }
                             }
                         }
                     }

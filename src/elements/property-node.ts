@@ -1,17 +1,18 @@
 import { ElementNode } from "./element-node";
 import { WriteModifier } from "./write-modifier";
 import * as ts from "typescript";
+import { AccessModifier } from "./access-modifier";
 
 export class PropertyNode extends ElementNode
 {
-    // #region Properties (3)
+    // #region Properties (4)
 
     public isAbstract: boolean;
+    public isArrowFunction: boolean;
     public isStatic: boolean;
     public writeMode: WriteModifier = WriteModifier.writable;
-    public isArrowFunction: boolean;
 
-    // #endregion
+    // #endregion Properties (4)
 
     // #region Constructors (1)
 
@@ -32,11 +33,17 @@ export class PropertyNode extends ElementNode
         this.decorators = this.getDecorators(propertyDeclaration, sourceFile);
 
         this.isArrowFunction = this.getIsArrowFunction(propertyDeclaration);
+
+        if (this.name.startsWith("#"))
+        {
+            // properties starting with # are private by default!
+            this.accessModifier = AccessModifier.private;
+        }
     }
 
-    // #endregion
+    // #endregion Constructors (1)
 
-    // #region Private methods
+    // #region Private Methods (1)
 
     private getIsArrowFunction(propertyDeclaration: ts.PropertyDeclaration)
     {
@@ -44,5 +51,5 @@ export class PropertyNode extends ElementNode
             propertyDeclaration.initializer.kind === ts.SyntaxKind.ArrowFunction;
     }
 
-    // #endregion
+    // #endregion Private Methods (1)
 }
