@@ -27,7 +27,7 @@ export function activate(context: vscode.ExtensionContext)
 
     vscode.workspace.onWillSaveTextDocument(e =>
     {
-        if (e.reason === vscode.TextDocumentSaveReason.Manual && 
+        if (e.reason === vscode.TextDocumentSaveReason.Manual &&
             vscode.window.activeTextEditor &&
             vscode.window.activeTextEditor.document.fileName == e.document.fileName)
         {
@@ -135,7 +135,6 @@ function organizeAll(configuration: Configuration)
         .then(typescriptFiles => typescriptFiles.forEach(typescriptFile => vscode.workspace.openTextDocument(typescriptFile)
             .then(document => vscode.window.showTextDocument(document)
                 .then(editor => organize(editor, configuration) !== null))));
-
 }
 
 function organize(editor: vscode.TextEditor | undefined, configuration: Configuration)
@@ -217,8 +216,19 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
                         if (node.accessModifier === null)
                         {
                             if (node instanceof MethodNode ||
-                                node instanceof PropertyNode ||
-                                node instanceof GetterNode ||
+                                node instanceof PropertyNode)
+                            {
+                                if (node.name.startsWith("#"))
+                                {
+                                    code = `private ${code}`;
+                                }
+                                else
+                                {
+                                    code = `public ${code}`;
+                                }
+                            }
+
+                            if (node instanceof GetterNode ||
                                 node instanceof SetterNode)
                             {
                                 code = `public ${code}`;

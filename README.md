@@ -286,30 +286,34 @@ Example of the default `tsco.memberOrder` setting:
 - added option of adding number of members within a region (courtesy of [pillont](https://github.com/pillont))
 - added option to output accessors before constructor (courtesy of [pillont](https://github.com/pillont))
 
-### 10.0.15
+### 1.0.15
 
 - add option to customize grouping and ordering of members
 
-### 10.0.16
+### 1.0.16
 
 - fix bug where accessors (getters and setters) got removed when organizing a class
 
-### 10.0.17
+### 1.0.17
 
 - added option to treat arrow function properties as methods (courtesy of [testpossessed](https://github.com/testpossessed))
 - fix bug where assync methods were not assigned a public access modifier correctly
 
-### 10.0.19
+### 1.0.19
 
 - added option organize file on save
 
-### 10.0.21
+### 1.0.21
 
 - fixed issue where static members without an access modifier were not correctly decorated with the public access modifier
 
-### 10.0.23
+### 1.0.23
 
 - fixed issue where a redundant empty line was added when organising arrow type method properties
 - fixed issue where default access modifier is not correctly set
 - fixed issue where invalid member names are used
 - trigger organizing members only if manually saving the file and not if autosave is on in VS Code (courtesy of [Donny Verduijn](https://github.com/DonnyVerduijn))
+
+### 1.0.24
+
+- add support for # notation for properties and methods
