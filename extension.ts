@@ -359,6 +359,7 @@ function organizeTypes(sourceCode: string, fileName: string, configuration: Conf
     }
 
     sourceCode = formatLines(sourceCode);
+
     return sourceCode;
 }
 
