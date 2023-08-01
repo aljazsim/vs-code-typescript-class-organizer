@@ -163,7 +163,7 @@ This configuration can ge changed by using the `tsco.memberOrder` setting in `se
   - privateAbstractMethod
 - `subGroups` (only for top level groups): the array of member types to be included in this group.
 - `placeAbove`: list of member names to be put at the top of the group in the order specified (optional)
-- `placeAfter`: list of member names to be put at the bottom of the group in the order specified (optional)
+- `placeBelow`: list of member names to be put at the bottom of the group in the order specified (optional)
 
 Example of the default `tsco.memberOrder` setting:
 
@@ -409,3 +409,7 @@ The `placeAbove` methods will always apear at the top of the public method membb
 
 - fix issue where intefaces lost getters/setters when organizing
 - add support for a special member list to be put at the top or bottom of a member group
+
+### 1.0.26
+
+- update README
