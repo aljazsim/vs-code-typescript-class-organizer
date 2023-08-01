@@ -1,4 +1,3 @@
-import { sort } from "../utils";
 import { ConstructorNode } from "./constructor-node";
 import { ElementNode } from "./element-node";
 import { GetterNode } from "./getter-node";
@@ -23,7 +22,7 @@ export class ClassNode extends ElementNode
     public properties: PropertyNode[] = [];
     public setters: SetterNode[] = [];
 
-    // #endregion
+    // #endregion Properties (10)
 
     // #region Constructors (1)
 
@@ -49,239 +48,239 @@ export class ClassNode extends ElementNode
         this.decorators = this.getDecorators(classDeclaration, sourceFile);
     }
 
-    // #endregion
+    // #endregion Constructors (1)
 
     // #region Public Methods (46)
 
-    public getConstructors(groupWithDecorators: boolean)
+    public getConstructors()
     {
-        return this.constructors.sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.constructors;
     }
 
-    public getPrivateAbstractGettersAndSetters(groupWithDecorators: boolean)
+    public getPrivateAbstractGettersAndSetters()
     {
-        return this.getters.concat(this.setters).filter(x => this.isPrivate(x) && !x.isStatic && x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.getters.concat(this.setters).filter(x => this.isPrivate(x) && !x.isStatic && x.isAbstract);
     }
 
-    public getPrivateAbstractIndexes(groupWithDecorators: boolean)
+    public getPrivateAbstractIndexes()
     {
-        return this.indexes.filter(x => this.isPrivate(x) && !x.isStatic && x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.indexes.filter(x => this.isPrivate(x) && !x.isStatic && x.isAbstract);
     }
 
-    public getPrivateAbstractMethods(groupWithDecorators: boolean)
+    public getPrivateAbstractMethods()
     {
-        return this.methods.filter(x => this.isPrivate(x) && !x.isStatic && x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.methods.filter(x => this.isPrivate(x) && !x.isStatic && x.isAbstract);
     }
 
-    public getPrivateConstProperties(groupWithDecorators: boolean)
+    public getPrivateConstProperties()
     {
-        return this.properties.filter(x => this.isPrivate(x) && this.isConstant(x) && !x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.properties.filter(x => this.isPrivate(x) && this.isConstant(x) && !x.isStatic);
     }
 
-    public getPrivateGettersAndSetters(groupWithDecorators: boolean)
+    public getPrivateGettersAndSetters()
     {
-        return this.getters.concat(this.setters).filter(x => this.isPrivate(x) && !x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.getters.concat(this.setters).filter(x => this.isPrivate(x) && !x.isStatic && !x.isAbstract);
     }
 
-    public getPrivateIndexes(groupWithDecorators: boolean)
+    public getPrivateIndexes()
     {
-        return this.indexes.filter(x => this.isPrivate(x) && !x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.indexes.filter(x => this.isPrivate(x) && !x.isStatic && !x.isAbstract);
     }
 
-    public getPrivateMethods(groupWithDecorators: boolean)
+    public getPrivateMethods()
     {
-        return this.methods.filter(x => this.isPrivate(x) && !x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.methods.filter(x => this.isPrivate(x) && !x.isStatic && !x.isAbstract);
     }
 
-    public getPrivateProperties(groupWithDecorators: boolean)
+    public getPrivateProperties()
     {
-        return this.properties.filter(x => this.isPrivate(x) && this.isWritable(x) && !x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.properties.filter(x => this.isPrivate(x) && this.isWritable(x) && !x.isStatic);
     }
 
-    public getPrivateReadOnlyProperties(groupWithDecorators: boolean)
+    public getPrivateReadOnlyProperties()
     {
-        return this.properties.filter(x => this.isPrivate(x) && this.isReadOnly(x) && !x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.properties.filter(x => this.isPrivate(x) && this.isReadOnly(x) && !x.isStatic);
     }
 
-    public getPrivateStaticConstProperties(groupWithDecorators: boolean)
+    public getPrivateStaticConstProperties()
     {
-        return this.properties.filter(x => this.isPrivate(x) && this.isConstant(x) && x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.properties.filter(x => this.isPrivate(x) && this.isConstant(x) && x.isStatic);
     }
 
-    public getPrivateStaticGettersAndSetters(groupWithDecorators: boolean)
+    public getPrivateStaticGettersAndSetters()
     {
-        return this.getters.concat(this.setters).filter(x => this.isPrivate(x) && x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.getters.concat(this.setters).filter(x => this.isPrivate(x) && x.isStatic && !x.isAbstract);
     }
 
-    public getPrivateStaticIndexes(groupWithDecorators: boolean)
+    public getPrivateStaticIndexes()
     {
-        return this.indexes.filter(x => this.isPrivate(x) && x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.indexes.filter(x => this.isPrivate(x) && x.isStatic && !x.isAbstract);
     }
 
-    public getPrivateStaticMethods(groupWithDecorators: boolean)
+    public getPrivateStaticMethods()
     {
-        return this.methods.filter(x => this.isPrivate(x) && x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.methods.filter(x => this.isPrivate(x) && x.isStatic && !x.isAbstract);
     }
 
-    public getPrivateStaticProperties(groupWithDecorators: boolean)
+    public getPrivateStaticProperties()
     {
-        return this.properties.filter(x => this.isPrivate(x) && this.isWritable(x) && x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.properties.filter(x => this.isPrivate(x) && this.isWritable(x) && x.isStatic);
     }
 
-    public getPrivateStaticReadOnlyProperties(groupWithDecorators: boolean)
+    public getPrivateStaticReadOnlyProperties()
     {
-        return this.properties.filter(x => this.isPrivate(x) && this.isReadOnly(x) && x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.properties.filter(x => this.isPrivate(x) && this.isReadOnly(x) && x.isStatic);
     }
 
-    public getProtectedAbstractGettersAndSetters(groupWithDecorators: boolean)
+    public getProtectedAbstractGettersAndSetters()
     {
-        return this.getters.concat(this.setters).filter(x => this.isProtected(x) && !x.isStatic && x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.getters.concat(this.setters).filter(x => this.isProtected(x) && !x.isStatic && x.isAbstract);
     }
 
-    public getProtectedAbstractIndexes(groupWithDecorators: boolean)
+    public getProtectedAbstractIndexes()
     {
-        return this.indexes.filter(x => this.isProtected(x) && !x.isStatic && x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.indexes.filter(x => this.isProtected(x) && !x.isStatic && x.isAbstract);
     }
 
-    public getProtectedAbstractMethods(groupWithDecorators: boolean)
+    public getProtectedAbstractMethods()
     {
-        return this.methods.filter(x => this.isProtected(x) && !x.isStatic && x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.methods.filter(x => this.isProtected(x) && !x.isStatic && x.isAbstract);
     }
 
-    public getProtectedConstProperties(groupWithDecorators: boolean)
+    public getProtectedConstProperties()
     {
-        return this.properties.filter(x => this.isProtected(x) && this.isConstant(x) && !x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.properties.filter(x => this.isProtected(x) && this.isConstant(x) && !x.isStatic);
     }
 
-    public getProtectedGettersAndSetters(groupWithDecorators: boolean)
+    public getProtectedGettersAndSetters()
     {
-        return this.getters.concat(this.setters).filter(x => this.isProtected(x) && !x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.getters.concat(this.setters).filter(x => this.isProtected(x) && !x.isStatic && !x.isAbstract);
     }
 
-    public getProtectedIndexes(groupWithDecorators: boolean)
+    public getProtectedIndexes()
     {
-        return this.indexes.filter(x => this.isProtected(x) && !x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.indexes.filter(x => this.isProtected(x) && !x.isStatic && !x.isAbstract);
     }
 
-    public getProtectedMethods(groupWithDecorators: boolean)
+    public getProtectedMethods()
     {
-        return this.methods.filter(x => this.isProtected(x) && !x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.methods.filter(x => this.isProtected(x) && !x.isStatic && !x.isAbstract);
     }
 
-    public getProtectedProperties(groupWithDecorators: boolean)
+    public getProtectedProperties()
     {
-        return this.properties.filter(x => this.isProtected(x) && this.isWritable(x) && !x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.properties.filter(x => this.isProtected(x) && this.isWritable(x) && !x.isStatic);
     }
 
-    public getProtectedReadOnlyProperties(groupWithDecorators: boolean)
+    public getProtectedReadOnlyProperties()
     {
-        return this.properties.filter(x => this.isProtected(x) && this.isReadOnly(x) && !x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.properties.filter(x => this.isProtected(x) && this.isReadOnly(x) && !x.isStatic);
     }
 
-    public getProtectedStaticConstProperties(groupWithDecorators: boolean)
+    public getProtectedStaticConstProperties()
     {
-        return this.properties.filter(x => this.isProtected(x) && this.isConstant(x) && x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.properties.filter(x => this.isProtected(x) && this.isConstant(x) && x.isStatic);
     }
 
-    public getProtectedStaticGettersAndSetters(groupWithDecorators: boolean)
+    public getProtectedStaticGettersAndSetters()
     {
-        return this.getters.concat(this.setters).filter(x => this.isProtected(x) && x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.getters.concat(this.setters).filter(x => this.isProtected(x) && x.isStatic && !x.isAbstract);
     }
 
-    public getProtectedStaticIndexes(groupWithDecorators: boolean)
+    public getProtectedStaticIndexes()
     {
-        return this.indexes.filter(x => this.isProtected(x) && x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.indexes.filter(x => this.isProtected(x) && x.isStatic && !x.isAbstract);
     }
 
-    public getProtectedStaticMethods(groupWithDecorators: boolean)
+    public getProtectedStaticMethods()
     {
-        return this.methods.filter(x => this.isProtected(x) && x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.methods.filter(x => this.isProtected(x) && x.isStatic && !x.isAbstract);
     }
 
-    public getProtectedStaticProperties(groupWithDecorators: boolean)
+    public getProtectedStaticProperties()
     {
-        return this.properties.filter(x => this.isProtected(x) && this.isWritable(x) && x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.properties.filter(x => this.isProtected(x) && this.isWritable(x) && x.isStatic);
     }
 
-    public getProtectedStaticReadOnlyProperties(groupWithDecorators: boolean)
+    public getProtectedStaticReadOnlyProperties()
     {
-        return this.properties.filter(x => this.isProtected(x) && this.isReadOnly(x) && x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.properties.filter(x => this.isProtected(x) && this.isReadOnly(x) && x.isStatic);
     }
 
-    public getPublicAbstractGettersAndSetters(groupWithDecorators: boolean)
+    public getPublicAbstractGettersAndSetters()
     {
-        return this.getters.concat(this.setters).filter(x => this.isPublic(x) && !x.isStatic && x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.getters.concat(this.setters).filter(x => this.isPublic(x) && !x.isStatic && x.isAbstract);
     }
 
-    public getPublicAbstractIndexes(groupWithDecorators: boolean)
+    public getPublicAbstractIndexes()
     {
-        return this.indexes.filter(x => this.isPublic(x) && !x.isStatic && x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.indexes.filter(x => this.isPublic(x) && !x.isStatic && x.isAbstract);
     }
 
-    public getPublicAbstractMethods(groupWithDecorators: boolean)
+    public getPublicAbstractMethods()
     {
-        return this.methods.filter(x => this.isPublic(x) && !x.isStatic && x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.methods.filter(x => this.isPublic(x) && !x.isStatic && x.isAbstract);
     }
 
-    public getPublicConstProperties(groupWithDecorators: boolean)
+    public getPublicConstProperties()
     {
-        return this.properties.filter(x => this.isPublic(x) && this.isConstant(x) && !x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.properties.filter(x => this.isPublic(x) && this.isConstant(x) && !x.isStatic);
     }
 
-    public getPublicGettersAndSetters(groupWithDecorators: boolean)
+    public getPublicGettersAndSetters()
     {
-        return this.getters.concat(this.setters).filter(x => this.isPublic(x) && !x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.getters.concat(this.setters).filter(x => this.isPublic(x) && !x.isStatic && !x.isAbstract);
     }
 
-    public getPublicIndexes(groupWithDecorators: boolean)
+    public getPublicIndexes()
     {
-        return this.indexes.filter(x => this.isPublic(x) && !x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.indexes.filter(x => this.isPublic(x) && !x.isStatic && !x.isAbstract);
     }
 
-    public getPublicMethods(groupWithDecorators: boolean)
+    public getPublicMethods()
     {
-        return this.methods.filter(x => this.isPublic(x) && !x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.methods.filter(x => this.isPublic(x) && !x.isStatic && !x.isAbstract);
     }
 
-    public getPublicProperties(groupWithDecorators: boolean)
+    public getPublicProperties()
     {
-        return this.properties.filter(x => this.isPublic(x) && this.isWritable(x) && !x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.properties.filter(x => this.isPublic(x) && this.isWritable(x) && !x.isStatic);
     }
 
-    public getPublicReadOnlyProperties(groupWithDecorators: boolean)
+    public getPublicReadOnlyProperties()
     {
-        return this.properties.filter(x => this.isPublic(x) && this.isReadOnly(x) && !x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.properties.filter(x => this.isPublic(x) && this.isReadOnly(x) && !x.isStatic);
     }
 
-    public getPublicStaticConstProperties(groupWithDecorators: boolean)
+    public getPublicStaticConstProperties()
     {
-        return this.indexes.filter(x => this.isPublic(x) && this.isConstant(x) && x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.indexes.filter(x => this.isPublic(x) && this.isConstant(x) && x.isStatic);
     }
 
-    public getPublicStaticGettersAndSetters(groupWithDecorators: boolean)
+    public getPublicStaticGettersAndSetters()
     {
-        return this.getters.concat(this.setters).filter(x => this.isPublic(x) && x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.getters.concat(this.setters).filter(x => this.isPublic(x) && x.isStatic && !x.isAbstract);
     }
 
-    public getPublicStaticIndexes(groupWithDecorators: boolean)
+    public getPublicStaticIndexes()
     {
-        return this.indexes.filter(x => this.isPublic(x) && x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.indexes.filter(x => this.isPublic(x) && x.isStatic && !x.isAbstract);
     }
 
-    public getPublicStaticMethods(groupWithDecorators: boolean)
+    public getPublicStaticMethods()
     {
-        return this.methods.filter(x => this.isPublic(x) && x.isStatic && !x.isAbstract).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.methods.filter(x => this.isPublic(x) && x.isStatic && !x.isAbstract);
     }
 
-    public getPublicStaticProperties(groupWithDecorators: boolean)
+    public getPublicStaticProperties()
     {
-        return this.properties.filter(x => this.isPublic(x) && this.isWritable(x) && x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.properties.filter(x => this.isPublic(x) && this.isWritable(x) && x.isStatic);
     }
 
-    public getPublicStaticReadOnlyProperties(groupWithDecorators: boolean)
+    public getPublicStaticReadOnlyProperties()
     {
-        return this.properties.filter(x => this.isPublic(x) && this.isReadOnly(x) && x.isStatic).sort((a, b) => sort(a, b, groupWithDecorators));
+        return this.properties.filter(x => this.isPublic(x) && this.isReadOnly(x) && x.isStatic);
     }
 
-    // #endregion
+    // #endregion Public Methods (46)
 }

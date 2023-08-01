@@ -1,4 +1,3 @@
-import { sort } from "../utils";
 import { ElementNode } from "./element-node";
 import { GetterNode } from "./getter-node";
 import { IndexSignatureNode } from "./index-signature-node";
@@ -9,17 +8,17 @@ import * as ts from "typescript";
 
 export class InterfaceNode extends ElementNode
 {
-  // #region Properties (5)
+  // #region Properties (7)
 
+  public getters: GetterNode[] = [];
   public indexes: IndexSignatureNode[] = [];
   public membersEnd: number = 0;
   public membersStart: number = 0;
   public methods: MethodSignatureNode[] = [];
   public properties: PropertySignatureNode[] = [];
-  public getters: GetterNode[] = [];
   public setters: SetterNode[] = [];
 
-  // #endregion
+  // #endregion Properties (7)
 
   // #region Constructors (1)
 
@@ -40,39 +39,39 @@ export class InterfaceNode extends ElementNode
     }
   }
 
-  // #endregion
+  // #endregion Constructors (1)
 
-  // #region Public Methods (5)
+  // #region Public Methods (6)
 
-  public getConstProperties(groupWithDecorators: boolean)
+  public getConstProperties()
   {
-    return this.properties.filter(x => this.isConstant(x)).sort((a, b) => sort(a, b, groupWithDecorators));
+    return this.properties.filter(x => this.isConstant(x));
   }
 
-  public getIndexes(groupWithDecorators: boolean)
+  public getGettersAndSetters()
   {
-    return this.indexes.sort((a, b) => sort(a, b, groupWithDecorators));
+    return this.getters.concat(this.setters);
   }
 
-  public getMethods(groupWithDecorators: boolean)
+  public getIndexes()
   {
-    return this.methods.sort((a, b) => sort(a, b, groupWithDecorators));
+    return this.indexes;
   }
 
-  public getGettersAndSetters(groupWithDecorators: boolean)
+  public getMethods()
   {
-    return this.getters.concat(this.setters).sort((a, b) => sort(a, b, groupWithDecorators));
+    return this.methods;
   }
 
-  public getProperties(groupWithDecorators: boolean)
+  public getProperties()
   {
-    return this.properties.filter(x => this.isWritable(x)).sort((a, b) => sort(a, b, groupWithDecorators));
+    return this.properties.filter(x => this.isWritable(x));
   }
 
-  public getReadOnlyProperties(groupWithDecorators: boolean)
+  public getReadOnlyProperties()
   {
-    return this.properties.filter(x => this.isReadOnly(x)).sort((a, b) => sort(a, b, groupWithDecorators));
+    return this.properties.filter(x => this.isReadOnly(x));
   }
 
-  // #endregion
+  // #endregion Public Methods (6)
 }

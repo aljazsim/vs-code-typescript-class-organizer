@@ -14,20 +14,20 @@ Organize currently opened TypeScript file or all TypeScript files in your projec
 
 From the command palette you can:
 
-- organize current TypeScript file by invoking command "TypeScript Class Organizer: Organize Current File",
-- organize all TypeScript files in the project by invoking command "TypeScript Class Organizer: Organize All Files"
+- organize current TypeScript file by invoking command `TypeScript Class Organizer: Organize Current File`,
+- organize all TypeScript files in the project by invoking command `TypeScript Class Organizer: Organize All Files`
 
 ![Command Palette](./doc/command_palette.png "Command Palette")
 
-### Shortcuts
+### Keybboard Shortcuts
 
-You can invoke command "TypeScript Class Organizer: Organize Current File" by using the shortcut Ctr + Shift + O. You can change the shortcut by assigning a different shortcut to command "tsco.organize".
+You can invoke command `TypeScript Class Organizer: Organize Current File` by using the shortcut Ctr + Shift + O. You can change the shortcut by assigning a different shortcut to command "tsco.organize".
 
 ![Shortcut](./doc/shortcut.png "Shortcut")
 
-### Context menu
+### Context Menu
 
-You can invoke command "TypeScript Class Organizer: Organize Current File" by using the context menu item.
+You can invoke command `TypeScript Class Organizer: Organize Current File` by using the context menu item.
 
 ![Context Menu](./doc/context_menu.png "Context Menu")
 
@@ -35,18 +35,31 @@ You can invoke command "TypeScript Class Organizer: Organize Current File" by us
 
 Extensions supports the following configuration options:
 
-- `tsco.useRegions`: When true regions surrounding member groups are added. True by default.
-- `tsco.addPublicModifierIfMissing`: When true public access modifier is added. True by default.
-- `tsco.addRegionIndentation`: When true regions are indented with class members. True by default.
-- `tsco.addRegionCaptionToRegionEnd`: When true region caption is added to region end as well. True by default.
-- `tsco.groupPropertiesWithDecorators`: When true properties with decorators will come first. False by default.
-- `tsco.addRowNumberInRegionName`: When true region children count added on title. True by default.
-- `tsco.accessorsBeforeCtor`: When true put accessor before ctor during organization. False by default.
-- `tsco.memberOrder`: Configuration of grouping and ordering of members.
-- `tsco.treatArrowFunctionPropertiesAsMethods`: When true arrow function properties will be treated as methods.
-- `tsco.organizeOnSave`: When true file will get organized automatically whenever saved. False by default.
+### Regions
 
-### Configuration of grouping and ordering of members
+- `tsco.useRegions`: Adds member group regions (true by default).
+- `tsco.addMemberCountInRegionName`: Adds member group region member count after region title (true by default).
+missing (true by default).
+- `tsco.addRegionIndentation`: Adds region indentation (true by default).
+- `tsco.addRegionCaptionToRegionEnd`: Adds region caption to region end (true by default).
+
+### Access modifiers
+
+- `tsco.addPublicModifierIfMissing`: Adds a public access modifier if 
+
+### Decorators
+
+- `tsco.groupPropertiesWithDecorators`: Properties with decorators will come first, ordered by decorator name, then by member name (false by default).
+
+### Arrow functions
+- `tsco.treatArrowFunctionPropertiesAsMethods`: Arrow function properties will be treated as methods (false by default).
+
+### Actions
+- `tsco.organizeOnSave`: Source code will get organized automatically on file saved (false by default).
+
+### Member ordering
+
+- `tsco.memberOrder`: Configuration of grouping and ordering of members.
 
 By default members are grouped and ordered in the following way:
 
@@ -98,154 +111,228 @@ By default members are grouped and ordered in the following way:
 - private methods,
 - private abstract methods.
 
-This configuration can ge changed by using the `tsco.memberOrder` setting in settings.json. Members can be grouped separately or grouped together with other member groups in a two level hierarchy. Every group has a property:
+This configuration can ge changed by using the `tsco.memberOrder` setting in `settings.json``. Members can be grouped separately or grouped together with other member groups in a two level hierarchy. Every group has a property:
 
 - `caption` (only for top level groups): the caption will be outputted if `tsco.useRegions` is set to true,
-- `memberType` (top and bottom level groups): the type of the member in the group (privateStaticConstProperties, privateConstProperties, privateStaticReadOnlyProperties, privateReadOnlyProperties, privateStaticProperties, privateProperties, protectedStaticConstProperties, protectedConstProperties, protectedStaticReadOnlyProperties, protectedReadOnlyProperties, protectedStaticProperties, protectedProperties, publicStaticConstProperties, publicConstProperties, publicStaticReadOnlyProperties, publicReadOnlyProperties, publicStaticProperties, publicProperties, constructors, publicStaticIndexes, publicIndexes,
-  publicAbstractIndexes, protectedStaticIndexes, protectedIndexes, protectedAbstractIndexes, privateStaticIndexes, privateIndexes, privateAbstractIndexes, publicStaticMethods, publicMethods, publicAbstractMethods, protectedStaticMethods, protectedMethods, protectedAbstractMethods, privateStaticMethods, privateMethods, privateAbstractMethods),
+- `memberType` (top and bottom level groups): the type of the member in the group:
+  - privateStaticConstProperties
+  - privateConstProperties
+  - privateStaticReadOnlyProperties
+  - privateReadOnlyProperties
+  - privateStaticProperties
+  - privateProperties
+  - protectedStaticConstProperties
+  - protectedConstProperties
+  - protectedStaticReadOnlyProperties
+  - protectedReadOnlyProperties
+  - protectedStaticProperties
+  - protectedProperties
+  - publicStaticConstProperties
+  - publicConstProperties
+  - publicStaticReadOnlyProperties
+  - publicReadOnlyProperties
+  - publicStaticProperties
+  - publicProperties
+  - constructors
+  - publicStaticIndexes
+  - publicIndexes
+  - publicAbstractIndexes
+  - protectedStaticIndexes
+  - protectedIndexes
+  - protectedAbstractIndexes
+  - privateStaticIndexes
+  - privateIndexes
+  - privateAbstractIndexes
+  - publicStaticGettersAndSetters
+  - publicGettersAndSetters
+  - publicAbstractGettersAndSetters
+  - protectedStaticGettersAndSetters
+  - protectedGettersAndSetters
+  - protectedAbstractGettersAndSetters
+  - privateStaticGettersAndSetters
+  - privateGettersAndSetters
+  - privateAbstractGettersAndSetters
+  - publicStaticMethods
+  - publicMethods
+  - publicAbstractMethods
+  - protectedStaticMethods
+  - protectedMethods
+  - protectedAbstractMethods
+  - privateStaticMethods
+  - privateMethods
+  - privateAbstractMethod
 - `subGroups` (only for top level groups): the array of member types to be included in this group.
+- `placeAbove`: list of member names to be put at the top of the group in the order specified (optional)
+- `placeAfter`: list of member names to be put at the bottom of the group in the order specified (optional)
 
 Example of the default `tsco.memberOrder` setting:
 
 ```json
-[
-  {
-    "caption": "Properties",
-    "memberTypes": [
-      "privateStaticConstProperties",
-      "privateConstProperties",
-      "privateStaticReadOnlyProperties",
-      "privateReadOnlyProperties",
-      "privateStaticProperties",
-      "privateProperties",
-      "protectedStaticConstProperties",
-      "protectedConstProperties",
-      "protectedStaticReadOnlyProperties",
-      "protectedReadOnlyProperties",
-      "protectedStaticProperties",
-      "protectedProperties",
-      "publicStaticConstProperties",
-      "publicConstProperties",
-      "publicStaticReadOnlyProperties",
-      "publicReadOnlyProperties",
-      "publicStaticProperties",
-      "publicProperties"
-    ]
-  },
-  {
-    "caption": "Constructors",
-    "memberTypes": ["constructors"]
-  },
-  {
-    "caption": "Public Static Indexers",
-    "memberTypes": ["publicStaticIndexes"]
-  },
-  {
-    "caption": "Public Indexers",
-    "memberTypes": ["publicIndexes"]
-  },
-  {
-    "caption": "Public Abstract Indexers",
-    "memberTypes": ["publicAbstractIndexes"]
-  },
-  {
-    "caption": "Protected Static Indexers",
-    "memberTypes": ["protectedStaticIndexes"]
-  },
-  {
-    "caption": "Protected Indexers",
-    "memberTypes": ["protectedIndexes"]
-  },
-  {
-    "caption": "Protected Abstract Indexers",
-    "memberTypes": ["protectedAbstractIndexes"]
-  },
-  {
-    "caption": "Private Static Indexers",
-    "memberTypes": ["privateStaticIndexes"]
-  },
-  {
-    "caption": "Private Indexers",
-    "memberTypes": ["privateIndexes"]
-  },
-  {
-    "caption": "Private Abstract Indexers",
-    "memberTypes": ["privateAbstractIndexes"]
-  },
-  {
-    "caption": "Public Static Accessors",
-    "memberTypes": ["publicStaticGettersAndSetters"]
-  },
-  {
-    "caption": "Public Accessors",
-    "memberTypes": ["publicGettersAndSetters"]
-  },
-  {
-    "caption": "Public Abstract Accessors",
-    "memberTypes": ["publicAbstractGettersAndSetters"]
-  },
-  {
-    "caption": "Protected Static Accessors",
-    "memberTypes": ["protectedStaticGettersAndSetters"]
-  },
-  {
-    "caption": "Protected Accessors",
-    "memberTypes": ["protectedGettersAndSetters"]
-  },
-  {
-    "caption": "Protected Abstract Accessors",
-    "memberTypes": ["protectedAbstractGettersAndSetters"]
-  },
-  {
-    "caption": "Private Static Accessors",
-    "memberTypes": ["privateStaticGettersAndSetters"]
-  },
-  {
-    "caption": "Private Accessors",
-    "memberTypes": ["privateGettersAndSetters"]
-  },
-  {
-    "caption": "Private Abstract Accessors",
-    "memberTypes": ["privateAbstractGettersAndSetters"]
-  },
-  {
-    "caption": "Public Static Methods",
-    "memberTypes": ["publicStaticMethods"]
-  },
+{
+  "tsco.memberOrder": [
+    {
+      "caption": "Properties",
+      "memberTypes": [
+        "privateStaticConstProperties",
+        "privateConstProperties",
+        "privateStaticReadOnlyProperties",
+        "privateReadOnlyProperties",
+        "privateStaticProperties",
+        "privateProperties",
+        "protectedStaticConstProperties",
+        "protectedConstProperties",
+        "protectedStaticReadOnlyProperties",
+        "protectedReadOnlyProperties",
+        "protectedStaticProperties",
+        "protectedProperties",
+        "publicStaticConstProperties",
+        "publicConstProperties",
+        "publicStaticReadOnlyProperties",
+        "publicReadOnlyProperties",
+        "publicStaticProperties",
+        "publicProperties"
+      ]
+    },
+    {
+      "caption": "Constructors",
+      "memberTypes": ["constructors"]
+    },
+    {
+      "caption": "Public Static Indexers",
+      "memberTypes": ["publicStaticIndexes"]
+    },
+    {
+      "caption": "Public Indexers",
+      "memberTypes": ["publicIndexes"]
+    },
+    {
+      "caption": "Public Abstract Indexers",
+      "memberTypes": ["publicAbstractIndexes"]
+    },
+    {
+      "caption": "Protected Static Indexers",
+      "memberTypes": ["protectedStaticIndexes"]
+    },
+    {
+      "caption": "Protected Indexers",
+      "memberTypes": ["protectedIndexes"]
+    },
+    {
+      "caption": "Protected Abstract Indexers",
+      "memberTypes": ["protectedAbstractIndexes"]
+    },
+    {
+      "caption": "Private Static Indexers",
+      "memberTypes": ["privateStaticIndexes"]
+    },
+    {
+      "caption": "Private Indexers",
+      "memberTypes": ["privateIndexes"]
+    },
+    {
+      "caption": "Private Abstract Indexers",
+      "memberTypes": ["privateAbstractIndexes"]
+    },
+    {
+      "caption": "Public Static Accessors",
+      "memberTypes": ["publicStaticGettersAndSetters"]
+    },
+    {
+      "caption": "Public Accessors",
+      "memberTypes": ["publicGettersAndSetters"]
+    },
+    {
+      "caption": "Public Abstract Accessors",
+      "memberTypes": ["publicAbstractGettersAndSetters"]
+    },
+    {
+      "caption": "Protected Static Accessors",
+      "memberTypes": ["protectedStaticGettersAndSetters"]
+    },
+    {
+      "caption": "Protected Accessors",
+      "memberTypes": ["protectedGettersAndSetters"]
+    },
+    {
+      "caption": "Protected Abstract Accessors",
+      "memberTypes": ["protectedAbstractGettersAndSetters"]
+    },
+    {
+      "caption": "Private Static Accessors",
+      "memberTypes": ["privateStaticGettersAndSetters"]
+    },
+    {
+      "caption": "Private Accessors",
+      "memberTypes": ["privateGettersAndSetters"]
+    },
+    {
+      "caption": "Private Abstract Accessors",
+      "memberTypes": ["privateAbstractGettersAndSetters"]
+    },
+    {
+      "caption": "Public Static Methods",
+      "memberTypes": ["publicStaticMethods"]
+    },
+    {
+      "caption": "Public Methods",
+      "memberTypes": ["publicMethods"]
+    },
+    {
+      "caption": "Public Abstract Methods",
+      "memberTypes": ["publicAbstractMethods"]
+    },
+    {
+      "caption": "Protected Static Methods",
+      "memberTypes": ["protectedStaticMethods"]
+    },
+    {
+      "caption": "Protected Methods",
+      "memberTypes": ["protectedMethods"]
+    },
+    {
+      "caption": "Protected Abstract Methods",
+      "memberTypes": ["protectedAbstractMethods"]
+    },
+    {
+      "caption": "Private Static Methods",
+      "memberTypes": ["privateStaticMethods"]
+    },
+    {
+      "caption": "Private Methods",
+      "memberTypes": ["privateMethods"]
+    },
+    {
+      "caption": "Private Abstract Methods",
+      "memberTypes": ["privateAbstractMethods"]
+    }
+  ]
+}
+```
+
+If you'd like to order special members differently, you can yuse the `placeAbove` and `placeBelow` properties for a particular `tsco.memberOrder` item. If for example you prefer Angular component lifecycle methods on top of public methods, you can configure `publicMethods` member group like this:
+
+```json
+"tsco.memberOrder": [
+  ...,
   {
     "caption": "Public Methods",
-    "memberTypes": ["publicMethods"]
+    "memberTypes": ["publicMethods"],
+    "placeAbove": [
+        "ngOnChanges", 
+        "ngOnInit", 
+        "ngDoCheck", 
+        "ngAfterContentInit", 
+        "ngAfterContentChecked", 
+        "ngAfterViewInit", 
+        "ngAfterViewChecked", 
+        "ngOnDestroy"
+    ]
   },
-  {
-    "caption": "Public Abstract Methods",
-    "memberTypes": ["publicAbstractMethods"]
-  },
-  {
-    "caption": "Protected Static Methods",
-    "memberTypes": ["protectedStaticMethods"]
-  },
-  {
-    "caption": "Protected Methods",
-    "memberTypes": ["protectedMethods"]
-  },
-  {
-    "caption": "Protected Abstract Methods",
-    "memberTypes": ["protectedAbstractMethods"]
-  },
-  {
-    "caption": "Private Static Methods",
-    "memberTypes": ["privateStaticMethods"]
-  },
-  {
-    "caption": "Private Methods",
-    "memberTypes": ["privateMethods"]
-  },
-  {
-    "caption": "Private Abstract Methods",
-    "memberTypes": ["privateAbstractMethods"]
-  }
+  ...
 ]
 ```
+
+The `placeAbove` methods will always apear at the top of the public method membber group in the list as specified (if any exist in the class being ordered) and the rest of the methods will be ordered by name and placed below the `placeAbove` methods. Same goes for `placeBelow`, but those members will be placed at the bottom of the member group.
 
 ## Change log
 
@@ -317,3 +404,8 @@ Example of the default `tsco.memberOrder` setting:
 ### 1.0.24
 
 - add support for private identifiers for properties and methods
+
+### 1.0.25
+
+- fix issue where intefaces lost getters/setters when organizing
+- add support for a special member list to be put at the top or bottom of a member group
