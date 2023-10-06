@@ -4,7 +4,7 @@ export abstract class TestClass
     private static isMissing: boolean;
     private readonly name: string | undefined = "The Name";
 
-    protected static lastName = "Last name";
+    protected static lastName = "Last name 2";
     protected phoneNumber: Number = 123;
 
     static calculate()
@@ -50,7 +50,7 @@ export abstract class TestClass
 
     private readonly state: String = "Town B";
 
-    private lastName = "Last Name";
+    private lastName = "Last Name 1";
     abstract measure(): number;
     protected brand = "Brand C";
     protected readonly level = "Level 1";
