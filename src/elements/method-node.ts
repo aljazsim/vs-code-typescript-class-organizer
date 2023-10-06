@@ -8,6 +8,8 @@ export class MethodNode extends ElementNode
 
   public isAbstract: boolean;
   public isStatic: boolean;
+  public isAsync: boolean;
+
 
   // #endregion Properties (2)
 
@@ -26,6 +28,7 @@ export class MethodNode extends ElementNode
     this.accessModifier = this.getAccessModifier(methodDeclaration);
     this.isAbstract = this.getIsAbstract(methodDeclaration);
     this.isStatic = this.getIsStatic(methodDeclaration);
+    this.isAsync = this.getIsAsync(methodDeclaration);
     this.decorators = this.getDecorators(methodDeclaration, sourceFile);
 
     if (this.name.startsWith("#"))

@@ -326,7 +326,7 @@ function organizeTypes(sourceCode: string, fileName: string, configuration: Conf
 
   let elements = new Transformer().analyzeSyntaxTree(sourceFile, configuration.treatArrowFunctionPropertiesAsMethods);
 
-  if (!elements.some(x => !(x instanceof UnknownNode)))
+  if (!elements.some((x: any) => !(x instanceof UnknownNode)))
   {
     let imports = getImports(elements, configuration.groupPropertiesWithDecorators);
     let functions = getFunctions(elements, configuration.groupPropertiesWithDecorators);
@@ -356,7 +356,7 @@ function organizeTypes(sourceCode: string, fileName: string, configuration: Conf
 
   elements = new Transformer().analyzeSyntaxTree(sourceFile, configuration.treatArrowFunctionPropertiesAsMethods);
 
-  for (let element of elements.sort((a, b) => compareNumbers(a.fullStart, b.fullStart) * -1))
+  for (let element of elements.sort((a: any, b: any) => compareNumbers(a.fullStart, b.fullStart) * -1))
   {
     if (element instanceof InterfaceNode)
     {
