@@ -3,19 +3,19 @@ import * as ts from "typescript";
 
 export class TypeAliasNode extends ElementNode
 {
-    // #region Constructors (1)
+  // #region Constructors (1)
 
-    constructor(sourceFile: ts.SourceFile, typeAliasDeclaration: ts.TypeAliasDeclaration)
-    {
-        super(typeAliasDeclaration);
+  constructor(sourceFile: ts.SourceFile, typeAliasDeclaration: ts.TypeAliasDeclaration)
+  {
+    super(typeAliasDeclaration);
 
-        this.name = (<ts.Identifier>typeAliasDeclaration.name).escapedText?.toString() ?? sourceFile.getFullText().substring(typeAliasDeclaration.name.pos, typeAliasDeclaration.name.end).trim();
+    this.name = (<ts.Identifier>typeAliasDeclaration.name).escapedText?.toString() ?? sourceFile.getFullText().substring(typeAliasDeclaration.name.pos, typeAliasDeclaration.name.end).trim();
 
-        this.fullStart = typeAliasDeclaration.getFullStart();
-        this.end = typeAliasDeclaration.getEnd();
-        this.start = typeAliasDeclaration.getStart(sourceFile, false);
-        this.decorators = this.getDecorators(typeAliasDeclaration, sourceFile);
-    }
+    this.fullStart = typeAliasDeclaration.getFullStart();
+    this.end = typeAliasDeclaration.getEnd();
+    this.start = typeAliasDeclaration.getStart(sourceFile, false);
+    this.decorators = this.getDecorators(typeAliasDeclaration, sourceFile);
+  }
 
-    // #endregion
+  // #endregion
 }

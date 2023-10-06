@@ -6,187 +6,209 @@ import * as ts from "typescript";
 
 export abstract class ElementNode
 {
-    // #region Properties (5)
+  public accessModifier: AccessModifier | null = null;
+  public decorators: string[] = [];
+  public end: number = 0;
+  public fullStart: number = 0;
+  public name: string = "";
+  public start: number = 0;
 
-    public accessModifier: AccessModifier | null = null;
-    public decorators: string[] = [];
-    public end: number = 0;
-    public fullStart: number = 0;
-    public name: string = "";
-    public start: number = 0;
+  constructor(public readonly node: ts.Node)
+  {
+  }
 
-    // #endregion
+  protected getAccessModifier(node: ts.PropertyDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration | ts.MethodDeclaration | ts.PropertySignature | ts.IndexSignatureDeclaration)
+  {
+    let accessModifier: AccessModifier | null = null;
+    let accessModifiers: ts.SyntaxKind[] = [ts.SyntaxKind.PrivateKeyword, ts.SyntaxKind.ProtectedKeyword, ts.SyntaxKind.PublicKeyword];
+    let nodeAccessModifier: ts.Modifier | ts.ModifierLike | undefined;
 
-    // #region Constructors (1)
-
-    constructor(public readonly node: ts.Node)
+    if (node.modifiers &&
+      node.modifiers.length > 0)
     {
-    }
+      nodeAccessModifier = node.modifiers.find((x) => accessModifiers.indexOf(x.kind) > -1);
 
-    // #endregion
-
-    // #region Protected Methods (5)
-
-    protected getAccessModifier(node: ts.PropertyDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration | ts.MethodDeclaration | ts.IndexedAccessTypeNode | ts.PropertySignature | ts.IndexSignatureDeclaration)
-    {
-        let accessModifier: AccessModifier | null = null;
-        let accessModifiers: ts.SyntaxKind[] = [ts.SyntaxKind.PrivateKeyword, ts.SyntaxKind.ProtectedKeyword, ts.SyntaxKind.PublicKeyword];
-        let nodeAccessModifier: ts.Modifier | undefined;
-
-        if (node.modifiers &&
-            node.modifiers.length > 0)
+      if (nodeAccessModifier)
+      {
+        if (nodeAccessModifier.kind === ts.SyntaxKind.PublicKeyword)
         {
-            nodeAccessModifier = node.modifiers.find((x) => accessModifiers.indexOf(x.kind) > -1);
-
-            if (nodeAccessModifier)
-            {
-                if (nodeAccessModifier.kind === ts.SyntaxKind.PublicKeyword)
-                {
-                    accessModifier = AccessModifier.public;
-                }
-                else if (nodeAccessModifier.kind === ts.SyntaxKind.ProtectedKeyword)
-                {
-                    accessModifier = AccessModifier.protected;
-                }
-                else if (nodeAccessModifier.kind === ts.SyntaxKind.PrivateKeyword)
-                {
-                    accessModifier = AccessModifier.private;
-                }
-            }
+          accessModifier = AccessModifier.public;
         }
-
-        return accessModifier;
-    }
-
-    getDecorators(node: ts.ClassDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration | ts.PropertyDeclaration | ts.MethodDeclaration | ts.IndexedAccessTypeNode | ts.ConstructorDeclaration | ts.EnumDeclaration | ts.FunctionDeclaration | ts.IndexSignatureDeclaration | ts.MethodSignature | ts.PropertySignature | ts.TypeAliasDeclaration, sourceFile: ts.SourceFile)
-    {
-        let parametersRegex = /\(.*\)/;
-
-        if (node.decorators &&
-            node.decorators.length > 0)
+        else if (nodeAccessModifier.kind === ts.SyntaxKind.ProtectedKeyword)
         {
-            return node.decorators.map(x => x.getText(sourceFile).replace(parametersRegex, ""));
+          accessModifier = AccessModifier.protected;
         }
-        else
+        else if (nodeAccessModifier.kind === ts.SyntaxKind.PrivateKeyword)
         {
-            return [];
+          accessModifier = AccessModifier.private;
         }
+      }
     }
 
-    protected getIsAbstract(node: ts.ClassDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration | ts.PropertyDeclaration | ts.MethodDeclaration | ts.IndexedAccessTypeNode)
+    return accessModifier;
+  }
+
+  protected getDecorators(node: ts.ClassDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration | ts.PropertyDeclaration | ts.MethodDeclaration | ts.IndexedAccessTypeNode | ts.ConstructorDeclaration | ts.EnumDeclaration | ts.FunctionDeclaration | ts.IndexSignatureDeclaration | ts.MethodSignature | ts.PropertySignature | ts.TypeAliasDeclaration, sourceFile: ts.SourceFile)
+  {
+    let parametersRegex = /\(.*\)/;
+
+    return this.getModifiers(node).filter(m => ts.isDecorator(m)).map(x => (x as ts.Decorator).getText(sourceFile).replace(parametersRegex, "")) ?? []
+  }
+
+  protected getIsAbstract(node: ts.ClassDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration | ts.PropertyDeclaration | ts.MethodDeclaration | ts.IndexedAccessTypeNode)
+  {
+    return this.getModifiers(node).find((x) => x.kind === ts.SyntaxKind.AbstractKeyword) !== undefined;
+  }
+
+  protected getIsExport(node: ts.ClassDeclaration | ts.FunctionDeclaration)
+  {
+    let isExport = false;
+
+    if (node.modifiers &&
+      node.modifiers.length > 0)
     {
-        let isAbstract = false;
+      let tmp = node.modifiers.find((modifier, index, array) => modifier.kind === ts.SyntaxKind.ExportKeyword);
 
-        if (node.modifiers &&
-            node.modifiers.length > 0)
-        {
-            isAbstract = node.modifiers.find((x) => x.kind === ts.SyntaxKind.AbstractKeyword) !== undefined;
-        }
-
-        return isAbstract;
+      if (tmp &&
+        tmp.kind === ts.SyntaxKind.ExportKeyword)
+      {
+        isExport = true;
+      }
     }
 
-    protected getIsExport(node: ts.ClassDeclaration | ts.FunctionDeclaration)
+    return isExport;
+  }
+
+  protected getIsStatic(node: ts.ClassDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration | ts.PropertyDeclaration | ts.MethodDeclaration | ts.IndexedAccessTypeNode)
+  {
+    return this.getModifiers(node).find((x) => x.kind === ts.SyntaxKind.StaticKeyword) !== undefined;
+  }
+
+  protected getModifiers(node: ts.ClassDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration | ts.PropertyDeclaration | ts.MethodDeclaration | ts.IndexedAccessTypeNode | ts.ConstructorDeclaration | ts.EnumDeclaration | ts.FunctionDeclaration | ts.IndexSignatureDeclaration | ts.MethodSignature | ts.PropertySignature | ts.TypeAliasDeclaration | ts.VariableStatement)
+  {
+    let modifiers: ts.NodeArray<ts.ModifierLike> | undefined;
+
+    if (ts.isClassDeclaration(node))
     {
-        let isExport = false;
-
-        if (node.modifiers &&
-            node.modifiers.length > 0)
-        {
-            let tmp = node.modifiers.find((modifier, index, array) => modifier.kind === ts.SyntaxKind.ExportKeyword);
-
-            if (tmp &&
-                tmp.kind === ts.SyntaxKind.ExportKeyword)
-            {
-                isExport = true;
-            }
-        }
-
-        return isExport;
+      modifiers = (node as ts.ClassDeclaration).modifiers;
     }
-
-    protected getIsStatic(node: ts.ClassDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration | ts.PropertyDeclaration | ts.MethodDeclaration | ts.IndexedAccessTypeNode)
+    else if (ts.isGetAccessorDeclaration(node))
     {
-        let isStatic = false;
-
-        if (node.modifiers &&
-            node.modifiers.length > 0)
-        {
-            isStatic = node.modifiers.find((x) => x.kind === ts.SyntaxKind.StaticKeyword) !== undefined;
-        }
-
-        return isStatic;
+      modifiers = (node as ts.GetAccessorDeclaration).modifiers;
     }
-
-    protected getWriteMode(node: ts.PropertyDeclaration | ts.VariableStatement | ts.IndexedAccessTypeNode | ts.PropertySignature | ts.IndexSignatureDeclaration)
+    else if (ts.isSetAccessorDeclaration(node))
     {
-        let writeMode: WriteModifier = WriteModifier.writable;
-        let writeModifiers: ts.SyntaxKind[] = [ts.SyntaxKind.ConstKeyword, ts.SyntaxKind.ReadonlyKeyword];
-        let nodeWriteModifier: ts.Modifier | undefined;
-
-        if (node.modifiers &&
-            node.modifiers.length > 0)
-        {
-            nodeWriteModifier = node.modifiers.find((x) => writeModifiers.indexOf(x.kind) > -1);
-
-            if (nodeWriteModifier)
-            {
-                if (nodeWriteModifier.kind === ts.SyntaxKind.ConstKeyword)
-                {
-                    writeMode = WriteModifier.const;
-                }
-                else if (nodeWriteModifier.kind === ts.SyntaxKind.ReadonlyKeyword)
-                {
-                    writeMode = WriteModifier.readOnly;
-                }
-            }
-        }
-
-        return writeMode;
+      modifiers = (node as ts.SetAccessorDeclaration).modifiers;
     }
-
-    protected isProtected(x: ElementNode)
+    else if (ts.isPropertyDeclaration(node))
     {
-        return x.accessModifier === AccessModifier.protected;
+      modifiers = (node as ts.PropertyDeclaration).modifiers;
     }
-
-    protected isConstant(x: PropertyNode | PropertySignatureNode)
+    else if (ts.isMethodDeclaration(node))
     {
-        return x.writeMode === WriteModifier.const;
+      modifiers = (node as ts.MethodDeclaration).modifiers;
     }
-
-    protected isPrivate(x: ElementNode)
+    else if (ts.isIndexedAccessTypeNode(node))
     {
-        return x.accessModifier === AccessModifier.private;
+      // no modifiers
     }
-
-    protected isWritable(x: PropertyNode | PropertySignatureNode)
+    else if (ts.isConstructorDeclaration(node))
     {
-        return x.writeMode === WriteModifier.writable;
+      modifiers = (node as ts.ConstructorDeclaration).modifiers;
     }
-
-    protected isReadOnly(x: PropertyNode | PropertySignatureNode)
+    else if (ts.isEnumDeclaration(node))
     {
-        return x.writeMode === WriteModifier.readOnly;
+      modifiers = (node as ts.EnumDeclaration).modifiers;
     }
-
-    protected isPublic(x: ElementNode)
+    else if (ts.isFunctionDeclaration(node))
     {
-        return x.accessModifier === AccessModifier.public || x.accessModifier === null;
+      modifiers = (node as ts.FunctionDeclaration).modifiers;
     }
-
-    protected getName(node: ElementNode, groupWithDecorators: boolean): string
+    else if (ts.isIndexSignatureDeclaration(node))
     {
-        if (groupWithDecorators)
-        {
-            if (node.decorators.length > 0)
-            {
-                return node.decorators.join(", ") + " " + node.name;
-            }
-        }
-
-        return node.name;
+      modifiers = (node as ts.IndexSignatureDeclaration).modifiers;
+    }
+    else if (ts.isMethodSignature(node))
+    {
+      modifiers = (node as ts.MethodSignature).modifiers;
+    }
+    else if (ts.isPropertySignature(node))
+    {
+      modifiers = (node as ts.PropertySignature).modifiers;
+    }
+    else if (ts.isTypeAliasDeclaration(node))
+    {
+      modifiers = (node as ts.TypeAliasDeclaration).modifiers;
+    }
+    else if (ts.isVariableStatement(node))
+    {
+      modifiers = (node as ts.VariableStatement).modifiers;
     }
 
-    // #endregion
+    return modifiers ?? [];
+  }
+
+  protected getName(node: ElementNode, groupWithDecorators: boolean): string
+  {
+    if (groupWithDecorators)
+    {
+      if (node.decorators.length > 0)
+      {
+        return node.decorators.join(", ") + " " + node.name;
+      }
+    }
+
+    return node.name;
+  }
+
+  protected getWriteMode(node: ts.PropertyDeclaration | ts.VariableStatement | ts.IndexedAccessTypeNode | ts.PropertySignature | ts.IndexSignatureDeclaration)
+  {
+    let writeMode: WriteModifier = WriteModifier.writable;
+    let writeModifiers: ts.SyntaxKind[] = [ts.SyntaxKind.ConstKeyword, ts.SyntaxKind.ReadonlyKeyword];
+    let nodeWriteModifier = this.getModifiers(node).find((x) => writeModifiers.indexOf(x.kind) > -1);
+
+    if (nodeWriteModifier)
+    {
+      if (nodeWriteModifier.kind === ts.SyntaxKind.ConstKeyword)
+      {
+        writeMode = WriteModifier.const;
+      }
+      else if (nodeWriteModifier.kind === ts.SyntaxKind.ReadonlyKeyword)
+      {
+        writeMode = WriteModifier.readOnly;
+      }
+    }
+
+    return writeMode;
+  }
+
+  protected isConstant(x: PropertyNode | PropertySignatureNode)
+  {
+    return x.writeMode === WriteModifier.const;
+  }
+
+  protected isPrivate(x: ElementNode)
+  {
+    return x.accessModifier === AccessModifier.private;
+  }
+
+  protected isProtected(x: ElementNode)
+  {
+    return x.accessModifier === AccessModifier.protected;
+  }
+
+  protected isPublic(x: ElementNode)
+  {
+    return x.accessModifier === AccessModifier.public || x.accessModifier === null;
+  }
+
+  protected isReadOnly(x: PropertyNode | PropertySignatureNode)
+  {
+    return x.writeMode === WriteModifier.readOnly;
+  }
+
+  protected isWritable(x: PropertyNode | PropertySignatureNode)
+  {
+    return x.writeMode === WriteModifier.writable;
+  }
 }

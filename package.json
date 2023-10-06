@@ -414,18 +414,18 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/vscode": "^1.69.1",
-    "@types/glob": "^7.2.0",
-    "@types/mocha": "^9.1.1",
-    "@types/node": "16.x",
-    "@typescript-eslint/eslint-plugin": "^5.31.0",
-    "@typescript-eslint/parser": "^5.31.0",
-    "eslint": "^8.20.0",
-    "glob": "^8.0.3",
-    "mocha": "^10.0.0",
-    "@vscode/test-electron": "^2.1.5"
+    "@types/vscode": "^1.83.0",
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.2",
+    "@types/node": "^20.8.2",
+    "@typescript-eslint/eslint-plugin": "^6.7.4",
+    "@typescript-eslint/parser": "^6.7.4",
+    "eslint": "^8.50.0",
+    "glob": "^10.3.10",
+    "mocha": "^10.2.0",
+    "@vscode/test-electron": "^2.3.5"
   },
   "dependencies": {
-    "typescript": "^4.7.4"
+    "typescript": "^5.2.2"
   }
 }
