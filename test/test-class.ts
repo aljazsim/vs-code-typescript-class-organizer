@@ -39,9 +39,11 @@ export abstract class TestClass
     }
     protected abstract hack(): number;
 
+    private accessor isEnabled: boolean = true;
 
 
     public static year: Number;
+    static accessor isLast: boolean | undefined;
     public maker: string | null;
     tone = "dark";
 
@@ -52,7 +54,9 @@ export abstract class TestClass
 
     private lastName = "Last Name 1";
     abstract measure(): number;
+    protected accessor isFirst = true;
     protected brand = "Brand C";
+    private accessor isLast: boolean | undefined;
     protected readonly level = "Level 1";
     private arrowFunction = () => 3;
 
