@@ -3,27 +3,27 @@ import * as ts from "typescript";
 
 export class FunctionNode extends ElementNode
 {
-    // #region Properties (1)
+  // #region Properties (1)
 
-    public isExport: boolean;
+  public isExport: boolean;
 
-    // #endregion
+  // #endregion
 
-    // #region Constructors (1)
+  // #region Constructors (1)
 
-    constructor(sourceFile: ts.SourceFile, functionDeclaration: ts.FunctionDeclaration)
-    {
-        super(functionDeclaration);
+  constructor(sourceFile: ts.SourceFile, functionDeclaration: ts.FunctionDeclaration)
+  {
+    super(functionDeclaration);
 
-        this.name = (<ts.Identifier>functionDeclaration.name).escapedText.toString();
+    this.name = (<ts.Identifier>functionDeclaration.name).escapedText.toString();
 
-        this.fullStart = functionDeclaration.getFullStart();
-        this.end = functionDeclaration.getEnd();
-        this.start = functionDeclaration.getStart(sourceFile, false);
+    this.fullStart = functionDeclaration.getFullStart();
+    this.end = functionDeclaration.getEnd();
+    this.start = functionDeclaration.getStart(sourceFile, false);
 
-        this.isExport = this.getIsExport(functionDeclaration);
-        this.decorators = this.getDecorators(functionDeclaration, sourceFile);
-    }
+    this.isExport = this.getIsExport(functionDeclaration);
+    this.decorators = this.getDecorators(functionDeclaration, sourceFile);
+  }
 
-    // #endregion
+  // #endregion
 }
