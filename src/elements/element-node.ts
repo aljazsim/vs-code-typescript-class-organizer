@@ -6,6 +6,7 @@ import * as ts from "typescript";
 
 export abstract class ElementNode
 {
+<<<<<<< Updated upstream
     // #region Properties (5)
 
     public accessModifier: AccessModifier | null = null;
@@ -16,6 +17,34 @@ export abstract class ElementNode
     public start: number = 0;
 
     // #endregion
+=======
+  // #region Properties (6)
+
+  public accessModifier: AccessModifier | null = null;
+  public decorators: string[] = [];
+  public end: number = 0;
+  public fullStart: number = 0;
+  public name: string = "";
+  public start: number = 0;
+
+  // #endregion Properties (6)
+
+  // #region Constructors (1)
+
+  constructor(public readonly node: ts.Node)
+  {
+  }
+
+  // #endregion Constructors (1)
+
+  // #region Protected Methods (15)
+
+  protected getAccessModifier(node: ts.PropertyDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration | ts.MethodDeclaration | ts.PropertySignature | ts.IndexSignatureDeclaration)
+  {
+    let accessModifier: AccessModifier | null = null;
+    let accessModifiers: ts.SyntaxKind[] = [ts.SyntaxKind.PrivateKeyword, ts.SyntaxKind.ProtectedKeyword, ts.SyntaxKind.PublicKeyword];
+    let nodeAccessModifier: ts.Modifier | ts.ModifierLike | undefined;
+>>>>>>> Stashed changes
 
     // #region Constructors (1)
 
@@ -73,7 +102,36 @@ export abstract class ElementNode
         }
     }
 
+<<<<<<< Updated upstream
     protected getIsAbstract(node: ts.ClassDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration | ts.PropertyDeclaration | ts.MethodDeclaration | ts.IndexedAccessTypeNode)
+=======
+    return accessModifier;
+  }
+
+  protected getDecorators(node: ts.ClassDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration | ts.PropertyDeclaration | ts.MethodDeclaration | ts.IndexedAccessTypeNode | ts.ConstructorDeclaration | ts.EnumDeclaration | ts.FunctionDeclaration | ts.IndexSignatureDeclaration | ts.MethodSignature | ts.PropertySignature | ts.TypeAliasDeclaration, sourceFile: ts.SourceFile)
+  {
+    let parametersRegex = /\(.*\)/;
+
+    return this.getModifiers(node).filter(m => ts.isDecorator(m)).map(x => (x as ts.Decorator).getText(sourceFile).replace(parametersRegex, "")) ?? []
+  }
+
+  protected getIsAbstract(node: ts.ClassDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration | ts.PropertyDeclaration | ts.MethodDeclaration | ts.IndexedAccessTypeNode)
+  {
+    return this.getModifiers(node).find((x) => x.kind === ts.SyntaxKind.AbstractKeyword) !== undefined;
+  }
+
+  protected getIsAsync(node: ts.MethodDeclaration | ts.PropertyDeclaration)
+  {
+    return this.getModifiers(node).find((x) => x.kind === ts.SyntaxKind.AsyncKeyword) !== undefined;
+  }
+
+  protected getIsExport(node: ts.ClassDeclaration | ts.FunctionDeclaration)
+  {
+    let isExport = false;
+
+    if (node.modifiers &&
+      node.modifiers.length > 0)
+>>>>>>> Stashed changes
     {
         let isAbstract = false;
 
@@ -175,6 +233,7 @@ export abstract class ElementNode
         return x.accessModifier === AccessModifier.public || x.accessModifier === null;
     }
 
+<<<<<<< Updated upstream
     protected getName(node: ElementNode, groupWithDecorators: boolean): string
     {
         if (groupWithDecorators)
@@ -189,4 +248,12 @@ export abstract class ElementNode
     }
 
     // #endregion
+=======
+  protected isWritable(x: PropertyNode | PropertySignatureNode)
+  {
+    return x.writeMode === WriteModifier.writable;
+  }
+
+  // #endregion Protected Methods (15)
+>>>>>>> Stashed changes
 }

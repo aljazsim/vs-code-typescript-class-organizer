@@ -255,53 +255,107 @@
             {
               "caption": "Public Static Accessors",
               "memberTypes": [
-                "publicStaticGettersAndSetters"
+                "publicStaticAccessors"
               ]
             },
             {
               "caption": "Public Accessors",
               "memberTypes": [
-                "publicGettersAndSetters"
+                "publicAccessors"
               ]
             },
             {
               "caption": "Public Abstract Accessors",
               "memberTypes": [
-                "publicAbstractGettersAndSetters"
+                "publicAbstractAccessors"
               ]
             },
             {
               "caption": "Protected Static Accessors",
               "memberTypes": [
-                "protectedStaticGettersAndSetters"
+                "protectedStaticAccessors"
               ]
             },
             {
               "caption": "Protected Accessors",
               "memberTypes": [
-                "protectedGettersAndSetters"
+                "protectedAccessors"
               ]
             },
             {
               "caption": "Protected Abstract Accessors",
               "memberTypes": [
-                "protectedAbstractGettersAndSetters"
+                "protectedAbstractAccessors"
               ]
             },
             {
               "caption": "Private Static Accessors",
               "memberTypes": [
-                "privateStaticGettersAndSetters"
+                "privateStaticAccessors"
               ]
             },
             {
               "caption": "Private Accessors",
               "memberTypes": [
-                "privateGettersAndSetters"
+                "privateAccessors"
               ]
             },
             {
               "caption": "Private Abstract Accessors",
+              "memberTypes": [
+                "privateAbstractAccessors"
+              ]
+            },
+            {
+              "caption": "Public Static Getters And Setters",
+              "memberTypes": [
+                "publicStaticGettersAndSetters"
+              ]
+            },
+            {
+              "caption": "Public Getters And Setters",
+              "memberTypes": [
+                "publicGettersAndSetters"
+              ]
+            },
+            {
+              "caption": "Public Abstract Getters And Setters",
+              "memberTypes": [
+                "publicAbstractGettersAndSetters"
+              ]
+            },
+            {
+              "caption": "Protected Static Getters And Setters",
+              "memberTypes": [
+                "protectedStaticGettersAndSetters"
+              ]
+            },
+            {
+              "caption": "Protected Getters And Setters",
+              "memberTypes": [
+                "protectedGettersAndSetters"
+              ]
+            },
+            {
+              "caption": "Protected Abstract Getters And Setters",
+              "memberTypes": [
+                "protectedAbstractGettersAndSetters"
+              ]
+            },
+            {
+              "caption": "Private Static Getters And Setters",
+              "memberTypes": [
+                "privateStaticGettersAndSetters"
+              ]
+            },
+            {
+              "caption": "Private Getters And Setters",
+              "memberTypes": [
+                "privateGettersAndSetters"
+              ]
+            },
+            {
+              "caption": "Private Abstract Getters And Setters",
               "memberTypes": [
                 "privateAbstractGettersAndSetters"
               ]

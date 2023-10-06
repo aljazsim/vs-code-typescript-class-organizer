@@ -1,3 +1,4 @@
+import { AccessorNode } from "./elements/accessor-node";
 import { ClassNode } from "./elements/class-node";
 import { ConstructorNode } from "./elements/constructor-node";
 import { ElementNode } from "./elements/element-node";
@@ -33,7 +34,7 @@ export class Transformer
     return elements;
   }
 
-  // #endregion
+  // #endregion Public Methods (1)
 
   // #region Private Methods (1)
 
@@ -56,6 +57,10 @@ export class Transformer
         if (ts.isPropertySignature(member))
         {
           (<InterfaceNode>elements[elements.length - 1]).properties.push(new PropertySignatureNode(sourceFile, member));
+        }
+        else if (ts.isAutoAccessorPropertyDeclaration(member))
+        {
+          (<InterfaceNode>elements[elements.length - 1]).accessors.push(new AccessorNode(sourceFile, member));
         }
         else if (ts.isGetAccessorDeclaration(member))
         {
@@ -85,10 +90,13 @@ export class Transformer
         {
           (<ClassNode>elements[elements.length - 1]).constructors.push(new ConstructorNode(sourceFile, member));
         }
+        else if (ts.isAutoAccessorPropertyDeclaration(member))
+        {
+          (<ClassNode>elements[elements.length - 1]).accessors.push(new AccessorNode(sourceFile, member));
+        }
         else if (ts.isPropertyDeclaration(member))
         {
-          if (treatArrowFunctionPropertiesAsMethods &&
-            member.initializer?.kind === ts.SyntaxKind.ArrowFunction)
+          if (treatArrowFunctionPropertiesAsMethods && member.initializer?.kind === ts.SyntaxKind.ArrowFunction)
           {
             (<ClassNode>elements[elements.length - 1]).methods.push(new PropertyNode(sourceFile, member));
           }
@@ -134,5 +142,5 @@ export class Transformer
     return elements;
   }
 
-  // #endregion
+  // #endregion Private Methods (1)
 }

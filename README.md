@@ -39,7 +39,7 @@ Extensions supports the following configuration options:
 
 - `tsco.useRegions`: Adds member group regions (true by default).
 - `tsco.addMemberCountInRegionName`: Adds member group region member count after region title (true by default).
-missing (true by default).
+- `tsco.addPublicModifierIfMissing`: Adds public access modifier if missing (true by default).
 - `tsco.addRegionIndentation`: Adds region indentation (true by default).
 - `tsco.addRegionCaptionToRegionEnd`: Adds region caption to region end (true by default).
 
@@ -101,6 +101,15 @@ By default members are grouped and ordered in the following way:
 - private static accessors,
 - private accessors,
 - private abstract accessors,
+- public static getters and setters,
+- public getters and setters,
+- public abstract getters and setters,
+- protected static getters and setters,
+- protected getters and setters,
+- protected abstract getters and setters,
+- private static getters and setters,
+- private getters and setters,
+- private abstract getters and setters,
 - public static methods,
 - public methods,
 - public abstract methods,
@@ -143,6 +152,15 @@ This configuration can ge changed by using the `tsco.memberOrder` setting in `se
   - privateStaticIndexes
   - privateIndexes
   - privateAbstractIndexes
+  - publicStaticAccessors
+  - publicAccessors
+  - publicAbstractAccessors
+  - protectedStaticAccessors
+  - protectedAccessors
+  - protectedAbstractAccessors
+  - privateStaticAccessors
+  - privateAccessors
+  - privateAbstractAccessors
   - publicStaticGettersAndSetters
   - publicGettersAndSetters
   - publicAbstractGettersAndSetters
@@ -235,38 +253,74 @@ Example of the default `tsco.memberOrder` setting:
     },
     {
       "caption": "Public Static Accessors",
-      "memberTypes": ["publicStaticGettersAndSetters"]
+      "memberTypes": ["publicStaticAccessors"]
     },
     {
       "caption": "Public Accessors",
-      "memberTypes": ["publicGettersAndSetters"]
+      "memberTypes": ["publicAccessors"]
     },
     {
       "caption": "Public Abstract Accessors",
-      "memberTypes": ["publicAbstractGettersAndSetters"]
+      "memberTypes": ["publicAbstractAccessors"]
     },
     {
       "caption": "Protected Static Accessors",
-      "memberTypes": ["protectedStaticGettersAndSetters"]
+      "memberTypes": ["protectedStaticAccessors"]
     },
     {
       "caption": "Protected Accessors",
-      "memberTypes": ["protectedGettersAndSetters"]
+      "memberTypes": ["protectedAccessors"]
     },
     {
       "caption": "Protected Abstract Accessors",
-      "memberTypes": ["protectedAbstractGettersAndSetters"]
+      "memberTypes": ["protectedAbstractAccessors"]
     },
     {
       "caption": "Private Static Accessors",
-      "memberTypes": ["privateStaticGettersAndSetters"]
+      "memberTypes": ["privateStaticAccessors"]
     },
     {
       "caption": "Private Accessors",
-      "memberTypes": ["privateGettersAndSetters"]
+      "memberTypes": ["privateAccessors"]
     },
     {
       "caption": "Private Abstract Accessors",
+      "memberTypes": ["privateAbstractAccessors"]
+    },
+    {
+      "caption": "Public Static Getters And Setters",
+      "memberTypes": ["publicStaticGettersAndSetters"]
+    },
+    {
+      "caption": "Public Getters And Setters",
+      "memberTypes": ["publicGettersAndSetters"]
+    },
+    {
+      "caption": "Public Abstract Getters And Setters",
+      "memberTypes": ["publicAbstractGettersAndSetters"]
+    },
+    {
+      "caption": "Protected Static Getters And Setters",
+      "memberTypes": ["protectedStaticGettersAndSetters"]
+    },
+    {
+      "caption": "Protected Getters And Setters",
+      "memberTypes": ["protectedGettersAndSetters"]
+    },
+    {
+      "caption": "Protected Abstract Getters And Setters",
+      "memberTypes": ["protectedAbstractGettersAndSetters"]
+    },
+    {
+      "caption": "Private Static Getters And Setters",
+      "memberTypes": ["privateStaticGettersAndSetters"]
+    },
+    {
+      "caption": "Private Getters And Setters",
+      "memberTypes": ["privateGettersAndSetters"]
+    },
+    {
+      "caption": "Private Abstract Getters And Setters",
       "memberTypes": ["privateAbstractGettersAndSetters"]
     },
     {
@@ -413,3 +467,7 @@ The `placeAbove` methods will always apear at the top of the public method membb
 ### 1.0.26
 
 - update README
+
+### 1.0.27
+
+- add support for accessors

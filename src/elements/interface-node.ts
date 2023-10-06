@@ -1,3 +1,4 @@
+import { AccessorNode } from "./accessor-node";
 import { ElementNode } from "./element-node";
 import { GetterNode } from "./getter-node";
 import { IndexSignatureNode } from "./index-signature-node";
@@ -8,8 +9,9 @@ import * as ts from "typescript";
 
 export class InterfaceNode extends ElementNode
 {
-  // #region Properties (7)
+  // #region Properties (8)
 
+  public accessors: AccessorNode[] = [];
   public getters: GetterNode[] = [];
   public indexes: IndexSignatureNode[] = [];
   public membersEnd: number = 0;
@@ -18,7 +20,7 @@ export class InterfaceNode extends ElementNode
   public properties: PropertySignatureNode[] = [];
   public setters: SetterNode[] = [];
 
-  // #endregion Properties (7)
+  // #endregion Properties (8)
 
   // #region Constructors (1)
 
@@ -41,7 +43,12 @@ export class InterfaceNode extends ElementNode
 
   // #endregion Constructors (1)
 
-  // #region Public Methods (6)
+  // #region Public Methods (7)
+
+  public getAccessors()
+  {
+    return this.accessors.concat(this.setters);
+  }
 
   public getConstProperties()
   {
@@ -73,5 +80,5 @@ export class InterfaceNode extends ElementNode
     return this.properties.filter(x => this.isReadOnly(x));
   }
 
-  // #endregion Public Methods (6)
+  // #endregion Public Methods (7)
 }

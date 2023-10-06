@@ -35,6 +35,18 @@ export enum MemberType
     privateIndexes,
     privateAbstractIndexes,
 
+    publicStaticAccessors,
+    publicAccessors,
+    publicAbstractAccessors,
+
+    privateStaticAccessors,
+    privateAccessors,
+    privateAbstractAccessors,
+
+    protectedStaticAccessors,
+    protectedAccessors,
+    protectedAbstractAccessors,
+
     publicStaticGettersAndSetters,
     publicGettersAndSetters,
     publicAbstractGettersAndSetters,

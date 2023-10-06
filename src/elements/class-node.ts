@@ -1,3 +1,4 @@
+import { AccessorNode } from "./accessor-node";
 import { ConstructorNode } from "./constructor-node";
 import { ElementNode } from "./element-node";
 import { GetterNode } from "./getter-node";
@@ -9,6 +10,7 @@ import * as ts from "typescript";
 
 export class ClassNode extends ElementNode
 {
+<<<<<<< Updated upstream
     // #region Properties (10)
 
     public constructors: ConstructorNode[] = [];
@@ -23,6 +25,23 @@ export class ClassNode extends ElementNode
     public setters: SetterNode[] = [];
 
     // #endregion Properties (10)
+=======
+  // #region Properties (11)
+
+  public accessors: AccessorNode[] = [];
+  public constructors: ConstructorNode[] = [];
+  public getters: GetterNode[] = [];
+  public indexes: IndexNode[] = [];
+  public isAbstract: boolean;
+  public isStatic: boolean;
+  public membersEnd: number = 0;
+  public membersStart: number = 0;
+  public methods: (MethodNode | PropertyNode)[] = [];
+  public properties: PropertyNode[] = [];
+  public setters: SetterNode[] = [];
+
+  // #endregion Properties (11)
+>>>>>>> Stashed changes
 
     // #region Constructors (1)
 
@@ -52,20 +71,36 @@ export class ClassNode extends ElementNode
 
     // #region Public Methods (46)
 
+<<<<<<< Updated upstream
     public getConstructors()
     {
         return this.constructors;
     }
+=======
+  // #region Public Methods (55)
+>>>>>>> Stashed changes
 
     public getPrivateAbstractGettersAndSetters()
     {
         return this.getters.concat(this.setters).filter(x => this.isPrivate(x) && !x.isStatic && x.isAbstract);
     }
 
+<<<<<<< Updated upstream
     public getPrivateAbstractIndexes()
     {
         return this.indexes.filter(x => this.isPrivate(x) && !x.isStatic && x.isAbstract);
     }
+=======
+  public getPrivateAbstractAccessors()
+  {
+    return this.accessors.filter(x => this.isPrivate(x) && !x.isStatic && x.isAbstract);
+  }
+
+  public getPrivateAbstractGettersAndSetters()
+  {
+    return this.getters.concat(this.setters).filter(x => this.isPrivate(x) && !x.isStatic && x.isAbstract);
+  }
+>>>>>>> Stashed changes
 
     public getPrivateAbstractMethods()
     {
@@ -77,10 +112,22 @@ export class ClassNode extends ElementNode
         return this.properties.filter(x => this.isPrivate(x) && this.isConstant(x) && !x.isStatic);
     }
 
+<<<<<<< Updated upstream
     public getPrivateGettersAndSetters()
     {
         return this.getters.concat(this.setters).filter(x => this.isPrivate(x) && !x.isStatic && !x.isAbstract);
     }
+=======
+  public getPrivateAccessors()
+  {
+    return this.accessors.filter(x => this.isPrivate(x) && !x.isStatic && !x.isAbstract);
+  }
+
+  public getPrivateConstProperties()
+  {
+    return this.properties.filter(x => this.isPrivate(x) && this.isConstant(x) && !x.isStatic);
+  }
+>>>>>>> Stashed changes
 
     public getPrivateIndexes()
     {
@@ -107,10 +154,22 @@ export class ClassNode extends ElementNode
         return this.properties.filter(x => this.isPrivate(x) && this.isConstant(x) && x.isStatic);
     }
 
+<<<<<<< Updated upstream
     public getPrivateStaticGettersAndSetters()
     {
         return this.getters.concat(this.setters).filter(x => this.isPrivate(x) && x.isStatic && !x.isAbstract);
     }
+=======
+  public getPrivateStaticAccessors()
+  {
+    return this.accessors.filter(x => this.isPrivate(x) && x.isStatic && !x.isAbstract);
+  }
+
+  public getPrivateStaticConstProperties()
+  {
+    return this.properties.filter(x => this.isPrivate(x) && this.isConstant(x) && x.isStatic);
+  }
+>>>>>>> Stashed changes
 
     public getPrivateStaticIndexes()
     {
@@ -137,10 +196,22 @@ export class ClassNode extends ElementNode
         return this.getters.concat(this.setters).filter(x => this.isProtected(x) && !x.isStatic && x.isAbstract);
     }
 
+<<<<<<< Updated upstream
     public getProtectedAbstractIndexes()
     {
         return this.indexes.filter(x => this.isProtected(x) && !x.isStatic && x.isAbstract);
     }
+=======
+  public getProtectedAbstractAccessors()
+  {
+    return this.accessors.filter(x => this.isProtected(x) && !x.isStatic && x.isAbstract);
+  }
+
+  public getProtectedAbstractGettersAndSetters()
+  {
+    return this.getters.concat(this.setters).filter(x => this.isProtected(x) && !x.isStatic && x.isAbstract);
+  }
+>>>>>>> Stashed changes
 
     public getProtectedAbstractMethods()
     {
@@ -152,10 +223,22 @@ export class ClassNode extends ElementNode
         return this.properties.filter(x => this.isProtected(x) && this.isConstant(x) && !x.isStatic);
     }
 
+<<<<<<< Updated upstream
     public getProtectedGettersAndSetters()
     {
         return this.getters.concat(this.setters).filter(x => this.isProtected(x) && !x.isStatic && !x.isAbstract);
     }
+=======
+  public getProtectedAccessors()
+  {
+    return this.accessors.filter(x => this.isProtected(x) && !x.isStatic && !x.isAbstract);
+  }
+
+  public getProtectedConstProperties()
+  {
+    return this.properties.filter(x => this.isProtected(x) && this.isConstant(x) && !x.isStatic);
+  }
+>>>>>>> Stashed changes
 
     public getProtectedIndexes()
     {
@@ -182,10 +265,22 @@ export class ClassNode extends ElementNode
         return this.properties.filter(x => this.isProtected(x) && this.isConstant(x) && x.isStatic);
     }
 
+<<<<<<< Updated upstream
     public getProtectedStaticGettersAndSetters()
     {
         return this.getters.concat(this.setters).filter(x => this.isProtected(x) && x.isStatic && !x.isAbstract);
     }
+=======
+  public getProtectedStaticAccessors()
+  {
+    return this.accessors.filter(x => this.isProtected(x) && x.isStatic && !x.isAbstract);
+  }
+
+  public getProtectedStaticConstProperties()
+  {
+    return this.properties.filter(x => this.isProtected(x) && this.isConstant(x) && x.isStatic);
+  }
+>>>>>>> Stashed changes
 
     public getProtectedStaticIndexes()
     {
@@ -212,10 +307,22 @@ export class ClassNode extends ElementNode
         return this.getters.concat(this.setters).filter(x => this.isPublic(x) && !x.isStatic && x.isAbstract);
     }
 
+<<<<<<< Updated upstream
     public getPublicAbstractIndexes()
     {
         return this.indexes.filter(x => this.isPublic(x) && !x.isStatic && x.isAbstract);
     }
+=======
+  public getPublicAbstractAccessors()
+  {
+    return this.accessors.filter(x => this.isPublic(x) && !x.isStatic && x.isAbstract);
+  }
+
+  public getPublicAbstractGettersAndSetters()
+  {
+    return this.getters.concat(this.setters).filter(x => this.isPublic(x) && !x.isStatic && x.isAbstract);
+  }
+>>>>>>> Stashed changes
 
     public getPublicAbstractMethods()
     {
@@ -227,10 +334,22 @@ export class ClassNode extends ElementNode
         return this.properties.filter(x => this.isPublic(x) && this.isConstant(x) && !x.isStatic);
     }
 
+<<<<<<< Updated upstream
     public getPublicGettersAndSetters()
     {
         return this.getters.concat(this.setters).filter(x => this.isPublic(x) && !x.isStatic && !x.isAbstract);
     }
+=======
+  public getPublicAccessors()
+  {
+    return this.accessors.filter(x => this.isPublic(x) && !x.isStatic && !x.isAbstract);
+  }
+
+  public getPublicConstProperties()
+  {
+    return this.properties.filter(x => this.isPublic(x) && this.isConstant(x) && !x.isStatic);
+  }
+>>>>>>> Stashed changes
 
     public getPublicIndexes()
     {
@@ -257,10 +376,22 @@ export class ClassNode extends ElementNode
         return this.indexes.filter(x => this.isPublic(x) && this.isConstant(x) && x.isStatic);
     }
 
+<<<<<<< Updated upstream
     public getPublicStaticGettersAndSetters()
     {
         return this.getters.concat(this.setters).filter(x => this.isPublic(x) && x.isStatic && !x.isAbstract);
     }
+=======
+  public getPublicStaticAccessors()
+  {
+    return this.accessors.filter(x => this.isPublic(x) && x.isStatic && !x.isAbstract);
+  }
+
+  public getPublicStaticConstProperties()
+  {
+    return this.indexes.filter(x => this.isPublic(x) && this.isConstant(x) && x.isStatic);
+  }
+>>>>>>> Stashed changes
 
     public getPublicStaticIndexes()
     {
@@ -282,5 +413,14 @@ export class ClassNode extends ElementNode
         return this.properties.filter(x => this.isPublic(x) && this.isReadOnly(x) && x.isStatic);
     }
 
+<<<<<<< Updated upstream
     // #endregion Public Methods (46)
+=======
+  public getPublicStaticReadOnlyProperties()
+  {
+    return this.properties.filter(x => this.isPublic(x) && this.isReadOnly(x) && x.isStatic);
+  }
+
+  // #endregion Public Methods (55)
+>>>>>>> Stashed changes
 }
