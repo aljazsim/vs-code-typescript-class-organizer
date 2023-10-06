@@ -11,6 +11,9 @@ export abstract class TestClass
     {
     }
 
+    /**
+     * This method resolves everything.
+     */
     static resolve()
     {
     }
