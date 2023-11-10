@@ -7,7 +7,8 @@ import { MethodSignatureNode } from "./method-signature-node";
 import { PropertySignatureNode } from "./property-signature-node";
 import { SetterNode } from "./setter-node";
 
-export class InterfaceNode extends ElementNode {
+export class InterfaceNode extends ElementNode
+{
     // #region Properties (8)
 
     public accessors: AccessorNode[] = [];
@@ -23,7 +24,8 @@ export class InterfaceNode extends ElementNode {
 
     // #region Constructors (1)
 
-    constructor(sourceFile: ts.SourceFile, interfaceDeclaration: ts.InterfaceDeclaration) {
+    constructor(sourceFile: ts.SourceFile, interfaceDeclaration: ts.InterfaceDeclaration)
+    {
         super(interfaceDeclaration);
 
         this.name = (<ts.Identifier>interfaceDeclaration.name).escapedText?.toString() ?? sourceFile.getFullText().substring(interfaceDeclaration.name.pos, interfaceDeclaration.name.end).trim();
@@ -32,7 +34,8 @@ export class InterfaceNode extends ElementNode {
         this.end = interfaceDeclaration.getEnd();
         this.start = interfaceDeclaration.getStart(sourceFile, false);
 
-        if (interfaceDeclaration.members && interfaceDeclaration.members.length > 0) {
+        if (interfaceDeclaration.members && interfaceDeclaration.members.length > 0)
+        {
             this.membersStart = interfaceDeclaration.members[0].getFullStart();
             this.membersEnd = interfaceDeclaration.members[interfaceDeclaration.members.length - 1].getEnd();
         }
@@ -42,31 +45,38 @@ export class InterfaceNode extends ElementNode {
 
     // #region Public Methods (7)
 
-    public getAccessors() {
+    public getAccessors()
+    {
         return this.accessors;
     }
 
-    public getConstProperties() {
+    public getConstProperties()
+    {
         return this.properties.filter((x) => this.isConstant(x));
     }
 
-    public getGettersAndSetters() {
+    public getGettersAndSetters()
+    {
         return this.getters.concat(this.setters);
     }
 
-    public getIndexes() {
+    public getIndexes()
+    {
         return this.indexes;
     }
 
-    public getMethods() {
+    public getMethods()
+    {
         return this.methods;
     }
 
-    public getProperties() {
+    public getProperties()
+    {
         return this.properties.filter((x) => this.isWritable(x));
     }
 
-    public getReadOnlyProperties() {
+    public getReadOnlyProperties()
+    {
         return this.properties.filter((x) => this.isReadOnly(x));
     }
 

@@ -21,6 +21,7 @@ export enum MemberType
     publicStaticProperties,
     publicProperties,
 
+    staticBlockDeclarations,
     constructors,
 
     publicStaticIndexes,

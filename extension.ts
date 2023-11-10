@@ -1,3 +1,5 @@
+import * as ts from "typescript";
+import * as vscode from "vscode";
 import { Configuration } from "./src/configuration";
 import { ElementNodeGroup } from "./src/element-node-group";
 import { ElementNodeGroupConfiguration } from "./src/element-node-group-configuration";
@@ -15,8 +17,6 @@ import { MemberType } from "./src/member-type";
 import { formatLines, removeRegions } from "./src/regions";
 import { Transformer } from "./src/transformer";
 import { compareNumbers, distinct, getClasses, getEnums, getFunctions, getImports, getInterfaces, getTypeAliases, groupByPlaceAboveBelow } from "./src/utils";
-import * as ts from "typescript";
-import * as vscode from "vscode";
 
 let configuration = getConfiguration();
 
@@ -520,9 +520,13 @@ function organizeClassMembers(classNode: ClassNode, memberTypeOrder: ElementNode
       {
         memberGroups.push(new ElementNodeGroup(null, [], groupByPlaceAboveBelow(classNode.getPublicProperties(), placeAbove, placeBelow, groupElementsWithDecorators), false));
       }
+      else if (memberType === MemberType.staticBlockDeclarations)
+      {
+        memberGroups.push(new ElementNodeGroup(null, [], classNode.staticBlockDeclarations, false));
+      }
       else if (memberType === MemberType.constructors)
       {
-        memberGroups.push(new ElementNodeGroup(null, [], groupByPlaceAboveBelow(classNode.getConstructors(), placeAbove, placeBelow, groupElementsWithDecorators), false));
+        memberGroups.push(new ElementNodeGroup(null, [], classNode.getConstructors(), false));
       }
       else if (memberType === MemberType.publicStaticIndexes)
       {
