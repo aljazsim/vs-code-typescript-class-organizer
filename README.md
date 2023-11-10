@@ -82,6 +82,7 @@ By default members are grouped and ordered in the following way:
   - public readonly properties,
   - public static properties,
   - public properties,
+- static block declarations,
 - constructors,
 - public static indexes,
 - public indexes,
@@ -142,6 +143,7 @@ This configuration can ge changed by using the `tsco.memberOrder` setting in `se
   - publicReadOnlyProperties
   - publicStaticProperties
   - publicProperties
+  - staticBlockDeclarations,
   - constructors
   - publicStaticIndexes
   - publicIndexes
@@ -210,6 +212,10 @@ Example of the default `tsco.memberOrder` setting:
         "publicStaticProperties",
         "publicProperties"
       ]
+    },
+    {
+      "caption": "Static Block Declarations",
+      "memberTypes": ["staticBlockDeclarations"]
     },
     {
       "caption": "Constructors",
@@ -470,4 +476,5 @@ The `placeAbove` methods will always apear at the top of the public method membb
 
 ### 1.0.27
 
-- add support for accessors
+- add support for organizing accessors
+- add support for organizing static block declarations

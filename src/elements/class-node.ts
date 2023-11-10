@@ -1,3 +1,4 @@
+import * as ts from "typescript";
 import { AccessorNode } from "./accessor-node";
 import { ConstructorNode } from "./constructor-node";
 import { ElementNode } from "./element-node";
@@ -6,11 +7,11 @@ import { IndexNode } from "./index-node";
 import { MethodNode } from "./method-node";
 import { PropertyNode } from "./property-node";
 import { SetterNode } from "./setter-node";
-import * as ts from "typescript";
+import { StaticBlockDeclarationNode } from "./static-block-declaration-node";
 
 export class ClassNode extends ElementNode
 {
-  // #region Properties (11)
+  // #region Properties (12)
 
   public accessors: AccessorNode[] = [];
   public constructors: ConstructorNode[] = [];
@@ -23,8 +24,9 @@ export class ClassNode extends ElementNode
   public methods: (MethodNode | PropertyNode)[] = [];
   public properties: PropertyNode[] = [];
   public setters: SetterNode[] = [];
+  public staticBlockDeclarations: StaticBlockDeclarationNode[] = [];
 
-  // #endregion Properties (11)
+  // #endregion Properties (12)
 
   // #region Constructors (1)
 
