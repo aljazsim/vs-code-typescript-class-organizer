@@ -6,6 +6,8 @@ import * as ts from "typescript";
 
 export abstract class ElementNode
 {
+  // #region Properties (12)
+
   public accessModifier: AccessModifier | null = null;
   public decorators: string[] = [];
   public end: number = 0;
@@ -13,9 +15,17 @@ export abstract class ElementNode
   public name: string = "";
   public start: number = 0;
 
+  // #endregion Properties (12)
+
+  // #region Constructors (1)
+
   constructor(public readonly node: ts.Node)
   {
   }
+
+  // #endregion Constructors (1)
+
+  // #region Protected Methods (15)
 
   protected getAccessModifier(node: ts.PropertyDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration | ts.MethodDeclaration | ts.PropertySignature | ts.IndexSignatureDeclaration)
   {
@@ -58,6 +68,11 @@ export abstract class ElementNode
   protected getIsAbstract(node: ts.ClassDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration | ts.PropertyDeclaration | ts.MethodDeclaration | ts.IndexedAccessTypeNode)
   {
     return this.getModifiers(node).find((x) => x.kind === ts.SyntaxKind.AbstractKeyword) !== undefined;
+  }
+
+  protected getIsAsync(node: ts.MethodDeclaration | ts.PropertyDeclaration)
+  {
+    return this.getModifiers(node).find((x) => x.kind === ts.SyntaxKind.AsyncKeyword) !== undefined;
   }
 
   protected getIsExport(node: ts.ClassDeclaration | ts.FunctionDeclaration)
@@ -211,4 +226,6 @@ export abstract class ElementNode
   {
     return x.writeMode === WriteModifier.writable;
   }
+
+  // #endregion Protected Methods (15)
 }

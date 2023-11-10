@@ -1,6 +1,7 @@
 import { Configuration } from "./src/configuration";
 import { ElementNodeGroup } from "./src/element-node-group";
 import { ElementNodeGroupConfiguration } from "./src/element-node-group-configuration";
+import { AccessorNode } from "./src/elements/accessor-node";
 import { ClassNode } from "./src/elements/class-node";
 import { ElementNode } from "./src/elements/element-node";
 import { GetterNode } from "./src/elements/getter-node";
@@ -9,6 +10,7 @@ import { MethodNode } from "./src/elements/method-node";
 import { PropertyNode } from "./src/elements/property-node";
 import { SetterNode } from "./src/elements/setter-node";
 import { UnknownNode } from "./src/elements/unknown-node";
+import { WriteModifier } from "./src/elements/write-modifier";
 import { MemberType } from "./src/member-type";
 import { formatLines, removeRegions } from "./src/regions";
 import { Transformer } from "./src/transformer";
@@ -89,6 +91,7 @@ function convertPascalCaseToTitleCase(value: string)
     value.length > 1)
   {
     value = value.replace(/(?:^|\.?)([A-Z])/g, (x, y) => " " + y);
+    value = value[0].toUpperCase() + value.substring(1);
   }
 
   return value;
@@ -169,7 +172,21 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
   let sourceCode2: string;
   let count = 0;
   let members = "";
-  let newLine = "\r\n";
+  const newLine = "\r\n";
+  const spacesRegex = "\\s*";
+  const staticRegex = `(static)?${spacesRegex}`;
+  const readonlyRegex = `(readonly)?${spacesRegex}`;
+  const constRegex = `(const)?${spacesRegex}`;
+  const abstractRegex = `(abstract)?${spacesRegex}`;
+  const asyncRegex = `(async)?${spacesRegex}`;
+  const getterRegex = `get${spacesRegex}`;
+  const setterRegex = `set${spacesRegex}`;
+  const accessorRegex = `accessor${spacesRegex}`;
+  const getAsync = (isAsync: boolean) => isAsync ? "async " : "";
+  const getStatic = (isStatic: boolean) => isStatic ? "static " : "";
+  const getAbstract = (isAbstract: boolean) => isAbstract ? "abstract " : "";
+  const getReadOnly = (writeMode: WriteModifier) => writeMode === WriteModifier.readOnly ? "readonly " : "";
+  const getConst = (writeMode: WriteModifier) => writeMode === WriteModifier.const ? "const " : "";
   let nodeGroups: ElementNode[][] = [];
 
   for (let group of groups)
@@ -219,71 +236,23 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
             {
               if (node instanceof MethodNode)
               {
-                if (new RegExp(`static\\s*async\\s*${node.name}`).test(code))
-                {
-                  code = code.replace(new RegExp(`static\\s*async\\s*${node.name}\\s*\\(`), `public static async ${node.name}(`);
-                }
-                else if (new RegExp(`static\\s*${node.name}`).test(code))
-                {
-                  code = code.replace(new RegExp(`static\\s*${node.name}\\s*\\(`), `public static ${node.name}(`);
-                }
-                else if (new RegExp(`async\\s*${node.name}`).test(code))
-                {
-                  code = code.replace(new RegExp(`async\\s*${node.name}\\s*\\(`), `public async ${node.name}(`);
-                }
-                else
-                {
-                  code = code.replace(new RegExp(`${node.name}\\s*\\(`), `public ${node.name}(`);
-                }
+                code = code.replace(new RegExp(`${staticRegex}${abstractRegex}${asyncRegex}${node.name}`), `public ${getStatic(node.isStatic)}${getAbstract(node.isAbstract)}${getAsync(node.isAsync)} ${node.name}`);
               }
               else if (node instanceof PropertyNode)
               {
-                if (new RegExp(`static\\s*readonly\\s*${node.name}`).test(code))
-                {
-                  code = code.replace(new RegExp(`static\\s*readonly\\s*${node.name}\\s*:`), `public static readonly ${node.name}:`);
-                  code = code.replace(new RegExp(`static\\s*readonly\\s*${node.name}\\s*=`), `public static readonly ${node.name} =`);
-                  code = code.replace(new RegExp(`static\\s*readonly\\s*${node.name}\\s*;`), `public static readonly ${node.name};`);
-                }
-                else if (new RegExp(`static\\s*${node.name}`).test(code))
-                {
-                  code = code.replace(new RegExp(`static\\s*${node.name}\\s*:`), `public static ${node.name}:`);
-                  code = code.replace(new RegExp(`static\\s*${node.name}\\s*=`), `public static ${node.name} =`);
-                  code = code.replace(new RegExp(`static\\s*${node.name}\\s*;`), `public static ${node.name};`);
-                }
-                else if (new RegExp(`readonly\\s*${node.name}`).test(code))
-                {
-                  code = code.replace(new RegExp(`readonly\\s*${node.name}\\s*:`), `public readonly ${node.name}:`);
-                  code = code.replace(new RegExp(`readonly\\s*${node.name}\\s*=`), `public readonly ${node.name} =`);
-                  code = code.replace(new RegExp(`readonly\\s*${node.name}\\s*;`), `public readonly ${node.name};`);
-                }
-                else
-                {
-                  code = code.replace(new RegExp(`${node.name}\\s*:`), `public ${node.name}:`);
-                  code = code.replace(new RegExp(`${node.name}\\s*=`), `public ${node.name} =`);
-                  code = code.replace(new RegExp(`${node.name}\\s*;`), `public ${node.name};`);
-                }
+                code = code.replace(new RegExp(`${staticRegex}${abstractRegex}${constRegex}${readonlyRegex}${node.name}`), `public ${getStatic(node.isStatic)}${getAbstract(node.isAbstract)}${getConst(node.writeMode)}${getReadOnly(node.writeMode)} ${node.name}`);
+              }
+              else if (node instanceof AccessorNode)
+              {
+                code = code.replace(new RegExp(`${staticRegex}${abstractRegex}${accessorRegex}${node.name}`), `public ${getStatic(node.isStatic)}${getAbstract(node.isAbstract)}accessor ${node.name}`);
               }
               else if (node instanceof GetterNode)
               {
-                if (new RegExp(`static\\s*get\\s*${node.name}`).test(code))
-                {
-                  code = code.replace(new RegExp(`static\\s*get\\s*${node.name}\\s*\\(`), `public static get ${node.name}(`);
-                }
-                else
-                {
-                  code = code.replace(new RegExp(`get\\s*${node.name}\\s*\\(`), `public get ${node.name}(`);
-                }
+                code = code.replace(new RegExp(`${staticRegex}${abstractRegex}${getterRegex}${node.name}`), `public ${getStatic(node.isStatic)}${getAbstract(node.isAbstract)}get ${node.name}`);
               }
               else if (node instanceof SetterNode)
               {
-                if (new RegExp(`static\\s*set\\s*${node.name}`).test(code))
-                {
-                  code = code.replace(new RegExp(`static\\s*set\\s*${node.name}\\s*\\(`), `public static set ${node.name}(`);
-                }
-                else
-                {
-                  code = code.replace(new RegExp(`set\\s*${node.name}\\s*\\(`), `public set ${node.name}(`);
-                }
+                code = code.replace(new RegExp(`${staticRegex}${abstractRegex}${setterRegex}${node.name}`), `public ${getStatic(node.isStatic)}${getAbstract(node.isAbstract)}set ${node.name}`);
               }
             }
           }
@@ -357,7 +326,7 @@ function organizeTypes(sourceCode: string, fileName: string, configuration: Conf
 
   let elements = new Transformer().analyzeSyntaxTree(sourceFile, configuration.treatArrowFunctionPropertiesAsMethods);
 
-  if (!elements.some(x => !(x instanceof UnknownNode)))
+  if (!elements.some((x: any) => !(x instanceof UnknownNode)))
   {
     let imports = getImports(elements, configuration.groupPropertiesWithDecorators);
     let functions = getFunctions(elements, configuration.groupPropertiesWithDecorators);
@@ -387,7 +356,7 @@ function organizeTypes(sourceCode: string, fileName: string, configuration: Conf
 
   elements = new Transformer().analyzeSyntaxTree(sourceFile, configuration.treatArrowFunctionPropertiesAsMethods);
 
-  for (let element of elements.sort((a, b) => compareNumbers(a.fullStart, b.fullStart) * -1))
+  for (let element of elements.sort((a: any, b: any) => compareNumbers(a.fullStart, b.fullStart) * -1))
   {
     if (element instanceof InterfaceNode)
     {
@@ -444,6 +413,10 @@ function organizeInterfaceMembers(interfaceNode: InterfaceNode, memberTypeOrder:
       else if (memberType === MemberType.publicIndexes)
       {
         memberGroups.push(new ElementNodeGroup(null, [], groupByPlaceAboveBelow(interfaceNode.getIndexes(), placeAbove, placeBelow, groupElementsWithDecorators), false));
+      }
+      else if (memberType === MemberType.publicAccessors)
+      {
+        memberGroups.push(new ElementNodeGroup(null, [], groupByPlaceAboveBelow(interfaceNode.getAccessors(), placeAbove, placeBelow, groupElementsWithDecorators), false));
       }
       else if (memberType === MemberType.publicGettersAndSetters)
       {
@@ -586,6 +559,42 @@ function organizeClassMembers(classNode: ClassNode, memberTypeOrder: ElementNode
       else if (memberType === MemberType.privateAbstractIndexes)
       {
         memberGroups.push(new ElementNodeGroup(null, [], groupByPlaceAboveBelow(classNode.getPrivateAbstractIndexes(), placeAbove, placeBelow, groupElementsWithDecorators), false));
+      }
+      else if (memberType === MemberType.publicStaticAccessors)
+      {
+        memberGroups.push(new ElementNodeGroup(null, [], groupByPlaceAboveBelow(classNode.getPublicStaticAccessors(), placeAbove, placeBelow, groupElementsWithDecorators), false));
+      }
+      else if (memberType === MemberType.publicAccessors)
+      {
+        memberGroups.push(new ElementNodeGroup(null, [], groupByPlaceAboveBelow(classNode.getPublicAccessors(), placeAbove, placeBelow, groupElementsWithDecorators), false));
+      }
+      else if (memberType === MemberType.publicAbstractAccessors)
+      {
+        memberGroups.push(new ElementNodeGroup(null, [], groupByPlaceAboveBelow(classNode.getPublicAbstractAccessors(), placeAbove, placeBelow, groupElementsWithDecorators), false));
+      }
+      else if (memberType === MemberType.protectedStaticAccessors)
+      {
+        memberGroups.push(new ElementNodeGroup(null, [], groupByPlaceAboveBelow(classNode.getProtectedStaticAccessors(), placeAbove, placeBelow, groupElementsWithDecorators), false));
+      }
+      else if (memberType === MemberType.protectedAccessors)
+      {
+        memberGroups.push(new ElementNodeGroup(null, [], groupByPlaceAboveBelow(classNode.getProtectedAccessors(), placeAbove, placeBelow, groupElementsWithDecorators), false));
+      }
+      else if (memberType === MemberType.protectedAbstractAccessors)
+      {
+        memberGroups.push(new ElementNodeGroup(null, [], groupByPlaceAboveBelow(classNode.getProtectedAbstractAccessors(), placeAbove, placeBelow, groupElementsWithDecorators), false));
+      }
+      else if (memberType === MemberType.privateStaticAccessors)
+      {
+        memberGroups.push(new ElementNodeGroup(null, [], groupByPlaceAboveBelow(classNode.getPrivateStaticAccessors(), placeAbove, placeBelow, groupElementsWithDecorators), false));
+      }
+      else if (memberType === MemberType.privateAccessors)
+      {
+        memberGroups.push(new ElementNodeGroup(null, [], groupByPlaceAboveBelow(classNode.getPrivateAccessors(), placeAbove, placeBelow, groupElementsWithDecorators), false));
+      }
+      else if (memberType === MemberType.privateAbstractAccessors)
+      {
+        memberGroups.push(new ElementNodeGroup(null, [], groupByPlaceAboveBelow(classNode.getPrivateAbstractAccessors(), placeAbove, placeBelow, groupElementsWithDecorators), false));
       }
       else if (memberType === MemberType.publicStaticGettersAndSetters)
       {
