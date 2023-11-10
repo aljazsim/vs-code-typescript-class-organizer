@@ -1,5 +1,4 @@
-export abstract class TestClass
-{
+export abstract class TestClass {
     protected static readonly caption = "The Caption";
     private static isMissing: boolean;
     private readonly name: string | undefined = "The Name";
@@ -7,43 +6,32 @@ export abstract class TestClass
     protected static lastName = "Last name 2";
     protected phoneNumber: Number = 123;
 
-    static calculate()
-    {
-    }
+    static calculate() {}
 
     /**
      * This method resolves everything.
      */
-    static resolve()
-    {
-    }
+    static resolve() {}
 
     public areaCode: Number = 123;
     public static readonly countryCode: Number = 123;
     public readonly color = "Red";
 
-    public end()
-    {
-    }
+    public end() {}
 
-    start()
-    {
-    }
+    start() {}
 
-    async run()
-    {
+    async run() {
         return Promise.resolve();
     }
 
     public abstract do(): number;
-    public ping(): number
-    {
+    public ping(): number {
         return 2;
     }
     protected abstract hack(): number;
 
     private accessor isEnabled: boolean = true;
-
 
     public static year: Number;
     static accessor isLast: boolean | undefined;
@@ -63,43 +51,35 @@ export abstract class TestClass
     protected readonly level = "Level 1";
     private arrowFunction = () => 3;
 
-    constructor(private readonly description: string)
-    {
+    constructor(private readonly description: string) {
         this.maker = "2";
         this.surname = "borg";
     }
 
     static [key: number]: string;
-    private lambdaFunction = (name: string) => { };
+    private lambdaFunction = (name: string) => {};
     private surname: string;
 
-    public static get getter1(): Number
-    {
+    public static get getter1(): Number {
         return 2;
     }
 
-    get size(): Number
-    {
+    get size(): Number {
         return 2;
     }
 
     abstract set height(size: Number);
     abstract get width(): Number;
 
-    set size(size: Number)
-    {
-    }
+    set size(size: Number) {}
 
-    public static get setter1(): Number
-    {
+    public static get setter1(): Number {
         return 2;
     }
-
 
     static {
         this.isMissing = true;
     }
 
     private readonly town = "Town A";
-
 }
