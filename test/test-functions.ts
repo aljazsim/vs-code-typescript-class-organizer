@@ -1,13 +1,13 @@
 function dependOnMeBefore()
 {
-    variable1 = 3;
     console.log("before")
 }
 
-let variable2 = 1;
-let variable3 = 3;
-let variable1 = variable2 + 1;
+export const foo = 2;
+let bar = foo;
+export const banana = getBanana();
 
+// bar = bar + 11;
 
 export function exportedFunction()
 {
@@ -18,4 +18,9 @@ export function exportedFunction()
 function dependOnMeAfter()
 {
     console.log("after")
+}
+
+function getBanana()
+{
+    return "banana";
 }
