@@ -478,3 +478,4 @@ The `placeAbove` methods will always apear at the top of the public method membb
 
 - add support for organizing accessors
 - add support for organizing static block declarations
+- add support for organizing functions outside of classes

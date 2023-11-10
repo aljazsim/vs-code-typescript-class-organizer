@@ -4,6 +4,7 @@ import { ClassNode } from "./elements/class-node";
 import { ConstructorNode } from "./elements/constructor-node";
 import { ElementNode } from "./elements/element-node";
 import { EnumNode } from "./elements/enum-node";
+import { ExpressionNode } from "./elements/expression-node";
 import { FunctionNode } from "./elements/function-node";
 import { GetterNode } from "./elements/getter-node";
 import { ImportNode } from "./elements/import-node";
@@ -17,6 +18,7 @@ import { PropertySignatureNode } from "./elements/property-signature-node";
 import { SetterNode } from "./elements/setter-node";
 import { StaticBlockDeclarationNode } from "./elements/static-block-declaration-node";
 import { TypeAliasNode } from "./elements/type-alias-node";
+import { VariableNode } from "./elements/variable-node";
 
 export class Transformer
 {
@@ -45,7 +47,7 @@ export class Transformer
         {
             elements.push(new ImportNode(sourceFile, node));
         }
-        if (ts.isTypeAliasDeclaration(node))
+        else if (ts.isTypeAliasDeclaration(node))
         {
             elements.push(new TypeAliasNode(sourceFile, node));
         }
@@ -135,6 +137,14 @@ export class Transformer
         else if (ts.isFunctionDeclaration(node))
         {
             elements.push(new FunctionNode(sourceFile, node));
+        }
+        else if (ts.isVariableStatement(node))
+        {
+            elements.push(new VariableNode(sourceFile, node));
+        }
+        else if (ts.isExpression(node))
+        {
+            elements.push(new ExpressionNode(sourceFile, node));
         }
         else
         {

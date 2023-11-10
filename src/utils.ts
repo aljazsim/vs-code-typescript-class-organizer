@@ -1,10 +1,12 @@
 import { ClassNode } from "./elements/class-node";
 import { ElementNode } from "./elements/element-node";
 import { EnumNode } from "./elements/enum-node";
+import { ExpressionNode } from "./elements/expression-node";
 import { FunctionNode } from "./elements/function-node";
 import { ImportNode } from "./elements/import-node";
 import { InterfaceNode } from "./elements/interface-node";
 import { TypeAliasNode } from "./elements/type-alias-node";
+import { VariableNode } from "./elements/variable-node";
 
 export function compareStrings(a: string, b: string)
 {
@@ -66,6 +68,18 @@ export function getImports(nodes: ElementNode[], groupWithDecorators: boolean)
 export function getFunctions(nodes: ElementNode[], groupWithDecorators: boolean)
 {
     return nodes.filter(x => x instanceof FunctionNode).sort((a, b) => sort(a, b, groupWithDecorators));
+}
+
+export function getVariables(nodes: ElementNode[])
+{
+    // variable declaration can be dependant on order variables, so it is best to not sort them
+    return nodes.filter(x => x instanceof VariableNode);
+}
+
+export function getExpressions(nodes: ElementNode[])
+{
+    // expressions are just executable code and can be interdependent
+    return nodes.filter(x => x instanceof ExpressionNode);
 }
 
 export function getName(node: ElementNode, groupWithDecorators: boolean): string
