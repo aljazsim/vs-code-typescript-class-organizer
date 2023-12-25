@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import { Configuration } from "./src/configuration/configuration";
 import { organizeTypes } from "./src/helpers/code-helper";
 
-// #region Functions (12)
+// #region Functions (3)
 
 export function activate(context: vscode.ExtensionContext)
 {
@@ -22,13 +22,6 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 }
-
-
-
-
-
-
-
 
 function organize(editor: vscode.TextEditor | undefined, configuration: Configuration)
 {
@@ -67,13 +60,7 @@ function organizeAll(configuration: Configuration)
                 .then(editor => organize(editor, configuration) !== null))));
 }
 
-
-
-
-
-
-
-// #endregion Functions (12)
+// #endregion Functions (3)
 
 // #region Variables (1)
 

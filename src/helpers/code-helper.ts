@@ -63,7 +63,7 @@ function getIndentation(sourceCode: string): string
 {
     let tab = "\t";
     let twoSpaces = "  ";
-    let fourSpaces = "    ";
+    let fourSpaces = twoSpaces + twoSpaces;
 
     for (const sourceCodeLine of sourceCode.split("\n"))
     {
@@ -411,7 +411,8 @@ export function organizeTypes(sourceCode: string, fileName: string, configuratio
             new ElementNodeGroup("Variables", [], variables, true)
         ];
 
-        if (typeAliases.length + interfaces.length + classes.length + enums.length + functions.length > 1)
+        if (typeAliases.length + interfaces.length + classes.length + enums.length + functions.length > 1 ||
+            typeAliases.length + interfaces.length + classes.length + enums.length == 0 && functions.length >= 1)
         {
             sourceCode = print(groups, sourceCode, 0, sourceCode.length, 0, configuration.addMemberCountInRegionName, false, false, indentation, configuration.addRegionCaptionToRegionEnd, configuration.groupPropertiesWithDecorators, configuration.treatArrowFunctionPropertiesAsMethods);
         }
@@ -450,7 +451,7 @@ export function organizeTypes(sourceCode: string, fileName: string, configuratio
     return sourceCode;
 }
 
-function print(groups: ElementNodeGroup[], sourceCode: string, start: number, end: number, IndentationLevel: number, addMemberCountInRegionName: boolean, addPublicModifierIfMissing: boolean, addRegionIndentation: boolean, Indentation: string, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean, treatArrowFunctionPropertiesAsMethods: boolean)
+function print(groups: ElementNodeGroup[], sourceCode: string, start: number, end: number, IndentationLevel: number, addMemberCountInRegionName: boolean, addPublicModifierIfMissing: boolean, addRegionIndentation: boolean, indentation: string, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean, treatArrowFunctionPropertiesAsMethods: boolean)
 {
     let sourceCode2: string;
     let count = 0;
@@ -497,7 +498,7 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
             if (group.isRegion)
             {
                 members += newLine;
-                members += `${addRegionIndentation ? Indentation : ""}// #region`;
+                members += `${addRegionIndentation ? indentation : ""}// #region`;
                 members += group.caption ? ` ${group.caption}` : "";
                 members += addMemberCountInRegionName ? ` (${count})` : "";
                 members += newLine;
@@ -554,10 +555,10 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
 
                     if (comment !== "")
                     {
-                        members += `${IndentationLevel === 1 ? Indentation : ""}${comment}${newLine}`;
+                        members += `${IndentationLevel === 1 ? indentation : ""}${comment}${newLine}`;
                     }
 
-                    members += `${IndentationLevel === 1 ? Indentation : ""}${code}`;
+                    members += `${IndentationLevel === 1 ? indentation : ""}${code}`;
                     members += newLine;
 
                     if (code.endsWith("}"))
@@ -579,7 +580,7 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
             if (group.isRegion)
             {
                 members += newLine;
-                members += `${addRegionIndentation ? Indentation : ""}// #endregion`;
+                members += `${addRegionIndentation ? indentation : ""}// #endregion`;
                 members += addRegionCaptionToRegionEnd ? ` ${group.caption}` : "";
                 members += addMemberCountInRegionName ? ` (${count})` : "";
                 members += newLine;
@@ -591,7 +592,7 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
 
     sourceCode2 = sourceCode.substring(0, start).trimEnd();
     sourceCode2 += newLine;
-    sourceCode2 += (addRegionIndentation ? Indentation : "") + members.trim();
+    sourceCode2 += (addRegionIndentation ? indentation : "") + members.trim();
     sourceCode2 += newLine;
     sourceCode2 += sourceCode.substring(end, sourceCode.length).trimStart();
 

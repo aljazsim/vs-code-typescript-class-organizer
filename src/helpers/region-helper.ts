@@ -1,4 +1,4 @@
-// #region Functions (2)
+// #region Functions (1)
 
 export function removeRegions(sourceCode: string)
 {
@@ -40,4 +40,4 @@ export function removeRegions(sourceCode: string)
     return lines2.join(newLine);
 }
 
-// #endregion Functions (2)
+// #endregion Functions (1)
