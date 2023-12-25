@@ -1,4 +1,5 @@
-export abstract class TestClass {
+export abstract class TestClass
+{
     // #region Properties (21)
 
     private static readonly address = "Lane 1";
@@ -11,7 +12,7 @@ export abstract class TestClass {
     private static isMissing: boolean;
 
     private arrowFunction = () => 3;
-    private lambdaFunction = (name: string) => {};
+    private lambdaFunction = (name: string) => { };
     private lastName = "Last Name 1";
     private surname: string;
 
@@ -36,9 +37,19 @@ export abstract class TestClass {
 
     // #endregion Properties (21)
 
+    // #region Static Block Declarations (1)
+
+    static {
+        TestClass.year = 42;
+        this.isMissing = true;
+    }
+
+    // #endregion Static Block Declarations (1)
+
     // #region Constructors (1)
 
-    constructor(private readonly description: string) {
+    constructor(private readonly description: string)
+    {
         this.maker = "2";
         this.surname = "borg";
     }
@@ -66,11 +77,13 @@ export abstract class TestClass {
 
     // #region Public Static Getters And Setters (2)
 
-    public static get getter1(): Number {
+    public static get getter1(): Number
+    {
         return 2;
     }
 
-    public static get setter1(): Number {
+    public static get setter1(): Number
+    {
         return 2;
     }
 
@@ -78,11 +91,12 @@ export abstract class TestClass {
 
     // #region Public Getters And Setters (2)
 
-    public get size(): Number {
+    public get size(): Number
+    {
         return 2;
     }
 
-    public set size(size: Number) {}
+    public set size(size: Number) { }
 
     // #endregion Public Getters And Setters (2)
 
@@ -95,28 +109,30 @@ export abstract class TestClass {
 
     // #region Public Static Methods (2)
 
-    public static calculate() {}
+    public static calculate() { }
 
     /**
      * This method resolves everything.
      */
-    public static resolve() {}
+    public static resolve() { }
 
     // #endregion Public Static Methods (2)
 
     // #region Public Methods (4)
 
-    public end() {}
+    public end() { }
 
-    public ping(): number {
+    public ping(): number
+    {
         return 2;
     }
 
-    public async run() {
+    public async run()
+    {
         return Promise.resolve();
     }
 
-    public start() {}
+    public start() { }
 
     // #endregion Public Methods (4)
 
