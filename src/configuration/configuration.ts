@@ -3,7 +3,6 @@ import * as vscode from "vscode";
 import { MemberType } from "../member-type";
 import { distinct } from "../helpers/array-helper";
 
-
 export class Configuration
 {
     // #region Constructors (1)
@@ -13,6 +12,8 @@ export class Configuration
     }
 
     // #endregion Constructors (1)
+
+    // #region Public Static Methods (1)
 
     public static getConfiguration()
     {
@@ -30,6 +31,10 @@ export class Configuration
             Configuration.getMemberOrderConfig()
         );
     }
+
+    // #endregion Public Static Methods (1)
+
+    // #region Private Static Methods (2)
 
     private static getMemberOrderConfig(): ElementNodeGroupConfiguration[]
     {
@@ -69,4 +74,6 @@ export class Configuration
 
         return elementNodeGroupConfiguration;
     }
+
+    // #endregion Private Static Methods (2)
 } 

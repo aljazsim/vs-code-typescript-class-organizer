@@ -1,3 +1,10 @@
+// #region Functions (2)
+
+export function distinct(a: string[])
+{
+    return a.filter((value, index, array) => array.indexOf(value) === index);
+}
+
 export function intersects(a: string[] | null, b: string[] | null)
 {
     if (a && b && a.length > 0 && b.length > 0)
@@ -8,7 +15,4 @@ export function intersects(a: string[] | null, b: string[] | null)
     return false;
 }
 
-export function distinct(a: string[])
-{
-    return a.filter((value, index, array) => array.indexOf(value) === index);
-}
+// #endregion Functions (2)

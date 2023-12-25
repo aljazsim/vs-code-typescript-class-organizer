@@ -1,3 +1,4 @@
+// #region Functions (2)
 
 export function compareNumbers(a: number, b: number) 
 {
@@ -30,3 +31,5 @@ export function compareStrings(a: string, b: string)
         return 0;
     }
 }
+
+// #endregion Functions (2)

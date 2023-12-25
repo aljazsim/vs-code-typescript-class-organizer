@@ -10,6 +10,8 @@ import { VariableNode } from "../elements/variable-node";
 import { compareStrings } from "./comparing-helper";
 import { sortBy } from "./sorting-helper";
 
+// #region Functions (11)
+
 export function getClasses(nodes: ElementNode[], groupWithDecorators: boolean)
 {
     return nodes.filter(x => x instanceof ClassNode).sort((a, b) => compareStrings(getName(a, groupWithDecorators), getName(b, groupWithDecorators)));
@@ -75,10 +77,6 @@ export function groupByPlaceAboveBelow(nodes: ElementNode[], placeAbove: string[
     return nodesAbove.concat(nodesMiddle).concat(nodesBelow);
 }
 
-
-
-
-
 export function splitByPlaceAboveBelow<T extends ElementNode>(nodes: T[], placeAbove: string[] | null, placeBelow: string[] | null)
 {
     const nodesAbove = placeAbove ? nodes.filter(n => placeAbove.indexOf(n.name) > -1) : [];
@@ -91,3 +89,5 @@ export function splitByPlaceAboveBelow<T extends ElementNode>(nodes: T[], placeA
         nodesBelow
     }
 }
+
+// #endregion Functions (11)

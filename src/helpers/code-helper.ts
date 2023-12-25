@@ -17,6 +17,8 @@ import { SetterNode } from "../elements/setter-node";
 import { WriteModifier } from "../elements/write-modifier";
 import { ElementNode } from "../elements/element-node";
 
+// #region Functions (6)
+
 export function formatLines(sourceCode: string)
 {
     const newLine = "\r\n";
@@ -595,3 +597,5 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
 
     return sourceCode2.trimStart();
 }
+
+// #endregion Functions (6)
