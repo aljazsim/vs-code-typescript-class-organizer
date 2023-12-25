@@ -45,7 +45,7 @@ Extensions supports the following configuration options:
 
 ### Access modifiers
 
-- `tsco.addPublicModifierIfMissing`: Adds a public access modifier if 
+- `tsco.addPublicModifierIfMissing`: Adds a public access modifier if missing.
 
 ### Decorators
 
