@@ -4,3 +4,5 @@ node_modules
 *.vsix
 /.vscodeignore
 /npm-debug.log
+extension.js
+estension.js.map
