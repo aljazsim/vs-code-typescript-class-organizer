@@ -1,4 +1,5 @@
-export interface TestInterface {
+export interface TestInterface
+{
     // #region Properties (18)
 
     readonly address: string;
@@ -29,18 +30,19 @@ export interface TestInterface {
 
     // #endregion Public Indexers (1)
 
-    // #region Public Getters And Setters (7)
+    // #region Public Getters And Setters (5)
 
     set height(size: Number);
     get setter1(): Number;
+    get size(): Number;
     set size(size: Number);
     get width(): Number;
 
-    // #endregion Public Getters And Setters (7)
+    // #endregion Public Getters And Setters (5)
 
     // #region Public Methods (9)
 
-    calculate(): void;
+    calculate(): void
     do(): number;
     end(): void;
     hack(): number;
