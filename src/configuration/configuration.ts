@@ -1,5 +1,5 @@
-import { ElementNodeGroupConfiguration } from "./element-node-group-configuration";
 import * as vscode from "vscode";
+import { ElementNodeGroupConfiguration } from "./element-node-group-configuration";
 import { MemberType } from "../member-type";
 import { distinct } from "../helpers/array-helper";
 
