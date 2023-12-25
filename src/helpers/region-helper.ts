@@ -1,19 +1,5 @@
 // #region Functions (2)
 
-export function formatRegions(sourceCode: string)
-{
-    const newLine = "\r\n";
-    const newLinePlaceholder = "//newline";
-    const cleanPlaceholder = "//clean";
-    const newLineRegex = new RegExp(`\\s*${newLinePlaceholder}`, "g");
-    const cleanRegex = new RegExp(`\\s*${cleanPlaceholder}`, "g");
-
-    sourceCode = sourceCode.replace(newLineRegex, newLine);
-    sourceCode = sourceCode.replace(cleanRegex, "");
-
-    return sourceCode;
-}
-
 export function removeRegions(sourceCode: string)
 {
     const newLine = "\n";
