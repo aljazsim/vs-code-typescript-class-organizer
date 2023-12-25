@@ -10,6 +10,7 @@ function dependOnMeBefore()
     console.log("before")
 }
 
+// bar = bar + 11;
 export function exportedFunction()
 {
     dependOnMeBefore()

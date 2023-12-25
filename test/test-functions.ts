@@ -4,8 +4,6 @@ function dependOnMeBefore()
 }
 
 export const foo = 2;
-let bar = foo;
-export const banana = getBanana();
 
 // bar = bar + 11;
 
@@ -15,10 +13,12 @@ export function exportedFunction()
     dependOnMeAfter()
 }
 
+export const banana = getBanana();
 function dependOnMeAfter()
 {
     console.log("after")
 }
+let bar = foo;
 
 function getBanana()
 {
