@@ -1,4 +1,4 @@
-import { MemberType } from "./member-type";
+import { MemberType } from "../member-type";
 
 export class ElementNodeGroupConfiguration
 {

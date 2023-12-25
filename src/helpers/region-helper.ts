@@ -1,52 +1,14 @@
 // #region Functions (3)
 
-export function formatLines(sourceCode: string)
-{
-    const newLine = "\r\n";
-    let emptyLineRegex = new RegExp(`^\\s*$`);
-    let newLineRegex = new RegExp(`\r?\n|\r`);
-    let openingBraceRegex = new RegExp(`^.*\{\\s*$`);
-    let closingBraceRegex = new RegExp(`^\\s*\}\\s*$`);
 
-    let lines: string[] = sourceCode.split(newLineRegex);
-
-    for (let i = 0; i < lines.length - 1; i++)
-    {
-        if (openingBraceRegex.test(lines[i]) &&
-            emptyLineRegex.test(lines[i + 1]))
-        {
-            // remove empty line after {
-            lines.splice(i + 1, 1);
-
-            i--;
-        }
-        else if (emptyLineRegex.test(lines[i]) &&
-            closingBraceRegex.test(lines[i + 1]))
-        {
-            // remove empty line before }
-            lines.splice(i, 1);
-
-            i--;
-        }
-        else if (emptyLineRegex.test(lines[i]) &&
-            emptyLineRegex.test(lines[i + 1]))
-        {
-            lines.splice(i, 1);
-
-            i--;
-        }
-    }
-
-    return lines.join(newLine);
-}
 
 export function formatRegions(sourceCode: string)
 {
     const newLine = "\r\n";
     const newLinePlaceholder = "//newline";
     const cleanPlaceholder = "//clean";
-    let newLineRegex = new RegExp(`\\s*${newLinePlaceholder}`, "g");
-    let cleanRegex = new RegExp(`\\s*${cleanPlaceholder}`, "g");
+    const newLineRegex = new RegExp(`\\s*${newLinePlaceholder}`, "g");
+    const cleanRegex = new RegExp(`\\s*${cleanPlaceholder}`, "g");
 
     sourceCode = sourceCode.replace(newLineRegex, newLine);
     sourceCode = sourceCode.replace(cleanRegex, "");

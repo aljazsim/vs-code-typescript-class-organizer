@@ -1,4 +1,4 @@
-import { ElementNode } from "./elements/element-node";
+import { ElementNode } from "./element-node";
 
 export class ElementNodeGroup
 {

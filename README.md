@@ -45,16 +45,18 @@ Extensions supports the following configuration options:
 
 ### Access modifiers
 
-- `tsco.addPublicModifierIfMissing`: Adds a public access modifier if 
+- `tsco.addPublicModifierIfMissing`: Adds a public access modifier if missing.
 
 ### Decorators
 
 - `tsco.groupPropertiesWithDecorators`: Properties with decorators will come first, ordered by decorator name, then by member name (false by default).
 
 ### Arrow functions
+
 - `tsco.treatArrowFunctionPropertiesAsMethods`: Arrow function properties will be treated as methods (false by default).
 
 ### Actions
+
 - `tsco.organizeOnSave`: Source code will get organized automatically on file saved (false by default).
 
 ### Member ordering
