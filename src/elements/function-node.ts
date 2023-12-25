@@ -7,7 +7,7 @@ export class FunctionNode extends ElementNode
 
   public isExport: boolean;
 
-  // #endregion
+  // #endregion Properties (1)
 
   // #region Constructors (1)
 
@@ -25,5 +25,5 @@ export class FunctionNode extends ElementNode
     this.decorators = this.getDecorators(functionDeclaration, sourceFile);
   }
 
-  // #endregion
+  // #endregion Constructors (1)
 }

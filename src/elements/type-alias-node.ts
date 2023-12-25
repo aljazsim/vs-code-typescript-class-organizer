@@ -17,5 +17,5 @@ export class TypeAliasNode extends ElementNode
     this.decorators = this.getDecorators(typeAliasDeclaration, sourceFile);
   }
 
-  // #endregion
+  // #endregion Constructors (1)
 }

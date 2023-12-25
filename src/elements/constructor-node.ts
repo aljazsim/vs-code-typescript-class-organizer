@@ -17,5 +17,5 @@ export class ConstructorNode extends ElementNode
     this.decorators = this.getDecorators(constructorDeclaration, sourceFile);
   }
 
-  // #endregion
+  // #endregion Constructors (1)
 }

@@ -8,21 +8,7 @@ import { InterfaceNode } from "./elements/interface-node";
 import { TypeAliasNode } from "./elements/type-alias-node";
 import { VariableNode } from "./elements/variable-node";
 
-export function compareStrings(a: string, b: string)
-{
-    if (a > b)
-    {
-        return 1;
-    }
-    else if (a < b)
-    {
-        return -1;
-    }
-    else
-    {
-        return 0;
-    }
-}
+// #region Functions (17)
 
 export function compareNumbers(a: number, b: number) 
 {
@@ -40,14 +26,25 @@ export function compareNumbers(a: number, b: number)
     }
 }
 
-export function getTypeAliases(nodes: ElementNode[], groupWithDecorators: boolean)
+export function compareStrings(a: string, b: string)
 {
-    return nodes.filter(x => x instanceof TypeAliasNode).sort((a, b) => sort(a, b, groupWithDecorators));
+    if (a > b)
+    {
+        return 1;
+    }
+    else if (a < b)
+    {
+        return -1;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
-export function getInterfaces(nodes: ElementNode[], groupWithDecorators: boolean)
+export function distinct(a: string[])
 {
-    return nodes.filter(x => x instanceof InterfaceNode).sort((a, b) => sort(a, b, groupWithDecorators));
+    return a.filter((value, index, array) => array.indexOf(value) === index);
 }
 
 export function getClasses(nodes: ElementNode[], groupWithDecorators: boolean)
@@ -60,9 +57,10 @@ export function getEnums(nodes: ElementNode[], groupWithDecorators: boolean)
     return nodes.filter(x => x instanceof EnumNode).sort((a, b) => sort(a, b, groupWithDecorators));
 }
 
-export function getImports(nodes: ElementNode[], groupWithDecorators: boolean)
+export function getExpressions(nodes: ElementNode[])
 {
-    return nodes.filter(x => x instanceof ImportNode).sort((a, b) => sort(a, b, groupWithDecorators));
+    // expressions are just executable code and can be interdependent
+    return nodes.filter(x => x instanceof ExpressionNode);
 }
 
 export function getFunctions(nodes: ElementNode[], groupWithDecorators: boolean)
@@ -70,16 +68,14 @@ export function getFunctions(nodes: ElementNode[], groupWithDecorators: boolean)
     return nodes.filter(x => x instanceof FunctionNode).sort((a, b) => sort(a, b, groupWithDecorators));
 }
 
-export function getVariables(nodes: ElementNode[])
+export function getImports(nodes: ElementNode[], groupWithDecorators: boolean)
 {
-    // variable declaration can be dependant on order variables, so it is best to not sort them
-    return nodes.filter(x => x instanceof VariableNode);
+    return nodes.filter(x => x instanceof ImportNode).sort((a, b) => sort(a, b, groupWithDecorators));
 }
 
-export function getExpressions(nodes: ElementNode[])
+export function getInterfaces(nodes: ElementNode[], groupWithDecorators: boolean)
 {
-    // expressions are just executable code and can be interdependent
-    return nodes.filter(x => x instanceof ExpressionNode);
+    return nodes.filter(x => x instanceof InterfaceNode).sort((a, b) => sort(a, b, groupWithDecorators));
 }
 
 export function getName(node: ElementNode, groupWithDecorators: boolean): string
@@ -93,6 +89,37 @@ export function getName(node: ElementNode, groupWithDecorators: boolean): string
     }
 
     return node.name;
+}
+
+export function getTypeAliases(nodes: ElementNode[], groupWithDecorators: boolean)
+{
+    return nodes.filter(x => x instanceof TypeAliasNode).sort((a, b) => sort(a, b, groupWithDecorators));
+}
+
+export function getVariables(nodes: ElementNode[])
+{
+    // variable declaration can be dependant on order variables, so it is best to not sort them
+    return nodes.filter(x => x instanceof VariableNode);
+}
+
+export function groupByPlaceAboveBelow(nodes: ElementNode[], placeAbove: string[], placeBelow: string[], groupWithDecorators: boolean)
+{
+    const nodesAboveMiddleBelow = splitByPlaceAboveBelow(nodes, placeAbove, placeBelow);
+    const nodesAbove = sortBy(nodesAboveMiddleBelow.nodesAbove, placeAbove);
+    const nodesMiddle = nodesAboveMiddleBelow.nodesMiddle.sort((a, b) => sort(a, b, groupWithDecorators));
+    const nodesBelow = sortBy(nodesAboveMiddleBelow.nodesBelow, placeBelow);
+
+    return nodesAbove.concat(nodesMiddle).concat(nodesBelow);
+}
+
+export function intersects(a: string[] | null, b: string[] | null)
+{
+    if (a && b && a.length > 0 && b.length > 0)
+    {
+        return a.some(itemA => b.some(itemB => itemA === itemB));
+    }
+
+    return false;
 }
 
 export function sort<T extends ElementNode>(a: T, b: T, groupWithDecorators: boolean)
@@ -112,16 +139,6 @@ export function sortBy<T extends ElementNode>(nodes: T[], nodeNames: string[])
     }
 }
 
-export function groupByPlaceAboveBelow(nodes: ElementNode[], placeAbove: string[], placeBelow: string[], groupWithDecorators: boolean)
-{
-    const nodesAboveMiddleBelow = splitByPlaceAboveBelow(nodes, placeAbove, placeBelow);
-    const nodesAbove = sortBy(nodesAboveMiddleBelow.nodesAbove, placeAbove);
-    const nodesMiddle = nodesAboveMiddleBelow.nodesMiddle.sort((a, b) => sort(a, b, groupWithDecorators));
-    const nodesBelow = sortBy(nodesAboveMiddleBelow.nodesBelow, placeBelow);
-
-    return nodesAbove.concat(nodesMiddle).concat(nodesBelow);
-}
-
 export function splitByPlaceAboveBelow<T extends ElementNode>(nodes: T[], placeAbove: string[] | null, placeBelow: string[] | null)
 {
     const nodesAbove = placeAbove ? nodes.filter(n => placeAbove.indexOf(n.name) > -1) : [];
@@ -135,17 +152,4 @@ export function splitByPlaceAboveBelow<T extends ElementNode>(nodes: T[], placeA
     }
 }
 
-export function intersects(a: string[] | null, b: string[] | null)
-{
-    if (a && b && a.length > 0 && b.length > 0)
-    {
-        return a.some(itemA => b.some(itemB => itemA === itemB));
-    }
-
-    return false;
-}
-
-export function distinct(a: string[])
-{
-    return a.filter((value, index, array) => array.indexOf(value) === index);
-}
+// #endregion Functions (17)

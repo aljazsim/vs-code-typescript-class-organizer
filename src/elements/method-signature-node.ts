@@ -17,5 +17,5 @@ export class MethodSignatureNode extends ElementNode
     this.decorators = this.getDecorators(methodSignatureDeclaration, sourceFile);
   }
 
-  // #endregion
+  // #endregion Constructors (1)
 }

@@ -8,7 +8,7 @@ export class GetterNode extends ElementNode
   public isAbstract: boolean;
   public isStatic: boolean;
 
-  // #endregion
+  // #endregion Properties (2)
 
   // #region Constructors (1)
 
@@ -27,5 +27,5 @@ export class GetterNode extends ElementNode
     this.decorators = this.getDecorators(getterDeclaration, sourceFile);
   }
 
-  // #endregion
+  // #endregion Constructors (1)
 }
