@@ -8,7 +8,7 @@ export class IndexSignatureNode extends ElementNode
 
   public writeMode: WriteModifier = WriteModifier.writable;
 
-  // #endregion
+  // #endregion Properties (1)
 
   // #region Constructors (1)
 
@@ -27,5 +27,5 @@ export class IndexSignatureNode extends ElementNode
     this.decorators = this.getDecorators(indexSignatureDeclaration, sourceFile);
   }
 
-  // #endregion
+  // #endregion Constructors (1)
 }

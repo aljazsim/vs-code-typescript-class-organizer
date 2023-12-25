@@ -10,7 +10,7 @@ export class IndexNode extends ElementNode
   public isStatic: boolean;
   public writeMode: WriteModifier = WriteModifier.writable;
 
-  // #endregion
+  // #endregion Properties (3)
 
   // #region Constructors (1)
 
@@ -31,5 +31,5 @@ export class IndexNode extends ElementNode
     this.decorators = this.getDecorators(indexDeclaration, sourceFile);
   }
 
-  // #endregion
+  // #endregion Constructors (1)
 }

@@ -16,5 +16,5 @@ export class ImportNode extends ElementNode
         this.start = importDeclaration.getStart(sourceFile, false);
     }
 
-    // #endregion
-}
+    // #endregion Constructors (1)
+} 

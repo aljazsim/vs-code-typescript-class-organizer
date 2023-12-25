@@ -6,7 +6,7 @@ import { WriteModifier } from "./write-modifier";
 
 export abstract class ElementNode
 {
-    // #region Properties (12)
+    // #region Properties (6)
 
     public accessModifier: AccessModifier | null = null;
     public decorators: string[] = [];
@@ -15,7 +15,7 @@ export abstract class ElementNode
     public name: string = "";
     public start: number = 0;
 
-    // #endregion Properties (12)
+    // #endregion Properties (6)
 
     // #region Constructors (1)
 

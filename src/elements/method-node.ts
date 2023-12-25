@@ -4,14 +4,13 @@ import * as ts from "typescript";
 
 export class MethodNode extends ElementNode
 {
-  // #region Properties (2)
+  // #region Properties (3)
 
   public isAbstract: boolean;
-  public isStatic: boolean;
   public isAsync: boolean;
+  public isStatic: boolean;
 
-
-  // #endregion Properties (2)
+  // #endregion Properties (3)
 
   // #region Constructors (1)
 

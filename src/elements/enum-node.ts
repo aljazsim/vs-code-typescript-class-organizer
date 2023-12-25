@@ -17,5 +17,5 @@ export class EnumNode extends ElementNode
     this.decorators = this.getDecorators(enumDeclaration, sourceFile);
   }
 
-  // #endregion
+  // #endregion Constructors (1)
 }

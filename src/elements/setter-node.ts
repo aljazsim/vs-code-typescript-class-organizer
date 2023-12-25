@@ -8,7 +8,7 @@ export class SetterNode extends ElementNode
   public isAbstract: boolean;
   public isStatic: boolean;
 
-  // #endregion
+  // #endregion Properties (2)
 
   // #region Constructors (1)
 
@@ -28,5 +28,5 @@ export class SetterNode extends ElementNode
     this.decorators = this.getDecorators(setterDeclaration, sourceFile);
   }
 
-  // #endregion
+  // #endregion Constructors (1)
 }

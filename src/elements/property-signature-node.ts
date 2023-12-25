@@ -8,7 +8,7 @@ export class PropertySignatureNode extends ElementNode
 
   public writeMode: WriteModifier = WriteModifier.writable;
 
-  // #endregion
+  // #endregion Properties (1)
 
   // #region Constructors (1)
 
@@ -27,5 +27,5 @@ export class PropertySignatureNode extends ElementNode
     this.decorators = this.getDecorators(propertySignatureDeclaration, sourceFile);
   }
 
-  // #endregion
+  // #endregion Constructors (1)
 }
