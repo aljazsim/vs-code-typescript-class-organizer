@@ -24,7 +24,7 @@ export function compareStrings(a: string, b: string)
     }
 }
 
-export function compareNumbers(a: number, b: number)
+export function compareNumbers(a: number, b: number) 
 {
     if (a > b)
     {
