@@ -59,7 +59,7 @@ export function formatLines(sourceCode: string)
     return lines.join(newLine);
 }
 
-function getIndentation(sourceCode: string): string
+export function getIndentation(sourceCode: string): string
 {
     let tab = "\t";
     let twoSpaces = "  ";
@@ -84,7 +84,7 @@ function getIndentation(sourceCode: string): string
     return twoSpaces;
 }
 
-function organizeClassMembers(classNode: ClassNode, memberTypeOrder: ElementNodeGroupConfiguration[], groupElementsWithDecorators: boolean): ElementNodeGroup[]
+export function organizeClassMembers(classNode: ClassNode, memberTypeOrder: ElementNodeGroupConfiguration[], groupElementsWithDecorators: boolean): ElementNodeGroup[]
 {
     let regions: ElementNodeGroup[] = [];
     let memberGroups: ElementNodeGroup[];
@@ -330,7 +330,7 @@ function organizeClassMembers(classNode: ClassNode, memberTypeOrder: ElementNode
     return regions;
 }
 
-function organizeInterfaceMembers(interfaceNode: InterfaceNode, memberTypeOrder: ElementNodeGroupConfiguration[], groupElementsWithDecorators: boolean)
+export function organizeInterfaceMembers(interfaceNode: InterfaceNode, memberTypeOrder: ElementNodeGroupConfiguration[], groupElementsWithDecorators: boolean)
 {
     let regions: ElementNodeGroup[] = [];
     let memberGroups: ElementNodeGroup[];
@@ -451,7 +451,7 @@ export function organizeTypes(sourceCode: string, fileName: string, configuratio
     return sourceCode;
 }
 
-function print(groups: ElementNodeGroup[], sourceCode: string, start: number, end: number, IndentationLevel: number, addMemberCountInRegionName: boolean, addPublicModifierIfMissing: boolean, addRegionIndentation: boolean, indentation: string, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean, treatArrowFunctionPropertiesAsMethods: boolean)
+export function print(groups: ElementNodeGroup[], sourceCode: string, start: number, end: number, IndentationLevel: number, addMemberCountInRegionName: boolean, addPublicModifierIfMissing: boolean, addRegionIndentation: boolean, indentation: string, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean, treatArrowFunctionPropertiesAsMethods: boolean)
 {
     let sourceCode2: string;
     let count = 0;

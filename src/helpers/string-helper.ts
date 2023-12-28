@@ -1,4 +1,4 @@
-function convertPascalCaseToTitleCase(value: string)
+export function convertPascalCaseToTitleCase(value: string)
 {
     if (value &&
         value.length > 1)
