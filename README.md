@@ -494,3 +494,7 @@ or
 - add support for organizing static block declarations
 - add support for organizing functions outside of classes
 - add support for ignoring files
+
+### 1.0.28
+
+- fix TS reference error
