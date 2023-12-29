@@ -59,7 +59,7 @@ export function formatLines(sourceCode: string)
     return lines.join(newLine);
 }
 
-function getIndentation(sourceCode: string): string
+export function getIndentation(sourceCode: string): string
 {
     let tab = "\t";
     let twoSpaces = "  ";
@@ -84,7 +84,7 @@ function getIndentation(sourceCode: string): string
     return twoSpaces;
 }
 
-function organizeClassMembers(classNode: ClassNode, memberTypeOrder: ElementNodeGroupConfiguration[], groupElementsWithDecorators: boolean): ElementNodeGroup[]
+export function organizeClassMembers(classNode: ClassNode, memberTypeOrder: ElementNodeGroupConfiguration[], groupElementsWithDecorators: boolean): ElementNodeGroup[]
 {
     let regions: ElementNodeGroup[] = [];
     let memberGroups: ElementNodeGroup[];
@@ -330,7 +330,7 @@ function organizeClassMembers(classNode: ClassNode, memberTypeOrder: ElementNode
     return regions;
 }
 
-function organizeInterfaceMembers(interfaceNode: InterfaceNode, memberTypeOrder: ElementNodeGroupConfiguration[], groupElementsWithDecorators: boolean)
+export function organizeInterfaceMembers(interfaceNode: InterfaceNode, memberTypeOrder: ElementNodeGroupConfiguration[], groupElementsWithDecorators: boolean)
 {
     let regions: ElementNodeGroup[] = [];
     let memberGroups: ElementNodeGroup[];
@@ -520,23 +520,23 @@ function print(groups: ElementNodeGroup[], sourceCode: string, start: number, en
                         {
                             if (node instanceof MethodNode)
                             {
-                                code = code.replace(new RegExp(`${staticRegex}${abstractRegex}${asyncRegex}${node.name}`), `public ${getStatic(node.isStatic)}${getAbstract(node.isAbstract)}${getAsync(node.isAsync)} ${node.name}`);
+                                code = code.replace(new RegExp(`${staticRegex}${abstractRegex}${asyncRegex}${node.name}(?!\")(?!\')(?!\`)`), "public " + `${getStatic(node.isStatic)}${getAbstract(node.isAbstract)}${getAsync(node.isAsync)} ${node.name}`.trim());
                             }
                             else if (node instanceof PropertyNode)
                             {
-                                code = code.replace(new RegExp(`${staticRegex}${abstractRegex}${constRegex}${readonlyRegex}${node.name}`), `public ${getStatic(node.isStatic)}${getAbstract(node.isAbstract)}${getConst(node.writeMode)}${getReadOnly(node.writeMode)} ${node.name}`);
+                                code = code.replace(new RegExp(`${staticRegex}${abstractRegex}${constRegex}${readonlyRegex}${node.name}(?!\")(?!\')(?!\`)`), "public " + `${getStatic(node.isStatic)}${getAbstract(node.isAbstract)}${getConst(node.writeMode)}${getReadOnly(node.writeMode)} ${node.name}`.trim());
                             }
                             else if (node instanceof AccessorNode)
                             {
-                                code = code.replace(new RegExp(`${staticRegex}${abstractRegex}${accessorRegex}${node.name}`), `public ${getStatic(node.isStatic)}${getAbstract(node.isAbstract)}accessor ${node.name}`);
+                                code = code.replace(new RegExp(`${staticRegex}${abstractRegex}${accessorRegex}${node.name}(?!\")(?!\')(?!\`)`), "public " + `${getStatic(node.isStatic)}${getAbstract(node.isAbstract)}accessor ${node.name}`.trim());
                             }
                             else if (node instanceof GetterNode)
                             {
-                                code = code.replace(new RegExp(`${staticRegex}${abstractRegex}${getterRegex}${node.name}`), `public ${getStatic(node.isStatic)}${getAbstract(node.isAbstract)}get ${node.name}`);
+                                code = code.replace(new RegExp(`${staticRegex}${abstractRegex}${getterRegex}${node.name}(?!\")(?!\')(?!\`)`), "public " + `${getStatic(node.isStatic)}${getAbstract(node.isAbstract)}get ${node.name}`.trim());
                             }
                             else if (node instanceof SetterNode)
                             {
-                                code = code.replace(new RegExp(`${staticRegex}${abstractRegex}${setterRegex}${node.name}`), `public ${getStatic(node.isStatic)}${getAbstract(node.isAbstract)}set ${node.name}`);
+                                code = code.replace(new RegExp(`${staticRegex}${abstractRegex}${setterRegex}${node.name}(?!\")(?!\')(?!\`)`), "public " + `${getStatic(node.isStatic)}${getAbstract(node.isAbstract)}set ${node.name}`.trim());
                             }
                         }
                     }
