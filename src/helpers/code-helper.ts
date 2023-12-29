@@ -451,7 +451,7 @@ export function organizeTypes(sourceCode: string, fileName: string, configuratio
     return sourceCode;
 }
 
-function print(groups: ElementNodeGroup[], sourceCode: string, start: number, end: number, IndentationLevel: number, addMemberCountInRegionName: boolean, addPublicModifierIfMissing: boolean, addRegionIndentation: boolean, indentation: string, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean, treatArrowFunctionPropertiesAsMethods: boolean)
+export function print(groups: ElementNodeGroup[], sourceCode: string, start: number, end: number, IndentationLevel: number, addMemberCountInRegionName: boolean, addPublicModifierIfMissing: boolean, addRegionIndentation: boolean, indentation: string, addRegionCaptionToRegionEnd: boolean, groupElementsWithDecorators: boolean, treatArrowFunctionPropertiesAsMethods: boolean)
 {
     let sourceCode2: string;
     let count = 0;
