@@ -1,4 +1,5 @@
 import * as ts from "typescript";
+
 import { AccessModifier } from "./access-modifier";
 import { PropertyNode } from "./property-node";
 import { PropertySignatureNode } from "./property-signature-node";
@@ -14,6 +15,11 @@ export abstract class ElementNode
     public fullStart: number = 0;
     public name: string = "";
     public start: number = 0;
+
+    public get decoratorsWithoutParameters()
+    {
+        return this.decorators.map(d => d.replace(/\(.*\)/, ""))
+    }
 
     // #endregion Properties (6)
 
@@ -60,9 +66,7 @@ export abstract class ElementNode
 
     protected getDecorators(node: ts.ClassDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration | ts.PropertyDeclaration | ts.MethodDeclaration | ts.IndexedAccessTypeNode | ts.ConstructorDeclaration | ts.EnumDeclaration | ts.FunctionDeclaration | ts.IndexSignatureDeclaration | ts.MethodSignature | ts.PropertySignature | ts.TypeAliasDeclaration, sourceFile: ts.SourceFile)
     {
-        let parametersRegex = /\(.*\)/;
-
-        return this.getModifiers(node).filter(m => ts.isDecorator(m)).map(x => (x as ts.Decorator).getText(sourceFile).replace(parametersRegex, "")) ?? []
+        return this.getModifiers(node).filter(m => ts.isDecorator(m)).map(x => (x as ts.Decorator).getText(sourceFile).trim()) ?? []
     }
 
     protected getIsAbstract(node: ts.ClassDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration | ts.PropertyDeclaration | ts.MethodDeclaration | ts.IndexedAccessTypeNode)

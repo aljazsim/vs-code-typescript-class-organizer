@@ -27,7 +27,7 @@ function getBanana()
 // #region Variables (3)
 
 export const foo = 2;
-let bar = foo;
 export const banana = getBanana();
+let bar = foo;
 
 // #endregion Variables (3)

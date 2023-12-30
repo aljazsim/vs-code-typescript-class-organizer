@@ -47,9 +47,9 @@ export function getName(node: ElementNode, groupWithDecorators: boolean): string
 {
     if (groupWithDecorators)
     {
-        if (node.decorators.length > 0)
+        if (node.decoratorsWithoutParameters.length > 0)
         {
-            return node.decorators.join(", ") + " " + node.name;
+            return node.decoratorsWithoutParameters.join(", ") + " " + node.name;
         }
     }
 
