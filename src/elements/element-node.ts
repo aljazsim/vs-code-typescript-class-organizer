@@ -16,11 +16,6 @@ export abstract class ElementNode
     public name: string = "";
     public start: number = 0;
 
-    public get decoratorsWithoutParameters()
-    {
-        return this.decorators.map(d => d.replace(/\(.*\)/, ""))
-    }
-
     // #endregion Properties (6)
 
     // #region Constructors (1)
@@ -30,6 +25,15 @@ export abstract class ElementNode
     }
 
     // #endregion Constructors (1)
+
+    // #region Public Getters And Setters (1)
+
+    public get decoratorsWithoutParameters()
+    {
+        return this.decorators.map(d => d.replace(/\(.*\)/, ""))
+    }
+
+    // #endregion Public Getters And Setters (1)
 
     // #region Protected Methods (15)
 
