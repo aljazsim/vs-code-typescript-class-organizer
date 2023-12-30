@@ -458,11 +458,11 @@ export function print(groups: ElementNodeGroup[], sourceCode: string, start: num
     let members = "";
     const newLine = "\r\n";
     const spacesRegex = "\\s*";
-    const staticRegex = `(static)?${spacesRegex}`;
-    const readonlyRegex = `(readonly)?${spacesRegex}`;
-    const constRegex = `(const)?${spacesRegex}`;
-    const abstractRegex = `(abstract)?${spacesRegex}`;
-    const asyncRegex = `(async)?${spacesRegex}`;
+    const staticRegex = `(static${spacesRegex})?`;
+    const readonlyRegex = `(readonly${spacesRegex})?`;
+    const constRegex = `(const${spacesRegex})?`;
+    const abstractRegex = `(abstract${spacesRegex})?`;
+    const asyncRegex = `(async${spacesRegex})?`;
     const getterRegex = `get${spacesRegex}`;
     const setterRegex = `set${spacesRegex}`;
     const accessorRegex = `accessor${spacesRegex}`;
@@ -615,7 +615,7 @@ export function print(groups: ElementNodeGroup[], sourceCode: string, start: num
 
 export function replaceAfterDecorators(code: string, decorators: string[], replaceWhat: RegExp, replaceWith: string)
 {
-    const afterDecoratorsStart = decorators.length === 0 ? 0 : (code.lastIndexOf(decorators[decorators.length - 1]) + decorators[decorators.length - 1].length) + 1;
+    const afterDecoratorsStart = decorators.length === 0 ? 0 : (code.lastIndexOf(decorators[decorators.length - 1]) + decorators[decorators.length - 1].length);
     const codeDecorators = code.substring(0, afterDecoratorsStart);
     const codeAfterDecorators = code.substring(afterDecoratorsStart);
 

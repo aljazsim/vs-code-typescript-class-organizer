@@ -1,19 +1,19 @@
 import "reflect-metadata";
 
+export type cobra = {};
+
+export class TestClassWithDecorators
+{
+    @decorator(`canvas`) canvas = "canvas";
+    @decorator("cobra") cobra?: cobra = {};
+    hobbit = false;
+    @decorator('sheriff')
+    sheriff?: string;
+}
+
 function decorator(text: string)
 {
     return (target: any, propertyKey: string) =>
     {
     }
-}
-
-export type cobra = {};
-
-export class TestClassWithDecorators
-{
-    hobbit = false;
-    @decorator(`canvas`) canvas = "canvas";
-    @decorator("cobra") cobra?: cobra = {};
-    @decorator('sheriff')
-    sheriff?: string;
 }
