@@ -17,7 +17,7 @@ import { SetterNode } from "../elements/setter-node";
 import { WriteModifier } from "../elements/write-modifier";
 import { ElementNode } from "../elements/element-node";
 
-// #region Functions (6)
+// #region Functions (7)
 
 export function formatLines(sourceCode: string)
 {
@@ -622,4 +622,4 @@ export function replaceAfterDecorators(code: string, decorators: string[], repla
     return codeDecorators + codeAfterDecorators.replace(replaceWhat, replaceWith);
 }
 
-// #endregion Functions (6)
+// #endregion Functions (7)

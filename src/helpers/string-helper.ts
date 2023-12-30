@@ -1,3 +1,5 @@
+// #region Functions (1)
+
 export function convertPascalCaseToTitleCase(value: string)
 {
     if (value &&
@@ -9,3 +11,5 @@ export function convertPascalCaseToTitleCase(value: string)
 
     return value;
 }
+
+// #endregion Functions (1)
