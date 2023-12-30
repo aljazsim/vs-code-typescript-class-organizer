@@ -40,7 +40,6 @@ export type TestType =
         readonly level: string;
         arrowFunction: () => number;
 
-
         [key: number]: string;
 
         get size(): Number;
@@ -51,7 +50,6 @@ export type TestType =
         set size(size: Number);
 
         get setter1(): Number;
-
 
         readonly town: string;
     }
