@@ -498,3 +498,7 @@ or
 ### 1.0.28
 
 - fix TS reference error
+
+### 1.0.29
+
+- fix accessor issue when decorator contains a parameter with the name of the field
