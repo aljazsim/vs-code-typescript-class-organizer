@@ -7,10 +7,13 @@ function decorator(text: string)
     }
 }
 
+export type cobra = {};
+
 export class TestClassWithDecorators
 {
     hobbit = false;
-    @decorator(`canvas`) cobra = "";
-    @decorator("canvas") canvas?: string = "";
-    @decorator('sheriff') sheriff?: string;
+    @decorator(`canvas`) canvas = "canvas";
+    @decorator("cobra") cobra?: cobra = {};
+    @decorator('sheriff')
+    sheriff?: string;
 }
