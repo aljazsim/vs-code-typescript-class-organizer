@@ -55,7 +55,7 @@ Extensions supports the following configuration options:
 - `tsco.treatArrowFunctionPropertiesAsMethods`: Arrow function properties will be treated as methods (false by default).
 
 ### Actions
-- `tsco.organizeOnSave`: Source code will get organized automatically on file saved (false by default).
+- `tsco.organizeOnSave`: Source code will get organized automatically on file saved (false by default). This now includes auto-save with `onFocusChange` and `afterDelay` settings.
 
 ### Member ordering
 
