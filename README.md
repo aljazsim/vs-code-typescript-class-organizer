@@ -503,7 +503,7 @@ or
 
 - fix accessor issue when decorator contains a parameter with the name of the field
 
-### 1.0.30
+### 1.0.31
 
 - add organizing document on saving in any mode (not just manual saving) (courtesy of [Christopher Robinson](https://github.com/Christopher-C-Robinson))
 

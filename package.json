@@ -2,7 +2,7 @@
   "name": "tsco",
   "displayName": "TypeScript Class Organizer",
   "description": "Groups and orders class members",
-  "version": "1.0.30",
+  "version": "1.0.31",
   "publisher": "aljazsim",
   "author": {
     "name": "aljazsim",
@@ -484,7 +484,9 @@
     "@vscode/test-electron": "^2.3.8",
     "eslint": "^8.56.0",
     "glob": "^10.3.10",
-    "mocha": "^10.2.0",
+    "mocha": "^10.2.0"
+  },
+  "dependencies": {
     "typescript": "^5.6.3"
   }
 }
