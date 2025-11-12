@@ -30,7 +30,7 @@ export class SourceCodePrinter
 {
     // #region Public Static Methods (1)
 
-    public static print(fileHeader: string | null, nodeGroups: ElementNodeGroup[], configuration: Configuration)
+    public static print(fileHeader: string | null, nodeGroups: ElementNodeGroup[], fileTrailer: string | null, configuration: Configuration)
     {
         const printedSourceCode = this.printNodeGroups(nodeGroups, configuration);
 
@@ -42,9 +42,21 @@ export class SourceCodePrinter
         printedSourceCode.removeConsecutiveEmptyLines();
         printedSourceCode.trim();
 
-        if (printedSourceCode.length > 0)
+        const hasContent = printedSourceCode.length > 0;
+        const hasTrailer = fileTrailer && fileTrailer.length > 0;
+
+        if (hasContent)
         {
             printedSourceCode.addNewLineAfter();
+            if (hasTrailer)
+            {
+                printedSourceCode.addNewLineAfter();
+            }
+        }
+
+        if (hasTrailer)
+        {
+            printedSourceCode.addAfter(fileTrailer);
         }
 
         return printedSourceCode;

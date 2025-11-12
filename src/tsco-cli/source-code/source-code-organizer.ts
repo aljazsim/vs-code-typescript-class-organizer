@@ -40,9 +40,10 @@ export class SourceCodeOrganizer
 
                 const sourceFile = ts.createSourceFile(sourceCodeFilePath, sourceCodeWithoutRegions.toString(), ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
                 const elements = SourceCodeAnalyzer.getNodes(sourceFile, configuration);
+                const fileTrailer = SourceCodeAnalyzer.getFileTrailer(sourceFile);
                 const topLevelGroups = await this.organizeModuleMembers(elements, configuration, sourceFile, sourceCodeFilePath); // TODO: move this to module node
 
-                return SourceCodePrinter.print(fileHeader, topLevelGroups, configuration).toString();
+                return SourceCodePrinter.print(fileHeader, topLevelGroups, fileTrailer, configuration).toString();
             }
             catch (error)
             {
